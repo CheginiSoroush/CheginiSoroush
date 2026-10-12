@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import { ArticleComments } from "@/components/site/article-comments";
+import { ProjectCover } from "@/components/site/project-cover";
 import { cn } from "@/lib/utils";
 import type { Article } from "@/lib/types";
 
@@ -243,11 +244,16 @@ export function ArticlesSection({
                   onMouseMove={onSpotlightMove}
                   className="glow-card spotlight group text-right rounded-2xl border border-border bg-card p-6 flex flex-col h-full"
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="text-4xl card-emoji" aria-hidden>
-                      {a.icon}
+                  {/* generative cover art */}
+                  <div className="cover-wrap -mx-6 -mt-6 mb-4 rounded-t-2xl overflow-hidden">
+                    <ProjectCover slug={a.slug} category={a.category} idPrefix="art" className="h-24 sm:h-28 w-full" />
+                    <div className="cover-float">
+                      <span className="text-3xl card-emoji drop-shadow-lg" aria-hidden>
+                        {a.icon}
+                      </span>
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5 mb-3">
                       {meta && (
                         <span
                           className={`text-[10px] font-bold rounded-full border px-2.5 py-1 ${meta.color}`}
@@ -282,7 +288,6 @@ export function ArticlesSection({
                           {commentCounts[a.slug].toLocaleString("fa-IR")}
                         </span>
                       )}
-                    </div>
                   </div>
                   <h3 className="font-extrabold text-lg mb-2 leading-8 group-hover:text-brand transition-colors">
                     {a.title}
@@ -313,14 +318,24 @@ export function ArticlesSection({
         >
           {selected && (
             <>
-              <div className="reading-progress -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-5" aria-hidden>
+              <div className="reading-progress -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-0" aria-hidden>
                 <span style={{ width: `${Math.round(progress * 100)}%` }} />
               </div>
 
-              <DialogHeader>
-                <div className="text-5xl mb-3 card-emoji" aria-hidden>
+              {/* generative hero cover */}
+              <div className="cover-wrap dialog-cover -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-5 overflow-hidden">
+                <ProjectCover
+                  slug={selected.slug}
+                  category={selected.category}
+                  idPrefix="artdlg"
+                  className="h-28 sm:h-32 w-full"
+                />
+                <span className="absolute bottom-3 right-5 text-4xl card-emoji drop-shadow-xl" aria-hidden>
                   {selected.icon}
-                </div>
+                </span>
+              </div>
+
+              <DialogHeader>
                 <DialogTitle className="text-xl sm:text-2xl leading-9 text-right">
                   {selected.title}
                 </DialogTitle>

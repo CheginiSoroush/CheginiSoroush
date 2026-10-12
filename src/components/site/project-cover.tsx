@@ -21,7 +21,7 @@ export function ProjectCover({
   idPrefix?: string;
 }) {
   const spec = useMemo(() => coverSpec(slug, category), [slug, category]);
-  const { palette, pattern, dots, traces, windows, orbit, lines } = spec;
+  const { palette, pattern, dots, traces, windows, orbit, lines, mind, pulse } = spec;
   const gid = `${idPrefix}-${slug.replace(/[^a-zA-Z0-9-]/g, "")}`;
 
   return (
@@ -116,6 +116,59 @@ export function ProjectCover({
           </g>
           {lines.map((l, i) => (
             <rect key={i} x={l.x} y={l.y} width={l.w} height="5" rx="2.5" fill={palette.accent} opacity={l.o} />
+          ))}
+        </g>
+      )}
+
+      {pattern === "mind" && (
+        <g>
+          {/* thought rings */}
+          {mind.rings.map((r, i) => (
+            <circle key={`ring-${i}`} cx={r.cx} cy={r.cy} r={r.r} fill="none" stroke={palette.accent} strokeWidth="1.2" opacity={r.o} />
+          ))}
+          {/* neuron links */}
+          <g stroke={palette.accent} strokeWidth="1" opacity="0.45">
+            {mind.links.map((l, i) => (
+              <line key={`link-${i}`} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} />
+            ))}
+          </g>
+          {/* neuron nodes */}
+          {mind.nodes.map((n, i) => (
+            <g key={`node-${i}`}>
+              <circle cx={n.x} cy={n.y} r={n.r + 3.5} fill={palette.accent} opacity="0.18" />
+              <circle cx={n.x} cy={n.y} r={n.r} fill={palette.accent} opacity="0.9" />
+            </g>
+          ))}
+        </g>
+      )}
+
+      {pattern === "pulse" && (
+        <g>
+          {/* activity bars behind */}
+          {pulse.bars.map((b, i) => (
+            <rect
+              key={`bar-${i}`}
+              x={b.x}
+              y={130 - b.h}
+              width="6"
+              height={b.h}
+              rx="3"
+              fill={palette.accent}
+              opacity="0.22"
+            />
+          ))}
+          {/* EKG heartbeat line */}
+          {pulse.segments.map((s, i) => (
+            <polyline
+              key={`beat-${i}`}
+              points={s.d}
+              fill="none"
+              stroke={palette.accent}
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity={s.o}
+            />
           ))}
         </g>
       )}

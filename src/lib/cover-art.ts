@@ -14,7 +14,7 @@ export type CoverPalette = {
   accent: string;
 };
 
-export type CoverPattern = "circuit" | "browser" | "orbit" | "terminal";
+export type CoverPattern = "circuit" | "browser" | "orbit" | "terminal" | "mind" | "pulse";
 
 const PALETTES: CoverPalette[] = [
   { from: "#0f766e", via: "#14d2b8", to: "#062e2a", accent: "#5eead4" }, // brand teal
@@ -32,6 +32,8 @@ export const CATEGORY_PATTERN: Record<string, CoverPattern> = {
   web: "browser",
   "3d": "orbit",
   tools: "terminal",
+  self: "mind",
+  sports: "pulse",
 };
 
 /** xmur3 string hash → 32-bit seed */
@@ -62,6 +64,9 @@ export type Dot = { x: number; y: number; r: number; o: number };
 export type Trace = { x1: number; y1: number; x2: number; y2: number };
 export type WindowBox = { x: number; y: number; w: number; h: number; skew: number };
 export type CodeLine = { x: number; y: number; w: number; o: number };
+export type NeuronLink = { x1: number; y1: number; x2: number; y2: number };
+export type PulseSegment = { d: string; o: number };
+export type ActivityBar = { x: number; h: number };
 
 export type CoverSpec = {
   palette: CoverPalette;
@@ -75,6 +80,10 @@ export type CoverSpec = {
   orbit: { cx: number; cy: number; radii: number[]; moons: Dot[]; tilt: number };
   /** terminal code lines (pattern: terminal) */
   lines: CodeLine[];
+  /** neuron network (pattern: mind) */
+  mind: { nodes: Dot[]; links: NeuronLink[]; rings: { cx: number; cy: number; r: number; o: number }[] };
+  /** heartbeat pulse (pattern: pulse) */
+  pulse: { segments: PulseSegment[]; bars: ActivityBar[] };
 };
 
 export function coverSpec(slug: string, category: string): CoverSpec {
@@ -139,5 +148,46 @@ export function coverSpec(slug: string, category: string): CoverSpec {
     o: Math.round((rand() * 0.45 + 0.25) * 100) / 100,
   }));
 
-  return { palette, pattern, dots, traces, windows, orbit, lines };
+  // neuron network (mind) — nodes linked to nearest neighbours + thought rings
+  const nodeCount = 9;
+  const nodes: Dot[] = Array.from({ length: nodeCount }, () => ({
+    x: Math.round(rand() * 360) + 20,
+    y: Math.round(rand() * 130) + 15,
+    r: Math.round((rand() * 2.4 + 2) * 10) / 10,
+    o: 1,
+  }));
+  const links: NeuronLink[] = [];
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 105 && rand() < 0.75) {
+        links.push({ x1: nodes[i].x, y1: nodes[i].y, x2: nodes[j].x, y2: nodes[j].y });
+      }
+    }
+  }
+  const mcx = 330;
+  const mcy = 46;
+  const mind = {
+    nodes,
+    links: links.slice(0, 14),
+    rings: [
+      { cx: mcx, cy: mcy, r: 26, o: 0.5 },
+      { cx: mcx, cy: mcy, r: 44, o: 0.32 },
+      { cx: mcx, cy: mcy, r: 64, o: 0.16 },
+    ],
+  };
+
+  // heartbeat pulse (pulse) — EKG polyline across the strip + activity bars
+  const beats = ["0,80 28,80 38,62 50,98 60,34 70,104 82,80", "120,80 148,80 158,58 170,100 180,28 190,110 202,80", "240,80 268,80 278,60 290,96 300,38 310,102 322,80", "350,80 374,80"];
+  const pulse = {
+    segments: beats.map((d, i) => ({ d, o: 0.9 - i * 0.15 })),
+    bars: Array.from({ length: 7 }, (_, i) => ({
+      x: 22 + i * 14,
+      h: Math.round(rand() * 46) + 10,
+    })),
+  };
+
+  return { palette, pattern, dots, traces, windows, orbit, lines, mind, pulse };
 }

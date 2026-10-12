@@ -762,3 +762,70 @@ body {
 .group:hover .cat-thumb {
   transform: scale(1.08) rotate(-2deg);
 }
+
+/* ---------- About section ---------- */
+.about-frame {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--brand) 85%, transparent),
+    color-mix(in srgb, var(--brand) 20%, transparent) 45%,
+    color-mix(in srgb, #5eead4 80%, transparent)
+  );
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.6), 0 0 40px -12px var(--brand-glow);
+  transition: box-shadow 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.about-frame:hover {
+  box-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.65), 0 0 56px -10px var(--brand-glow);
+  transform: translateY(-4px);
+}
+.about-photo {
+  transform: scale(1.02);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), filter 0.5s ease;
+  filter: saturate(1.02);
+}
+.about-frame:hover .about-photo {
+  transform: scale(1.07);
+}
+.about-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+  border-radius: 1rem;
+  padding: 0.55rem 0.9rem;
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.55), 0 0 20px -8px var(--brand-glow);
+  z-index: 2;
+}
+.timeline-line {
+  position: absolute;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  right: 0.55rem;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    180deg,
+    var(--brand) 0%,
+    color-mix(in srgb, var(--brand) 45%, transparent) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+.timeline-dot {
+  position: absolute;
+  top: 1.3rem;
+  right: -1.62rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--brand);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 22%, transparent), 0 0 12px var(--brand-glow);
+}
+@media (max-width: 640px) {
+  .about-badge {
+    padding: 0.4rem 0.7rem;
+  }
+}

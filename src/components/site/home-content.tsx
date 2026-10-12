@@ -6,6 +6,7 @@ import Image from "next/image";
 import { RadarChart } from "./radar-chart";
 import { GitHubCard } from "./github-card";
 import { ProjectCover } from "./project-cover";
+import { AboutSection } from "./about-section";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import type { Project, ViewName } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
@@ -98,6 +99,8 @@ export function HomeContent({
           ))}
         </div>
       </div>
+      {/* ---- About me ---- */}
+      <AboutSection />
       {/* ---- Radar chart + quick nav ---- */}
       <section aria-label="نقشه محتوای سایت" className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
         <motion.div
