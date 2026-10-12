@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  repo        String
+  description String
+  category    String
+  tags        String   @default("[]")
+  icon        String   @default("📦")
+  featured    Boolean  @default(false)
+  views       Int      @default(0)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String
+  content     String
+  category    String
+  icon        String   @default("📝")
+  readTime    Int      @default(5)
+  views       Int      @default(0)
+  publishedAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SiteStat {
+  key       String   @id
+  value     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}

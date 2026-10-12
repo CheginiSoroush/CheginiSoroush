@@ -1,0 +1,580 @@
+// Seed data extracted from the original CheginiSoroush/CheginiSoroush static site
+// 39 computer projects + 4 articles
+
+export type SeedProject = {
+  slug: string;
+  title: string;
+  repo: string;
+  description: string;
+  category: string;
+  tags: string[];
+  icon: string;
+  featured?: boolean;
+};
+
+export const PROJECT_CATEGORIES = [
+  { id: "bots", label: "ربات‌های تلگرام", icon: "🤖" },
+  { id: "web", label: "وب و فروشگاه", icon: "🌐" },
+  { id: "3d", label: "سه‌بعدی و تعاملی", icon: "🪐" },
+  { id: "tools", label: "ابزارهای توسعه", icon: "🛠️" },
+] as const;
+
+export const seedProjects: SeedProject[] = [
+  // ---------- BOTS (16) ----------
+  {
+    slug: "membership-bot",
+    title: "ربات تلگرام: قفل کانال",
+    repo: "CheginiSoroush/Membership-Button-Builder-Telegram-Bot",
+    description:
+      "توسعه یک ربات Serverless با Cloudflare Workers و دیتابیس D1 برای مدیریت پست‌های ویژه با شرط عضویت.",
+    category: "bots",
+    tags: ["Cloudflare Workers", "D1 Database", "TypeScript", "Telegram API"],
+    icon: "🔐",
+    featured: true,
+  },
+  {
+    slug: "persian-gemini-bot",
+    title: "دستیار هوش مصنوعی Gemini",
+    repo: "CheginiSoroush/Persian-Gemini-Telegram-Bot",
+    description:
+      "ربات تلگرامی متصل به هوش مصنوعی گوگل با قابلیت چت هوشمند، استخراج متن از تصویر (OCR) و پنل مدیریت.",
+    category: "bots",
+    tags: ["Google Gemini", "OCR", "Telegram API", "AI"],
+    icon: "✨",
+    featured: true,
+  },
+  {
+    slug: "aiflash",
+    title: "ربات هوش مصنوعی AiFlash",
+    repo: "CheginiSoroush/AiFlash",
+    description:
+      "دستیار تلگرامی چندوجهی متصل به Google Gemini، توسعه یافته بر بستر Cloudflare Workers بدون سرور.",
+    category: "bots",
+    tags: ["Cloudflare Workers", "Google Gemini", "Serverless", "AI"],
+    icon: "⚡",
+  },
+  {
+    slug: "cloudflare-telegram-bot",
+    title: "ربات Serverless تلگرام",
+    repo: "CheginiSoroush/Cloudflare-Telegram-Bot",
+    description:
+      "ربات تلگرامی با معماری بدون سرور روی Cloudflare Workers، مجهز به دیتابیس D1، سیستم KV و Rate Limiting.",
+    category: "bots",
+    tags: ["Cloudflare Workers", "D1", "KV Store", "Rate Limiting"],
+    icon: "☁️",
+  },
+  {
+    slug: "kv-dumper",
+    title: "سیستم صف ربات تلگرام",
+    repo: "CheginiSoroush/KV-Dumper",
+    description:
+      "ربات مدیریت صف ارسال محتوا با تاخیر هوشمند، متصل به دیتابیس Cloudflare D1 برای جلوگیری از Flood Limit تلگرام.",
+    category: "bots",
+    tags: ["Cloudflare D1", "Queue System", "Automation"],
+    icon: "📋",
+  },
+  {
+    slug: "unsplash-photos",
+    title: "اتوماسیون تصاویر Unsplash",
+    repo: "CheginiSoroush/Unsplash-Photos",
+    description:
+      "ربات سرورلس تلگرام مجهز به CRON Jobs برای دریافت تصاویر باکیفیت از Unsplash API و انتشار زمان‌بندی‌شده.",
+    category: "bots",
+    tags: ["CRON Jobs", "Unsplash API", "Serverless", "Cloudflare"],
+    icon: "📷",
+  },
+  {
+    slug: "heartadminbot",
+    title: "مدیریت ناوگان ربات‌ها",
+    repo: "CheginiSoroush/heartadminbot",
+    description:
+      "سیستم Serverless برای مدیریت متمرکز ده‌ها ربات تلگرامی جهت ثبت خودکار ری‌اکشن در کانال‌ها با Cloudflare D1.",
+    category: "bots",
+    tags: ["Fleet Management", "Cloudflare D1", "Serverless", "Automation"],
+    icon: "🛰️",
+  },
+  {
+    slug: "proxy-config-bot",
+    title: "ربات پروکسی و کانفیگ",
+    repo: "CheginiSoroush/Proxy-Config-Bot",
+    description:
+      "سیستم توزیع منابع شبکه مبتنی بر Cloudflare Workers، مجهز به دیتابیس D1، عضویت اجباری و آپدیت خودکار.",
+    category: "bots",
+    tags: ["Cloudflare Workers", "D1", "Network", "Telegram API"],
+    icon: "🛡️",
+  },
+  {
+    slug: "config-to-channel",
+    title: "ربات توزیع کانفیگ",
+    repo: "CheginiSoroush/ConfigToChannel",
+    description:
+      "موتور Serverless برای استخراج، مدیریت و زمان‌بندی هوشمندِ ارسال کانفیگ‌های V2Ray به چندین کانال تلگرامی.",
+    category: "bots",
+    tags: ["V2Ray", "Serverless", "Scheduling", "Telegram API"],
+    icon: "📡",
+  },
+  {
+    slug: "audio-queue-bot",
+    title: "ربات صف صوتی",
+    repo: "CheginiSoroush/Audio-Queue-Bot",
+    description:
+      "اتوماسیون انتشار موسیقی در کانال‌های تلگرامی با معماری Serverless، مجهز به زمان‌بندی پویا و دیتابیس D1.",
+    category: "bots",
+    tags: ["Audio Publishing", "Dynamic Scheduling", "D1", "Serverless"],
+    icon: "🎧",
+  },
+  {
+    slug: "ghost-curator",
+    title: "ربات کیوریتور (Ghost)",
+    repo: "CheginiSoroush/Ghost-Curator-Telegram-Bot",
+    description:
+      "ابزار هوشمند ادمین کانال برای ذخیره، پاکسازی خودکار متن‌ها و ارسال زمان‌بندی‌شده محتوا در تلگرام.",
+    category: "bots",
+    tags: ["Curation", "Text Processing", "Scheduling", "Telegram API"],
+    icon: "👻",
+  },
+  {
+    slug: "media-pack-bot",
+    title: "ربات مدیریت آلبوم مدیا",
+    repo: "CheginiSoroush/Media-Pack-Telegram-Bot",
+    description:
+      "ربات ابری (Serverless) برای مدیریت، پاکسازی کپشن‌ها و انتشار خودکار آلبوم‌های عکس و ویدیو در ساعات طلایی.",
+    category: "bots",
+    tags: ["Media Albums", "Caption Cleanup", "Cloudflare", "Automation"],
+    icon: "🖼️",
+  },
+  {
+    slug: "temp-file-bot",
+    title: "ربات فایل‌های موقت",
+    repo: "CheginiSoroush/Telegram-Temp-File-Bot",
+    description:
+      "ربات پایتونی برای ایجاد لینک‌های دانلود زمان‌دار، با قابلیت عضویت اجباری و حذف خودکار فایل‌ها از چت کاربر.",
+    category: "bots",
+    tags: ["Python", "Temporary Links", "Auto-Delete", "Telegram API"],
+    icon: "⏳",
+  },
+  {
+    slug: "channel-manager",
+    title: "دستیار ادمین کانال",
+    repo: "CheginiSoroush/Telegram-Channel-Manager",
+    description:
+      "ربات پایتونی برای پایش، پاکسازی خودکار متون با RegEx و سیستم تاییدیه دو مرحله‌ای برای مدیریت کانال.",
+    category: "bots",
+    tags: ["Python", "RegEx", "Moderation", "Two-Factor Approval"],
+    icon: "🛎️",
+  },
+  {
+    slug: "self-destruct",
+    title: "ربات فایل‌های زمان‌دار",
+    repo: "CheginiSoroush/Cloudflare-Self-Destruct",
+    description:
+      "نسخه Serverless ربات Self-Destruct در کلودفلر، مجهز به CRON Jobs یک دقیقه‌ای برای نابودی خودکار پیام‌ها.",
+    category: "bots",
+    tags: ["Cloudflare CRON", "Self-Destruct", "Serverless", "Security"],
+    icon: "💥",
+  },
+  {
+    slug: "bot-boilerplate",
+    title: "قالب پایه ربات تلگرام",
+    repo: "CheginiSoroush/Telegram-Bot-Boilerplate",
+    description:
+      "ساختار اولیه و استاندارد (Boilerplate) برای توسعه سریع ربات‌های تلگرامی با پایتون (Asyncio) و سیستم لاگینگ.",
+    category: "bots",
+    tags: ["Python", "Asyncio", "Logging", "Boilerplate"],
+    icon: "🧱",
+  },
+
+  // ---------- WEB (9) ----------
+  {
+    slug: "vamp-sole",
+    title: "فروشگاه خونین کفش",
+    repo: "CheginiSoroush/VampSole",
+    description:
+      "طراحی رابط کاربری خلاقانه و تعاملی با تم وحشت، دارای انیمیشن‌های پیشرفته CSS و افکت باران خون.",
+    category: "web",
+    tags: ["E-Commerce UI", "Advanced CSS", "Horror Theme", "Animations"],
+    icon: "🩸",
+  },
+  {
+    slug: "style-plus",
+    title: "فروشگاه استایل پلاس",
+    repo: "CheginiSoroush/StylePlus-Ecommerce",
+    description:
+      "رابط کاربری پیشرفته و واکنش‌گرای فروشگاهی با امکاناتی نظیر استوری، گردونه شانس و سبد خرید پویا.",
+    category: "web",
+    tags: ["E-Commerce UI", "Stories", "Spin Wheel", "Dynamic Cart"],
+    icon: "🛍️",
+  },
+  {
+    slug: "aurora-vpn",
+    title: "لندینگ پیج AuroraVPN",
+    repo: "CheginiSoroush/AuroraVPN",
+    description:
+      "طراحی مدرن شیشه‌ای با انیمیشن‌های پس‌زمینه پویا و اسکرول تعاملی با جاوااسکریپت خالص.",
+    category: "web",
+    tags: ["Glassmorphism", "Vanilla JS", "Landing Page", "Animations"],
+    icon: "🌌",
+  },
+  {
+    slug: "fashion-everyday",
+    title: "طراحی Fashion Everyday",
+    repo: "CheginiSoroush/Fashion-Everyday",
+    description:
+      "طراحی مدرن و مینیمال با استفاده از تکنیک‌های پیشرفته فیلترهای SVG برای خلق افکت‌های تایپوگرافی پویا.",
+    category: "web",
+    tags: ["SVG Filters", "Typography", "Minimal Design", "CSS"],
+    icon: "👗",
+  },
+  {
+    slug: "argus-vpn",
+    title: "لندینگ پیج ArgusVPN",
+    repo: "CheginiSoroush/ArgusVPN",
+    description:
+      "طراحی مدرن و تاریک با انیمیشن‌های اسکرول GSAP، ماک‌آپ تعاملی CSS و کره زمین سه‌بعدی.",
+    category: "web",
+    tags: ["GSAP", "3D Globe", "Dark Design", "CSS Mockups"],
+    icon: "👁️",
+  },
+  {
+    slug: "aramia-cbt",
+    title: "اپلیکیشن آرامیا (CBT)",
+    repo: "CheginiSoroush/Aramia-CBT-App",
+    description:
+      "وب‌اپلیکیشن روان‌شناسی برای مدیریت استرس مجهز به LocalStorage، نمودارهای Chart.js و ابزارهای ذهن‌آگاهی.",
+    category: "web",
+    tags: ["Psychology", "Chart.js", "LocalStorage", "Mindfulness"],
+    icon: "🧘",
+    featured: true,
+  },
+  {
+    slug: "luxe-ecommerce",
+    title: "فروشگاه آنلاین LUXE",
+    repo: "CheginiSoroush/Luxe",
+    description:
+      "رابط کاربری مدرن محصولات لوکس، مجهز به سبد خرید داینامیک و فیلتر محصولات با Bootstrap 5.",
+    category: "web",
+    tags: ["Bootstrap 5", "Luxury UI", "Dynamic Cart", "Filtering"],
+    icon: "💎",
+  },
+  {
+    slug: "stepstyle",
+    title: "فروشگاه آنلاین StepStyle",
+    repo: "CheginiSoroush/StepStyle",
+    description:
+      "رابط کاربری مدرن با Bootstrap 5، مجهز به سیستم فیلترینگ و رندرینگ داینامیک محصولات جاوااسکریپت.",
+    category: "web",
+    tags: ["Bootstrap 5", "Dynamic Rendering", "Filtering", "JS"],
+    icon: "👟",
+  },
+  {
+    slug: "valentine-game",
+    title: "مینی‌گیم ولنتاین",
+    repo: "CheginiSoroush/My_Valentine_site",
+    description:
+      "یک صفحه وب تعاملی و فان با جاوااسکریپت که در آن دکمه «خیر» به صورت هوشمند از دست کاربر فرار می‌کند!",
+    category: "web",
+    tags: ["Fun", "Interactive JS", "Mini-Game", "Creative"],
+    icon: "💝",
+  },
+
+  // ---------- 3D (7) ----------
+  {
+    slug: "cinematic-solar-system",
+    title: "شبیه‌ساز سینمایی منظومه",
+    repo: "CheginiSoroush/Cinematic-Solar-System-3D",
+    description:
+      "شبیه‌سازی کاملاً سه‌بعدی و واقع‌گرایانه با موتور قدرتمند Three.js، تکسچرهای ناسا و افکت‌های Post-Processing.",
+    category: "3d",
+    tags: ["Three.js", "NASA Textures", "Post-Processing", "WebGL"],
+    icon: "🪐",
+    featured: true,
+  },
+  {
+    slug: "threejs-solar-system",
+    title: "منظومه شمسی واقع‌گرایانه",
+    repo: "CheginiSoroush/ThreeJS-Solar-System",
+    description:
+      "شبیه‌سازی کاملاً تعاملی با موتور قدرتمند Three.js، افکت‌های سینمایی (Bloom & Lensflare) و تکسچرهای ناسا.",
+    category: "3d",
+    tags: ["Three.js", "Bloom", "Lensflare", "WebGL"],
+    icon: "🌞",
+  },
+  {
+    slug: "portfolio-nebula",
+    title: "قالب پورتفولیو سحابی",
+    repo: "CheginiSoroush/Portfolio-Nebula",
+    description:
+      "یک قالب شخصی تاریک و مدرن با پس‌زمینه تعاملی Three.js، افکت‌های تایپ‌رایتر و انیمیشن‌های GSAP.",
+    category: "3d",
+    tags: ["Three.js", "GSAP", "Typewriter", "Dark UI"],
+    icon: "🌫️",
+  },
+  {
+    slug: "fashionable-3d",
+    title: "تجربه سینمایی Fashionable",
+    repo: "CheginiSoroush/Fashionable-3D-Experience",
+    description:
+      "ترکیب جادویی Three.js و GSAP برای خلق یک لندینگ‌پیج تعاملی در عمق فضای سه‌بعدی (Z-Axis).",
+    category: "3d",
+    tags: ["Three.js", "GSAP", "Z-Axis", "Cinematic"],
+    icon: "🎬",
+  },
+  {
+    slug: "dev-portfolio-3d",
+    title: "پورتفولیو سه‌بعدی",
+    repo: "CheginiSoroush/Dev-Portfolio-3D",
+    description:
+      "قالب شخصی حرفه‌ای با طراحی شیشه‌ای (Glassmorphism)، تایم‌لاین مسیر شغلی و پس‌زمینه تعاملی Three.js.",
+    category: "3d",
+    tags: ["Glassmorphism", "Career Timeline", "Three.js", "Interactive"],
+    icon: "💼",
+  },
+  {
+    slug: "realistic-earth",
+    title: "شبیه‌سازی زمین و ماه",
+    repo: "CheginiSoroush/Realistic-Earth-WebGL",
+    description:
+      "رندرینگ واقع‌گرایانه کره زمین با استفاده از Three.js، تکسچرهای با وضوح بالا و نورپردازی دینامیک.",
+    category: "3d",
+    tags: ["Three.js", "HD Textures", "Dynamic Lighting", "WebGL"],
+    icon: "🌍",
+  },
+  {
+    slug: "cosmic-earth",
+    title: "منظومه زمین (Procedural)",
+    repo: "CheginiSoroush/3D-Cosmic-Earth",
+    description:
+      "خلق کره زمین با استفاده از ریاضیات (Simplex Noise) و شیدرنویسی سفارشی در Three.js بدون استفاده از عکس.",
+    category: "3d",
+    tags: ["Simplex Noise", "Custom Shaders", "Procedural", "Three.js"],
+    icon: "🧮",
+  },
+
+  // ---------- TOOLS (7) ----------
+  {
+    slug: "microservices-vs-monolith",
+    title: "میکروسرویس یا مونولیت؟",
+    repo: "CheginiSoroush/microservices-vs-monolith",
+    description:
+      "یک ابزار تعاملی و بصری با Chart.js برای پیشنهاد بهترین معماری نرم‌افزار بر اساس نیازهای پروژه.",
+    category: "tools",
+    tags: ["Architecture", "Chart.js", "Decision Tool", "Interactive"],
+    icon: "🏗️",
+  },
+  {
+    slug: "gitpedia",
+    title: "گیت‌پدیا (GitPedia)",
+    repo: "CheginiSoroush/gitpedia-interactive",
+    description:
+      "دانشنامه تعاملی دستورات گیت مجهز به شبیه‌ساز ترمینال داخلی برای اجرای زنده و نمایش خروجی کدها.",
+    category: "tools",
+    tags: ["Git", "Terminal Simulator", "Education", "Interactive"],
+    icon: "📚",
+    featured: true,
+  },
+  {
+    slug: "linux-cheat-sheet",
+    title: "چیت‌شیت جامع لینوکس",
+    repo: "CheginiSoroush/linux-cheat-sheet",
+    description:
+      "یک مرجع سریع و تعاملی برای دستورات پرکاربرد خط فرمان (CLI) با قابلیت جستجوی زنده و کپی سریع.",
+    category: "tools",
+    tags: ["Linux", "CLI", "Live Search", "Reference"],
+    icon: "🐧",
+  },
+  {
+    slug: "fix-network",
+    title: "اسکریپت تعمیر شبکه لینوکس",
+    repo: "CheginiSoroush/Fix-Network",
+    description:
+      "یک ابزار Bash خودکار و دوزبانه برای رفع مشکلات DNS، پاکسازی پروکسی‌ها و ریست شبکه.",
+    category: "tools",
+    tags: ["Bash", "DNS", "Network Repair", "Automation"],
+    icon: "🔧",
+  },
+  {
+    slug: "opencv-face-detection",
+    title: "تشخیص چهره با OpenCV",
+    repo: "CheginiSoroush/opencv-face-detection",
+    description:
+      "اسکریپت پایتون مبتنی بر خط فرمان برای تشخیص هوشمند چهره در تصاویر با استفاده از الگوریتم Haar Cascade.",
+    category: "tools",
+    tags: ["Python", "OpenCV", "Haar Cascade", "Computer Vision"],
+    icon: "😐",
+  },
+  {
+    slug: "opencv-image-blender",
+    title: "ابزار ترکیب تصاویر OpenCV",
+    repo: "CheginiSoroush/opencv-image-blender",
+    description:
+      "اسکریپت خط فرمان (CLI) پایتون برای ترکیب و ادغام (Blending) دو تصویر با کنترل شفافیت.",
+    category: "tools",
+    tags: ["Python", "OpenCV", "CLI", "Image Blending"],
+    icon: "🎭",
+  },
+  {
+    slug: "cpp-calculator",
+    title: "ماشین حساب C++ (CLI)",
+    repo: "CheginiSoroush/CPP-Calculator",
+    description:
+      "برنامه خط فرمان نوشته شده با ++C دارای سیستم اعتبارسنجی ورودی‌ها و مدیریت خطاهای ریاضی.",
+    category: "tools",
+    tags: ["C++", "CLI", "Validation", "Error Handling"],
+    icon: "🧮",
+  },
+];
+
+export type SeedArticle = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  icon: string;
+  readTime: number;
+  repo?: string;
+};
+
+export const ARTICLE_CATEGORIES = [
+  { id: "self", label: "توسعه فردی", icon: "💡" },
+  { id: "sports", label: "علوم ورزشی", icon: "🏋️" },
+] as const;
+
+export const seedArticles: SeedArticle[] = [
+  {
+    slug: "overcoming-laziness-roadmap",
+    title: "نقشه راه غلبه بر تنبلی",
+    excerpt:
+      "یک وب‌اپلیکیشن تعاملی بر پایه روانشناسی رفتار و مهندسی عادت‌ها؛ برنامه ۳۰ روزه‌ای برای غلبه بر تنبلی با تمرکز بر قانون ۲ دقیقه‌ای.",
+    icon: "🚀",
+    category: "self",
+    readTime: 8,
+    repo: "CheginiSoroush/overcoming-laziness-roadmap",
+    content: `## 🧠 کدنویسی برای ذهن انسان
+
+این پروژه تنها یک مقاله ساده نیست، بلکه یک **نقشه راه تعاملی** است. هدف من ترکیب نظریات روانشناسی رفتار (مانند *عادت‌های اتمی* از جیمز کلیر و *کار عمیق* از کال نیوپورت) با تکنیک‌های مدرن فرانت‌اند بود تا کاربران بتوانند مسیر پیشرفت خود را به صورت بصری و گام‌به‌گام در یک بازه ۳۰ روزه طی کنند.
+
+### نکات برجسته توسعه
+
+- **UI تعاملی و Tab-based:** پیاده‌سازی سیستم تب‌بندی داینامیک برای مدیریت و نمایش هفته‌های مختلف نقشه راه بدون بارگذاری مجدد صفحه.
+- **نمودار رشد:** رسم نمودارهای پیشرفت که نشان می‌دهد چگونه تمرکز روی یک حوزه (مانند ساخت عادت) در طول زمان رشد می‌کند.
+- **طراحی کارت‌محور:** استفاده از Tailwind CSS برای طراحی مدرن، واکنش‌گرا و مبتنی بر کارت.
+
+### هفته اول: قانون ۲ دقیقه‌ای
+
+> هر بار که احساس تنبلی کردید، سرنخ آن (مکان، زمان، احساس) را یادداشت کنید. سپس نسخه‌ای ۲ دقیقه‌ای از کار را اجرا کنید: «کتاب نمی‌خوانم، فقط یک صفحه می‌خوانم.»
+
+### چرا تعاملی؟
+
+مغز انسان با تصویر و تعامل بهتر یاد می‌گیرد. به جای خواندن یک متن طولانی، کاربر هفته به هفته پیشرفت خود را روی نمودار می‌بیند و حس مالکیت (Ownership) نسبت به مسیر رشد پیدا می‌کند.`,
+  },
+  {
+    slug: "atomic-habits-interactive",
+    title: "مهندسی عادت‌های اتمی",
+    excerpt:
+      "شبیه‌سازی بصری روانشناسی رفتار و اثر مرکب با جاوااسکریپت؛ کشف چرخه چهار مرحله‌ای عادت و تأثیر رشد ۱ درصدی روزانه.",
+    icon: "🧠",
+    category: "self",
+    readTime: 7,
+    repo: "CheginiSoroush/atomic-habits-interactive",
+    content: `## 🌱 روانشناسی در قالب کد
+
+این وب‌اپلیکیشن مفاهیم کتاب پرفروش **«عادت‌های اتمی»** اثر جیمز کلیر را به ابزارهای تعاملی تبدیل کرده است. به جای خواندن یک متن طولانی، کاربر می‌تواند با المان‌های رابط کاربری تعامل کند، چرخه چهار مرحله‌ای عادت را کشف کند و تأثیر شگفت‌انگیز «رشد یک درصدی» را روی نمودار ببیند.
+
+### قابلیت‌های کلیدی
+
+- **ماشین‌حساب اثر مرکب:** محاسبه زنده و رسم نمودار نمایی رشد با تغییر درصد بهبود روزانه.
+- **UI تعاملی چرخه عادت:** المان‌های قابل کلیک برای نمایش توضیحات پویای سرنخ، میل، پاسخ و پاداش.
+- **رابط کاربری هشداردهنده:** طراحی بخش «ترک عادت‌های بد» با رنگ‌بندی Danger/Warning برای انتقال حس روانشناختی متفاوت.
+
+### فرمول اثر مرکب
+
+اگر روزانه فقط **۱٪** بهتر شوید، پس از یک سال **۳۷ برابر** بهتر خواهید بود:
+
+\`\`\`
+(1 + 0.01) ^ 365 ≈ 37.78
+\`\`\`
+
+### چرخه چهار مرحله‌ای عادت
+
+1. **سرنخ (Cue):** محرکی که رفتار را آغاز می‌کند
+2. **میل (Craving):** انگیزه‌ای که ما را به سمت رفتار می‌کشاند
+3. **پاسخ (Response):** خودِ رفتار
+4. **پاداش (Reward):** نتیجه‌ای که چرخه را تثبیت می‌کند
+
+طراحی هر چهار مرحله به صورت کارت‌های تعاملی باعث شد مفهوم کتاب نه فقط خوانده شود، بلکه *تجربه* شود.`,
+  },
+  {
+    slug: "willpower-science-amcc",
+    title: "اراده پولادین (aMCC)",
+    excerpt:
+      "تحلیل تعاملی و علمی نوروساینس اراده؛ داشبورد تعاملی قشر کمربندی میانی قدامی (aMCC) در تقابل با ذهنیت سرسختانه دیوید گاگینز.",
+    icon: "🔋",
+    category: "self",
+    readTime: 9,
+    repo: "CheginiSoroush/willpower-science-amcc",
+    content: `## 🔬 تجسم داده‌های روان‌شناختی
+
+این وب‌اپلیکیشن به جای ارائه یک مقاله متنی خشک، محتوای علمی مربوط به قشر کمربندی میانی قدامی (**aMCC**) را به یک داشبورد تعاملی تبدیل کرده است. کاربر می‌تواند ابزارهای ذهنی گاگینز را انتخاب کند و در لحظه، بازخورد و واکنش بیولوژیکی مغز را روی نمودار مشاهده کند.
+
+### دستاوردهای پیاده‌سازی
+
+- **داشبورد تعاملی:** اتصال رویدادهای کلیک به توابع جاوااسکریپت برای تغییر آنی متون توضیحی و نمودارها.
+- **یکپارچه‌سازی بصری داده‌ها:** رسم نمودارهای میله‌ای که رشد فیزیکی aMCC را شبیه‌سازی می‌کنند.
+- **رابط کاربری انتقادی (Danger Zones):** باکس‌های هشدار با استایل‌های اختصاصی قرمز برای تحلیل انتقادی روان‌شناختی.
+- **جداول واکنش‌گرا:** جداول مقایسه‌ای که در موبایل به صورت کارت‌بندی شده نمایش داده می‌شوند.
+
+### aMCC چیست؟
+
+قشر کمربندی میانی قدامی (anterior midcingulate cortex) ناحیه‌ای از مغز است که تحقیقات نوروساینس آن را با **علم اراده** گره زده است:
+
+- فعال‌تر می‌شود وقتی کاری را انجام می‌دهیم که *نمی‌خواهیم* ولی می‌دانیم باید انجام دهیم
+- با تمرین منظم «دشواری داوطلبانه»، از نظر ساختاری رشد می‌کند
+- کلید زیست‌شناسیِ «فشار دادن ادامه» در لحظات سختی است
+
+### گاگینز در برابر علم
+
+ابزارهای ذهنی دیوید گاگینز (قانون ۴۰٪، اتاقک ذهنی، Accountabilty Mirror) را در کنار یافته‌های نوروساینس تحلیل کردم تا مشخص شود کدام تکنیک‌ها دقیقاً همان مسیر رشد aMCC را فعال می‌کنند.`,
+  },
+  {
+    slug: "smart-fitness-planner",
+    title: "جدال نهایی در وزنه‌زنی: تکرار بالا یا پایین؟",
+    excerpt:
+      "بر اساس جدیدترین تحقیقات علمی، بهترین روش تمرینی را برای اهداف منحصر به فرد خود انتخاب کنید؛ مربی هوشمند با تولید برنامه تمرینی و تغذیه توسط AI.",
+    icon: "🏋️",
+    category: "sports",
+    readTime: 10,
+    repo: "CheginiSoroush/Smart-Fitness-Planner",
+    content: `## 🤖💪 مربی هوشمند تناسب اندام
+
+تولید برنامه‌های تمرینی و تغذیه شخصی‌سازی‌شده با استفاده از هوش مصنوعی Gemini.
+
+### 🧠 ادغام علوم ورزشی و هوش مصنوعی
+
+این وب‌اپلیکیشن، مقالات علمی را با قدرت هوش مصنوعی ترکیب کرده است. کاربر با انتخاب هدف خود (عضله‌سازی، چربی‌سوزی، قدرت و...) تحلیل‌های بصری دریافت کرده و سپس می‌تواند از طریق API هوش مصنوعی Gemini، برنامه تمرینی و تغذیه کاملاً شخصی‌سازی‌شده تولید کند.
+
+### تکرار بالا یا پایین؟ جواب علمی
+
+- **دامنه ۶-۱۲ تکرار:** بهترین تعادل بین فشار مکانیکی و استرس متابولیک برای هایپرتروفی
+- **دامنه ۱-۵ تکرار:** بهینه برای قدرت بیشینه (Neural Adaptations)
+- **دامنه ۱۵+ تکرار:** استرس متابولیک بالا؛ مفید برای استقامت و پمپاژ خون
+
+تحقیقات متاآنالیز نشان می‌دهد **هایپرتروفی در تمام دامنه‌ها رخ می‌دهد** به شرطی که تمرین نزدیک به ناتوانی (Close to Failure) انجام شود — اما کارایی (Efficiency) و مدیریت خستگی، دامنه ۶-۱۲ را برنده می‌کند.
+
+### امکانات پیشرفته سیستم
+
+- **AI Workout Generator:** ارتباط مستقیم با مدل زبانی Google Gemini برای خلق برنامه‌های تمرینی بر اساس پرامپت‌های علمی.
+- **معماری Serverless:** میزبانی سمت سرور بر روی شبکه توزیع‌شده Cloudflare Workers بدون نیاز به سرور سنتی.
+- **پشتیبانی از Markdown:** رندر کردن متون خروجی هوش مصنوعی به HTML خوانا و زیبا.
+- **تجزیه و تحلیل بصری:** نمودارهای راداری مقایسه‌ای از میزان فشار مکانیکی و استرس متابولیک.
+
+### نکته کلیدی
+
+هیچ برنامه تمرینی «بهترین مطلق» وجود ندارد؛ فقط **بهترین برنامه برای هدف، تجهیزات و ظرفیت ریکاوری شما** وجود دارد. این ابزار دقیقاً همین تصمیم‌گیری را به داده و نمودار تبدیل می‌کند.`,
+  },
+];
+
+export const SITE_STATS_SEED: Record<string, number> = {
+  visits: 0,
+  projectViews: 0,
+};

@@ -1,0 +1,84 @@
+import { PrismaClient } from "@prisma/client";
+import { seedProjects, seedArticles } from "../src/lib/seed-data";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log("Seeding database...");
+
+  // Projects
+  for (let i = 0; i < seedProjects.length; i++) {
+    const p = seedProjects[i];
+    await prisma.project.upsert({
+      where: { slug: p.slug },
+      update: {
+        title: p.title,
+        repo: p.repo,
+        description: p.description,
+        category: p.category,
+        tags: JSON.stringify(p.tags),
+        icon: p.icon,
+        featured: p.featured ?? false,
+        order: i,
+      },
+      create: {
+        slug: p.slug,
+        title: p.title,
+        repo: p.repo,
+        description: p.description,
+        category: p.category,
+        tags: JSON.stringify(p.tags),
+        icon: p.icon,
+        featured: p.featured ?? false,
+        order: i,
+      },
+    });
+  }
+  console.log(`Projects seeded: ${seedProjects.length}`);
+
+  // Articles
+  for (const a of seedArticles) {
+    await prisma.article.upsert({
+      where: { slug: a.slug },
+      update: {
+        title: a.title,
+        excerpt: a.excerpt,
+        content: a.content,
+        category: a.category,
+        icon: a.icon,
+        readTime: a.readTime,
+      },
+      create: {
+        slug: a.slug,
+        title: a.title,
+        excerpt: a.excerpt,
+        content: a.content,
+        category: a.category,
+        icon: a.icon,
+        readTime: a.readTime,
+      },
+    });
+  }
+  console.log(`Articles seeded: ${seedArticles.length}`);
+
+  // Site stats
+  await prisma.siteStat.upsert({
+    where: { key: "visits" },
+    update: {},
+    create: { key: "visits", value: 1 },
+  });
+  await prisma.siteStat.upsert({
+    where: { key: "projectViews" },
+    update: {},
+    create: { key: "projectViews", value: 0 },
+  });
+
+  console.log("Seeding complete!");
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());
