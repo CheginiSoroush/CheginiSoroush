@@ -1,13 +1,14 @@
 "use client";
 
 import { SearchX, RotateCcw } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 export function EmptyState({
   title,
   description,
   emoji = "🔍",
   onReset,
-  resetLabel = "پاک کردن فیلترها",
+  resetLabel,
 }: {
   title: string;
   description: string;
@@ -15,6 +16,7 @@ export function EmptyState({
   onReset?: () => void;
   resetLabel?: string;
 }) {
+  const { t } = useT();
   return (
     <div className="empty-state text-center py-14 px-6" role="status">
       <div className="empty-orb mx-auto mb-5" aria-hidden>
@@ -29,7 +31,7 @@ export function EmptyState({
           className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-5 py-2.5 hover:bg-brand/20 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[40px]"
         >
           <RotateCcw className="w-4 h-4" />
-          {resetLabel}
+          {resetLabel ?? t("misc", "empty.reset")}
         </button>
       )}
     </div>

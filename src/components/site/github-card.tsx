@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Star, Users, GitFork, FolderGit2, RefreshCw, ExternalLink } from "lucide-react";
 import { ContributionHeatmap } from "@/components/site/contribution-heatmap";
+import { useT } from "@/lib/i18n";
 
 type GitHubStats = {
   username: string;
@@ -35,11 +36,8 @@ const LANG_COLORS: Record<string, string> = {
   Vue: "#41b883",
 };
 
-function fa(n: number) {
-  return n.toLocaleString("fa-IR");
-}
-
 export function GitHubCard() {
+  const { t, num } = useT();
   const [stats, setStats] = useState<GitHubStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -67,10 +65,10 @@ export function GitHubCard() {
 
   const statItems = stats
     ? [
-        { icon: <FolderGit2 className="w-4 h-4" />, label: "ریپوی عمومی", value: stats.publicRepos },
-        { icon: <Star className="w-4 h-4" />, label: "ستاره", value: stats.totalStars },
-        { icon: <GitFork className="w-4 h-4" />, label: "فورک", value: stats.totalForks },
-        { icon: <Users className="w-4 h-4" />, label: "دنبال‌کننده", value: stats.followers },
+        { icon: <FolderGit2 className="w-4 h-4" />, label: t("home", "github.stat.repos"), value: stats.publicRepos },
+        { icon: <Star className="w-4 h-4" />, label: t("home", "github.stat.stars"), value: stats.totalStars },
+        { icon: <GitFork className="w-4 h-4" />, label: t("home", "github.stat.forks"), value: stats.totalForks },
+        { icon: <Users className="w-4 h-4" />, label: t("home", "github.stat.followers"), value: stats.followers },
       ]
     : [];
 
@@ -80,7 +78,7 @@ export function GitHubCard() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.55 }}
-      aria-label="آمار زنده گیت‌هاب"
+      aria-label={t("home", "github.aria")}
       className="rounded-3xl border border-border bg-card/70 backdrop-blur p-6 sm:p-8"
     >
       <div className="flex items-center justify-between gap-3 mb-6">
@@ -88,7 +86,7 @@ export function GitHubCard() {
           {stats?.avatarUrl && (
             <img
               src={stats.avatarUrl}
-              alt={`آواتار گیت‌هاب ${stats.name}`}
+              alt={t("home", "github.avatarAlt", { name: stats.name })}
               width={44}
               height={44}
               loading="lazy"
@@ -96,7 +94,7 @@ export function GitHubCard() {
             />
           )}
           <div>
-            <h3 className="font-extrabold text-lg leading-6">گیت‌هاب زنده</h3>
+            <h3 className="font-extrabold text-lg leading-6">{t("home", "github.title")}</h3>
             <p className="text-xs text-muted-foreground">
               {stats ? (
                 <>
@@ -104,14 +102,14 @@ export function GitHubCard() {
                   {stats.name !== stats.username && ` · ${stats.name}`}
                 </>
               ) : (
-                "در حال دریافت..."
+                t("home", "github.loading")
               )}
             </p>
           </div>
         </div>
         <button
           onClick={() => load(true)}
-          aria-label="به‌روزرسانی آمار گیت‌هاب"
+          aria-label={t("home", "github.refresh")}
           disabled={refreshing}
           className="w-10 h-10 rounded-xl border border-border grid place-items-center text-muted-foreground hover:text-brand hover:border-brand/50 transition-all disabled:opacity-50 shrink-0"
         >
@@ -127,12 +125,12 @@ export function GitHubCard() {
         </div>
       ) : failed || !stats ? (
         <div className="text-center py-10 text-muted-foreground">
-          <p className="text-sm">فعلاً نتونستم به گیت‌هاب وصل بشم 🛰️</p>
+          <p className="text-sm">{t("home", "github.error")}</p>
           <button
             onClick={() => load(true)}
             className="mt-3 text-sm font-bold text-brand hover:underline"
           >
-            تلاش دوباره
+            {t("home", "github.retry")}
           </button>
         </div>
       ) : (
@@ -148,7 +146,7 @@ export function GitHubCard() {
                   {s.icon}
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-lg font-black tabular-nums leading-5">{fa(s.value)}</span>
+                  <span className="block text-lg font-black tabular-nums leading-5">{num(s.value)}</span>
                   <span className="block text-[11px] text-muted-foreground">{s.label}</span>
                 </span>
               </div>
@@ -166,7 +164,7 @@ export function GitHubCard() {
           {/* Top repos */}
           {stats.topRepos.length > 0 && (
             <div>
-              <h4 className="text-sm font-extrabold mb-3">پرستاره‌ترین ریپوها</h4>
+              <h4 className="text-sm font-extrabold mb-3">{t("home", "github.topRepos")}</h4>
               <ul className="space-y-2.5">
                 {stats.topRepos.map((r) => (
                   <li key={r.name}>
@@ -199,7 +197,7 @@ export function GitHubCard() {
                       </div>
                       <span className="flex items-center gap-1 text-xs font-bold text-amber-500 shrink-0 tabular-nums">
                         <Star className="w-3.5 h-3.5 fill-current" />
-                        {fa(r.stars)}
+                        {num(r.stars)}
                       </span>
                       <ExternalLink className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5" />
                     </a>

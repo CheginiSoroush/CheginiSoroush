@@ -4,26 +4,20 @@ import { useCallback, useEffect, useState } from "react";
 import { Loader2, MessageCircle, Trash2, RotateCcw, CheckCircle2, RefreshCw, ChevronRight, ChevronLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 import type { Comment } from "@/lib/types";
 
-const fa = (n: number) => n.toLocaleString("fa-IR");
-
-function formatDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleString("fa-IR", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
+const DATE_OPTS: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+};
 
 export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
   const { toast } = useToast();
+  const { t, num, isRtl, date } = useT();
   const [comments, setComments] = useState<Comment[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -32,6 +26,14 @@ export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
   const [failed, setFailed] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  const fmtDate = (iso: string) => {
+    try {
+      return date(iso, DATE_OPTS);
+    } catch {
+      return iso;
+    }
+  };
 
   const load = useCallback(
     async (opts?: { page?: number }) => {
@@ -76,14 +78,17 @@ export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
         body: JSON.stringify({ id: c.id }),
       });
       if (res.ok) {
-        toast({ title: "دیدگاه حذف شد", description: `دیدگاه «${c.name}» پاک شد.` });
+        toast({
+          title: t("admin", "commentDeleted"),
+          description: t("admin", "commentDeletedDesc", { s: c.name }),
+        });
         setConfirmDeleteId(null);
         load();
       } else {
-        toast({ title: "حذف ناموفق", variant: "destructive" });
+        toast({ title: t("admin", "deleteFailed"), variant: "destructive" });
       }
     } catch {
-      toast({ title: "خطای شبکه", variant: "destructive" });
+      toast({ title: t("admin", "networkTitle"), variant: "destructive" });
     } finally {
       setBusyId(null);
     }
@@ -101,13 +106,13 @@ export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <MessageCircle className="w-10 h-10 mx-auto mb-3 opacity-50" />
-        <p className="text-sm mb-4">دیدگاه‌ها بارگذاری نشد.</p>
+        <p className="text-sm mb-4">{t("admin", "commentsFailed")}</p>
         <button
           onClick={() => load()}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-4 py-2 hover:bg-brand/20 transition-all min-h-[34px]"
         >
           <RefreshCw className="w-3.5 h-3.5" />
-          تلاش دوباره
+          {t("admin", "retry")}
         </button>
       </div>
     );
@@ -117,7 +122,7 @@ export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <MessageCircle className="w-10 h-10 mx-auto mb-3 opacity-50" />
-        <p className="text-sm">هنوز دیدگاهی ثبت نشده.</p>
+        <p className="text-sm">{t("admin", "noComments")}</p>
       </div>
     );
   }
@@ -126,14 +131,16 @@ export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
-          مجموع <span className="font-bold text-brand">{fa(total)}</span> دیدگاه
+          {t("admin", "totalLabel")}{" "}
+          <span className="font-bold text-brand">{num(total)}</span>{" "}
+          {t("admin", "commentsUnit")}
         </p>
         <button
           onClick={() => load()}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 hover:bg-brand/20 active:scale-95 transition-all min-h-[30px]"
         >
           <RefreshCw className="w-3.5 h-3.5" />
-          به‌روزرسانی
+          {t("admin", "refresh")}
         </button>
       </div>
 
@@ -144,22 +151,22 @@ export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
               <div className="min-w-0">
                 <p className="font-bold text-sm truncate">
                   {c.name}
-                  <span dir="ltr" className="font-mono text-[10px] text-muted-foreground mr-2">
+                  <span dir="ltr" className="font-mono text-[10px] text-muted-foreground ms-2">
                     {c.articleSlug}
                   </span>
                 </p>
                 <p className="text-sm text-foreground/90 leading-7 whitespace-pre-wrap break-words mt-1">
                   {c.body}
                 </p>
-                <p className="text-[10px] text-muted-foreground mt-1.5">{formatDate(c.createdAt)}</p>
+                <p className="text-[10px] text-muted-foreground mt-1.5">{fmtDate(c.createdAt)}</p>
               </div>
               <div className="shrink-0">
                 {confirmDeleteId === c.id ? (
                   <span className="flex items-center gap-0.5">
                     <button
                       onClick={() => remove(c)}
-                      aria-label="تأیید حذف"
-                      title="تأیید حذف"
+                      aria-label={t("admin", "confirmDelete")}
+                      title={t("admin", "confirmDelete")}
                       disabled={busyId === c.id}
                       className="w-8 h-8 rounded-lg grid place-items-center text-destructive hover:bg-destructive/15 transition-all"
                     >
@@ -171,8 +178,8 @@ export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
                     </button>
                     <button
                       onClick={() => setConfirmDeleteId(null)}
-                      aria-label="انصراف"
-                      title="انصراف"
+                      aria-label={t("admin", "cancel")}
+                      title={t("admin", "cancel")}
                       className={cn(
                         "w-8 h-8 rounded-lg grid place-items-center text-muted-foreground/60 hover:text-foreground transition-all"
                       )}
@@ -183,8 +190,8 @@ export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
                 ) : (
                   <button
                     onClick={() => setConfirmDeleteId(c.id)}
-                    aria-label="حذف دیدگاه"
-                    title="حذف"
+                    aria-label={t("admin", "deleteComment")}
+                    title={t("admin", "deleteShort")}
                     className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -201,21 +208,21 @@ export function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
           <button
             onClick={() => load({ page: page - 1 })}
             disabled={page <= 1}
-            aria-label="صفحه قبل"
+            aria-label={t("admin", "prevPage")}
             className="w-9 h-9 grid place-items-center rounded-xl border border-border text-muted-foreground hover:text-brand hover:border-brand/50 transition-all disabled:opacity-40 disabled:pointer-events-none"
           >
-            <ChevronRight className="w-4 h-4" />
+            {isRtl ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
           <span className="text-xs text-muted-foreground tabular-nums">
-            صفحه {fa(page)} از {fa(totalPages)}
+            {t("admin", "pageOf", { n: num(page), m: num(totalPages) })}
           </span>
           <button
             onClick={() => load({ page: page + 1 })}
             disabled={page >= totalPages}
-            aria-label="صفحه بعد"
+            aria-label={t("admin", "nextPage")}
             className="w-9 h-9 grid place-items-center rounded-xl border border-border text-muted-foreground hover:text-brand hover:border-brand/50 transition-all disabled:opacity-40 disabled:pointer-events-none"
           >
-            <ChevronLeft className="w-4 h-4" />
+            {isRtl ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
         </div>
       )}

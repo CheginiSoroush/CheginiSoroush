@@ -4,17 +4,29 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Send, MapPin, Mail, Github, CheckCircle2, Loader2, FileClock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useT } from "@/lib/i18n";
+import type { ReactNode } from "react";
 
 type FormState = { name: string; email: string; subject: string; message: string };
 type FieldErrors = Partial<Record<keyof FormState, string>>;
 
+type Social = {
+  id: string;
+  labelKey: string;
+  value?: string;
+  valueKey?: string;
+  href: string | null;
+  icon: ReactNode;
+  tone: string;
+};
+
 const DRAFT_KEY = "imsoroush-contact-draft";
 const EMPTY_FORM: FormState = { name: "", email: "", subject: "", message: "" };
 
-const SOCIALS = [
+const SOCIALS: Social[] = [
   {
     id: "github",
-    label: "گیت‌هاب",
+    labelKey: "social.github",
     value: "CheginiSoroush",
     href: "https://github.com/CheginiSoroush",
     icon: <Github className="w-5 h-5" />,
@@ -22,7 +34,7 @@ const SOCIALS = [
   },
   {
     id: "email",
-    label: "ایمیل",
+    labelKey: "social.email",
     value: "imsoroushchegini@gmail.com",
     href: "mailto:imsoroushchegini@gmail.com",
     icon: <Mail className="w-5 h-5" />,
@@ -30,8 +42,8 @@ const SOCIALS = [
   },
   {
     id: "location",
-    label: "موقعیت",
-    value: "ایران",
+    labelKey: "social.location",
+    valueKey: "social.locationValue",
     href: null,
     icon: <MapPin className="w-5 h-5" />,
     tone: "text-emerald-500 bg-emerald-500/10 border-emerald-500/30",
@@ -40,6 +52,7 @@ const SOCIALS = [
 
 export function ContactSection() {
   const { toast } = useToast();
+  const { t, isRtl } = useT();
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -61,17 +74,20 @@ export function ContactSection() {
           message: typeof raw.message === "string" ? raw.message : "",
         });
         setDraftRestored(true);
-        toast({ title: "پیش‌نویس بازیابی شد ✍️", description: "پیام نیمه‌کاره قبلی شما برگشت." });
+        toast({
+          title: t("contact", "toast.draftRestored"),
+          description: t("contact", "toast.draftRestoredDesc"),
+        });
       }
     } catch {
       // storage unavailable
     }
-  }, [toast]);
+  }, [toast, t]);
 
   // Debounced draft persistence
   useEffect(() => {
     if (!draftLoadedRef.current) return;
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       try {
         if (form.message.trim() || form.subject.trim()) {
           localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
@@ -82,7 +98,7 @@ export function ContactSection() {
         // storage unavailable
       }
     }, 400);
-    return () => window.clearTimeout(t);
+    return () => window.clearTimeout(timer);
   }, [form]);
 
   const set = (key: keyof FormState) => (
@@ -94,10 +110,11 @@ export function ContactSection() {
 
   const validate = (): boolean => {
     const er: FieldErrors = {};
-    if (form.name.trim().length < 2) er.name = "نام باید حداقل ۲ حرف باشد";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) er.email = "ایمیل معتبر نیست";
-    if (form.subject.trim().length < 3) er.subject = "موضوع باید حداقل ۳ حرف باشد";
-    if (form.message.trim().length < 10) er.message = "پیام باید حداقل ۱۰ حرف باشد";
+    if (form.name.trim().length < 2) er.name = t("contact", "form.errName");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
+      er.email = t("contact", "form.errEmail");
+    if (form.subject.trim().length < 3) er.subject = t("contact", "form.errSubject");
+    if (form.message.trim().length < 10) er.message = t("contact", "form.errMessage");
     setErrors(er);
     return Object.keys(er).length === 0;
   };
@@ -126,19 +143,19 @@ export function ContactSection() {
         } catch {
           // storage unavailable
         }
-        toast({ title: "ارسال شد ✅", description: data.message });
+        toast({ title: t("contact", "toast.sent"), description: data.message });
       } else {
         if (data.errors) setErrors(data.errors);
         toast({
-          title: "خطا در ارسال",
-          description: data.error ?? "لطفاً دوباره تلاش کنید",
+          title: t("contact", "toast.errorTitle"),
+          description: data.error ?? t("contact", "toast.errorDesc"),
           variant: "destructive",
         });
       }
     } catch {
       toast({
-        title: "خطای شبکه",
-        description: "اتصال برقرار نشد، دوباره تلاش کنید",
+        title: t("contact", "toast.networkTitle"),
+        description: t("contact", "toast.networkDesc"),
         variant: "destructive",
       });
     } finally {
@@ -154,7 +171,11 @@ export function ContactSection() {
     }`;
 
   return (
-    <section id="contact" aria-label="تماس با من" className="max-w-6xl mx-auto px-4 sm:px-6">
+    <section
+      id="contact"
+      aria-label={t("contact", "aria.section")}
+      className="max-w-6xl mx-auto px-4 sm:px-6"
+    >
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
         {/* Social cards */}
         <motion.div
@@ -173,9 +194,12 @@ export function ContactSection() {
                   {s.icon}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-bold text-sm sm:text-base">{s.label}</h3>
-                  <p dir={s.id === "email" || s.id === "github" ? "ltr" : "rtl"} className="text-xs sm:text-sm text-muted-foreground truncate mt-0.5 text-left">
-                    {s.value}
+                  <h3 className="font-bold text-sm sm:text-base">{t("contact", s.labelKey)}</h3>
+                  <p
+                    dir={s.id === "location" ? (isRtl ? "rtl" : "ltr") : "ltr"}
+                    className="text-xs sm:text-sm text-muted-foreground truncate mt-0.5 text-start"
+                  >
+                    {s.value ?? (s.valueKey ? t("contact", s.valueKey) : "")}
                   </p>
                 </div>
               </>
@@ -204,10 +228,10 @@ export function ContactSection() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-60" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand" />
               </span>
-              <span className="text-sm font-bold text-brand">آماده همکاری</span>
+              <span className="text-sm font-bold text-brand">{t("contact", "avail.title")}</span>
             </div>
             <p className="text-xs sm:text-sm text-muted-foreground leading-6">
-              برای پروژه‌های فریلنس، ربات تلگرام، وب‌سایت یا همکاری متن‌باز — پیام بدهید.
+              {t("contact", "avail.desc")}
             </p>
           </div>
         </motion.div>
@@ -223,45 +247,45 @@ export function ContactSection() {
           {done ? (
             <div className="text-center py-14">
               <CheckCircle2 className="w-14 h-14 text-brand mx-auto mb-4" />
-              <h3 className="text-xl font-extrabold mb-2">پیام شما ثبت شد!</h3>
+              <h3 className="text-xl font-extrabold mb-2">{t("contact", "done.title")}</h3>
               <p className="text-sm text-muted-foreground mb-6">
-                ممنون که در ارتباط هستید؛ به‌زودی پاسخ می‌دهم.
+                {t("contact", "done.desc")}
               </p>
               <button
                 onClick={() => setDone(false)}
                 className="rounded-2xl border border-border px-6 py-2.5 text-sm font-bold hover:border-brand/50 hover:text-brand transition-all min-h-[42px]"
               >
-                ارسال پیام جدید
+                {t("contact", "done.again")}
               </button>
             </div>
           ) : (
             <form onSubmit={submit} noValidate className="space-y-5">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-1">
-                  <h2 className="text-lg font-extrabold">ارسال پیام مستقیم</h2>
+                  <h2 className="text-lg font-extrabold">{t("contact", "form.title")}</h2>
                   {draftRestored && (
                     <span className="draft-pill inline-flex items-center gap-1 text-[10px] font-bold text-brand bg-brand/10 border border-brand/25 rounded-full px-2.5 py-1">
                       <FileClock className="w-3 h-3" aria-hidden />
-                      پیش‌نویس بازیابی شد
+                      {t("contact", "form.draftPill")}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  پیام شما مستقیماً در صندوق پیام‌های من ذخیره می‌شود؛ پیش‌نویس هم به‌صورت خودکار نگه داشته می‌شود.
+                  {t("contact", "form.subtitle")}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="c-name" className="block text-xs font-bold mb-2">
-                    نام و نام خانوادگی
+                    {t("contact", "form.name")}
                   </label>
                   <input
                     id="c-name"
                     type="text"
                     value={form.name}
                     onChange={set("name")}
-                    placeholder="مثال: علی رضایی"
+                    placeholder={t("contact", "form.namePlaceholder")}
                     aria-invalid={!!errors.name}
                     className={inputCls(errors.name)}
                   />
@@ -269,7 +293,7 @@ export function ContactSection() {
                 </div>
                 <div>
                   <label htmlFor="c-email" className="block text-xs font-bold mb-2">
-                    ایمیل شما
+                    {t("contact", "form.email")}
                   </label>
                   <input
                     id="c-email"
@@ -287,14 +311,14 @@ export function ContactSection() {
 
               <div>
                 <label htmlFor="c-subject" className="block text-xs font-bold mb-2">
-                  موضوع
+                  {t("contact", "form.subject")}
                 </label>
                 <input
                   id="c-subject"
                   type="text"
                   value={form.subject}
                   onChange={set("subject")}
-                  placeholder="موضوع پیام شما"
+                  placeholder={t("contact", "form.subjectPlaceholder")}
                   aria-invalid={!!errors.subject}
                   className={inputCls(errors.subject)}
                 />
@@ -305,14 +329,14 @@ export function ContactSection() {
 
               <div>
                 <label htmlFor="c-message" className="block text-xs font-bold mb-2">
-                  متن پیام
+                  {t("contact", "form.message")}
                 </label>
                 <textarea
                   id="c-message"
                   rows={5}
                   value={form.message}
                   onChange={set("message")}
-                  placeholder="پیام خود را اینجا بنویسید..."
+                  placeholder={t("contact", "form.messagePlaceholder")}
                   aria-invalid={!!errors.message}
                   className={`${inputCls(errors.message)} resize-none`}
                 />
@@ -329,12 +353,12 @@ export function ContactSection() {
                 {submitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    در حال ارسال...
+                    {t("contact", "form.sending")}
                   </>
                 ) : (
                   <>
-                    <Send className="w-5 h-5 -scale-x-100" />
-                    ارسال پیام
+                    <Send className={`w-5 h-5 ${isRtl ? "-scale-x-100" : ""}`} />
+                    {t("contact", "form.send")}
                   </>
                 )}
               </button>

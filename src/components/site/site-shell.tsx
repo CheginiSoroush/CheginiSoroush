@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Mail, Heart, LockKeyhole, Keyboard } from "lucide-react";
+import { Github, Mail, Heart, LockKeyhole, Keyboard, Eye } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,11 +16,13 @@ import { AdminMessagesDialog } from "./admin-messages-dialog";
 import { CommandPalette } from "./command-palette";
 import { NewsletterForm } from "./newsletter-form";
 import { BackToTop } from "./back-to-top";
+import { MorphingLogo } from "./morphing-logo";
 import { Hero } from "./hero";
 import { HomeContent } from "./home-content";
 import { ProjectsExplorer } from "./projects-explorer";
 import { ArticlesSection } from "./articles-section";
 import { ContactSection } from "./contact-section";
+import { applyDocumentLang, toggleLang, useT } from "@/lib/i18n";
 import type { Article, Project, SiteStats, ViewName } from "@/lib/types";
 
 const VIEWS: ViewName[] = ["home", "projects", "writing", "contact"];
@@ -72,15 +74,17 @@ function getServerRoute(): Route {
 }
 
 function ShortcutsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+  const { t } = useT();
   const rows: { keys: string[]; desc: string }[] = [
-    { keys: ["Ctrl", "K"], desc: "جستجوی سراسری (پالت فرمان)" },
-    { keys: ["1"], desc: "خانه" },
-    { keys: ["2"], desc: "پروژه‌ها" },
-    { keys: ["3"], desc: "نوشته‌ها" },
-    { keys: ["4"], desc: "تماس" },
-    { keys: ["/"], desc: "جستجوی پروژه‌ها" },
-    { keys: ["T"], desc: "تغییر تم روشن/تاریک" },
-    { keys: ["؟", "?"], desc: "نمایش همین راهنما" },
+    { keys: ["Ctrl", "K"], desc: t("core", "sc.palette") },
+    { keys: ["1"], desc: t("core", "sc.home") },
+    { keys: ["2"], desc: t("core", "sc.projects") },
+    { keys: ["3"], desc: t("core", "sc.writing") },
+    { keys: ["4"], desc: t("core", "sc.contact") },
+    { keys: ["/"], desc: t("core", "sc.searchProjects") },
+    { keys: ["T"], desc: t("core", "sc.theme") },
+    { keys: ["L"], desc: t("core", "sc.lang") },
+    { keys: ["؟", "?"], desc: t("core", "sc.help") },
   ];
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -88,9 +92,9 @@ function ShortcutsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Keyboard className="w-5 h-5 text-brand" />
-            میان‌برهای صفحه‌کلید
+            {t("core", "sc.title")}
           </DialogTitle>
-          <DialogDescription>سریع‌تر بین بخش‌ها جابه‌جا شوید.</DialogDescription>
+          <DialogDescription>{t("core", "sc.desc")}</DialogDescription>
         </DialogHeader>
         <ul className="mt-3 space-y-2.5">
           {rows.map((r) => (
@@ -125,6 +129,7 @@ export function SiteShell({
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const visitedOnce = useRef(false);
   const route = useSyncExternalStore(subscribeHash, getHashSnapshot, getServerRoute);
+  const { t, num, lang } = useT();
 
   // Register visit once per session
   useEffect(() => {
@@ -140,6 +145,14 @@ export function SiteShell({
       }
     })();
   }, []);
+
+  // Keep <html lang/dir> and the document title in sync with the active language
+  useEffect(() => {
+    applyDocumentLang(lang);
+  }, [lang]);
+  useEffect(() => {
+    document.title = t("core", "meta.title");
+  }, [t]);
 
   const navigate = useCallback((v: ViewName) => {
     const target = `#${v}`;
@@ -210,6 +223,11 @@ export function SiteShell({
         case "ط":
           window.dispatchEvent(new CustomEvent("toggle-site-theme"));
           break;
+        case "l":
+        case "L":
+        case "ل":
+          toggleLang();
+          break;
         case "?":
         case "؟":
           setShortcutsOpen((v) => !v);
@@ -239,6 +257,7 @@ export function SiteShell({
     <div className="min-h-screen flex flex-col relative">
       <ScrollProgress />
       <SiteHeader view={route.view} onNavigate={navigate} />
+      <MorphingLogo />
 
       <main className="flex-grow relative z-10">
         <AnimatePresence mode="wait">
@@ -265,8 +284,8 @@ export function SiteShell({
             {route.view === "projects" && (
               <div className="pt-28 pb-24">
                 <SectionHeading
-                  title="کارنامه پروژه‌ها"
-                  subtitle="۳۹ پروژه واقعی و متن‌باز؛ از ربات‌های سرورلس تا شبیه‌سازهای سه‌بعدی. جستجو کنید، فیلتر کنید و جزئیات هر پروژه را ببینید."
+                  title={t("core", "heading.projects.title")}
+                  subtitle={t("core", "heading.projects.sub")}
                 />
                 <ProjectsExplorer
                   initialProjects={projects}
@@ -283,8 +302,8 @@ export function SiteShell({
             {route.view === "writing" && (
               <div className="pt-28 pb-24">
                 <SectionHeading
-                  title="نوشته‌ها و کاوش‌ها"
-                  subtitle="روانشناسی رفتار، نوروساینس اراده و علوم ورزشی — هر مقاله همراه با یک پروژه تعاملی واقعی."
+                  title={t("core", "heading.writing.title")}
+                  subtitle={t("core", "heading.writing.sub")}
                 />
                 <ArticlesSection
                   articles={articles}
@@ -302,8 +321,8 @@ export function SiteShell({
             {route.view === "contact" && (
               <div className="pt-28 pb-24">
                 <SectionHeading
-                  title="ارتباط با من"
-                  subtitle="خوشحال می‌شم نظرات، پیشنهادات یا ایده‌های همکاری‌تون رو بشنوم."
+                  title={t("core", "heading.contact.title")}
+                  subtitle={t("core", "heading.contact.sub")}
                 />
                 <ContactSection />
               </div>
@@ -323,7 +342,7 @@ export function SiteShell({
           </div>
 
           <div className="border-t border-border/70 pt-6 flex flex-col sm:flex-row items-center justify-between gap-5">
-            <nav aria-label="شبکه‌های اجتماعی" className="flex items-center gap-3">
+            <nav aria-label={t("core", "footer.social")} className="flex items-center gap-3">
               <a
                 href="https://github.com/CheginiSoroush"
                 target="_blank"
@@ -331,32 +350,33 @@ export function SiteShell({
                 className="inline-flex items-center gap-2 text-sm font-bold rounded-xl border border-border px-4 py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
               >
                 <Github className="w-4.5 h-4.5" />
-                گیت‌هاب
+                {t("core", "footer.github")}
               </a>
               <a
                 href="mailto:imsoroushchegini@gmail.com"
                 className="inline-flex items-center gap-2 text-sm font-bold rounded-xl border border-border px-4 py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
               >
                 <Mail className="w-4.5 h-4.5" />
-                ایمیل
+                {t("core", "footer.email")}
               </a>
               {stats && (
-                <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground rounded-xl border border-border px-4 py-2.5">
-                  👁️ {stats.visits.toLocaleString("fa-IR")} بازدید
+                <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground rounded-xl border border-border px-4 py-2.5" title={t("core", "footer.visits", { n: num(stats.visits) })}>
+                  <Eye className="w-3.5 h-3.5" aria-hidden />
+                  {t("core", "footer.visits", { n: num(stats.visits) })}
                 </span>
               )}
               <button
                 onClick={() => setAdminOpen(true)}
-                aria-label="پنل مدیریت پیام‌ها"
-                title="پنل مدیریت"
+                aria-label={t("core", "aria.admin")}
+                title={t("core", "aria.admin")}
                 className="w-[42px] h-[42px] grid place-items-center rounded-xl border border-border text-muted-foreground/60 hover:text-brand hover:border-brand/50 transition-all"
               >
                 <LockKeyhole className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setShortcutsOpen(true)}
-                aria-label="میان‌برهای صفحه‌کلید"
-                title="میان‌برهای صفحه‌کلید (؟)"
+                aria-label={t("core", "aria.shortcuts")}
+                title={t("core", "footer.shortcutsTitle")}
                 className="w-[42px] h-[42px] grid place-items-center rounded-xl border border-border text-muted-foreground/60 hover:text-brand hover:border-brand/50 transition-all"
               >
                 <Keyboard className="w-4 h-4" />
@@ -364,9 +384,13 @@ export function SiteShell({
             </nav>
 
             <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5">
-              ساخته شده با
-              <Heart className="w-4 h-4 text-brand fill-brand" aria-label="علاقه" />
-              و کد © {new Date().toLocaleDateString("fa-IR", { year: "numeric" })} سروش چگینی
+              {t("core", "footer.madeWith")}
+              <Heart className="w-4 h-4 text-brand fill-brand" aria-label={t("core", "footer.love")} />
+              {t("core", "footer.andCode")} ©{" "}
+              {new Date().toLocaleDateString(lang === "fa" ? "fa-IR" : "en-US", {
+                year: "numeric",
+              })}{" "}
+              {lang === "fa" ? "سروش چگینی" : "Soroush Chegini"}
             </p>
           </div>
         </div>

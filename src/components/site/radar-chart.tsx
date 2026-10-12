@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useInView, motion } from "framer-motion";
+import { useT } from "@/lib/i18n";
 
 type Axis = { label: string; value: number; icon: string };
 
 export function RadarChart({ axes }: { axes: Axis[] }) {
+  const { t, num, lang } = useT();
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const [progress, setProgress] = useState(0);
@@ -52,7 +54,9 @@ export function RadarChart({ axes }: { axes: Axis[] }) {
         viewBox={`0 0 ${size} ${size}`}
         className="w-full h-auto"
         role="img"
-        aria-label={`نمودار تمرکز محتوا: ${axes.map((a) => `${a.label} ${a.value}`).join("، ")}`}
+        aria-label={t("home", "radar.aria", {
+          items: axes.map((a) => `${a.label} ${a.value}`).join(lang === "fa" ? "، " : ", "),
+        })}
       >
         <defs>
           <radialGradient id="radar-fill" cx="50%" cy="50%" r="65%">
@@ -128,7 +132,7 @@ export function RadarChart({ axes }: { axes: Axis[] }) {
                 fontWeight={800}
                 style={{ fill: "var(--brand)" }}
               >
-                {axes[i].value.toLocaleString("fa-IR")}
+                {num(axes[i].value)}
               </text>
             )}
           </g>

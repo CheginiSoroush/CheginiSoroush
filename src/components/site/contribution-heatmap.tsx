@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 type Day = { date: string; count: number };
 
@@ -21,20 +22,6 @@ function levelOf(count: number): number {
   return 4;
 }
 
-function fa(n: number) {
-  return n.toLocaleString("fa-IR");
-}
-
-function dayLabel(day: Day) {
-  const dateFa = new Date(day.date).toLocaleDateString("fa-IR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-  if (day.count === 0) return `بدون فعالیت — ${dateFa}`;
-  return `${fa(day.count)} فعالیت در ${dateFa}`;
-}
-
 export function ContributionHeatmap({
   days,
   totalContributions,
@@ -42,7 +29,19 @@ export function ContributionHeatmap({
   days: Day[];
   totalContributions: number;
 }) {
+  const { t, num, lang } = useT();
   if (!days.length) return null;
+
+  const locale = lang === "fa" ? "fa-IR" : "en-US";
+  const dayLabel = (day: Day) => {
+    const dateStr = new Date(day.date).toLocaleDateString(locale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    if (day.count === 0) return t("home", "heatmap.day.none", { date: dateStr });
+    return t("home", "heatmap.day.some", { n: num(day.count), date: dateStr });
+  };
 
   // Group consecutive days into week columns (GitHub-style)
   const weeks: Day[][] = [];
@@ -58,15 +57,15 @@ export function ContributionHeatmap({
       <div className="flex items-center justify-between gap-2 mb-3">
         <h4 className="flex items-center gap-2 text-sm font-extrabold">
           <Flame className="w-4 h-4 text-brand" />
-          نقشه فعالیت یک سال گذشته
+          {t("home", "heatmap.title")}
         </h4>
         <span className="text-[11px] font-bold text-brand bg-brand/10 border border-brand/30 rounded-full px-2.5 py-1 tabular-nums shrink-0">
-          {fa(totalContributions)} مشارکت
+          {t("home", "heatmap.total", { n: num(totalContributions) })}
         </span>
       </div>
 
       <div dir="ltr" className="overflow-x-auto pb-1 heatmap-scroll">
-        <div className="flex gap-[3px] min-w-max" role="img" aria-label={`نقشه فعالیت گیت‌هاب با ${fa(totalContributions)} مشارکت در یک سال گذشته`}>
+        <div className="flex gap-[3px] min-w-max" role="img" aria-label={t("home", "heatmap.aria", { n: num(totalContributions) })}>
           {weeks.map((week, wi) => (
             <motion.div
               key={wi}
@@ -92,20 +91,20 @@ export function ContributionHeatmap({
 
       <div className="flex items-center justify-between gap-2 mt-3 flex-wrap">
         <p className="text-[11px] text-muted-foreground tabular-nums">
-          {fa(activeDays)} روز فعال از {fa(days.length)} روز
+          {t("home", "heatmap.activeDays", { n: num(activeDays), m: num(days.length) })}
           {bestDay.count > 0 && (
             <>
               {" "}
-              · رکورد: {fa(bestDay.count)} در یک روز 🏆
+              {t("home", "heatmap.record", { n: num(bestDay.count) })}
             </>
           )}
         </p>
         <div dir="ltr" className="flex items-center gap-1" aria-hidden>
-          <span className="text-[10px] text-muted-foreground ml-1">کم</span>
+          <span className="text-[10px] text-muted-foreground ms-1">{t("home", "heatmap.less")}</span>
           {LEVEL_CLASSES.map((cls) => (
             <span key={cls} className={`heatmap-cell ${cls}`} />
           ))}
-          <span className="text-[10px] text-muted-foreground mr-1">زیاد</span>
+          <span className="text-[10px] text-muted-foreground me-1">{t("home", "heatmap.more")}</span>
         </div>
       </div>
     </div>

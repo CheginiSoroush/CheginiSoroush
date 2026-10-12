@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Mail, Send, Check, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 type Status = "idle" | "loading" | "success" | "duplicate" | "error";
 
@@ -12,6 +12,7 @@ export function NewsletterForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [count, setCount] = useState<number | null>(null);
   const { toast } = useToast();
+  const { t, num, isRtl } = useT();
 
   // Subtle subscriber counter (one-shot, silent on failure)
   useEffect(() => {
@@ -29,8 +30,8 @@ export function NewsletterForm() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
       setStatus("error");
       toast({
-        title: "ایمیل معتبر نیست",
-        description: "مثال: name@example.com",
+        title: t("contact", "newsletter.errTitle"),
+        description: t("contact", "newsletter.errDesc"),
         variant: "destructive",
       });
       return;
@@ -48,15 +49,15 @@ export function NewsletterForm() {
       if (data.ok && data.duplicate) {
         setStatus("duplicate");
         toast({
-          title: "قبلاً عضو شده‌اید",
-          description: "این ایمیل از قبل در خبرنامه ثبت شده است.",
+          title: t("contact", "newsletter.dupTitle"),
+          description: t("contact", "newsletter.dupDesc"),
         });
       } else if (data.ok) {
         setStatus("success");
         setCount((c) => (c === null ? null : c + 1));
         toast({
-          title: "عضویت شما ثبت شد",
-          description: "از این به بعد نوشته‌ها و پروژه‌های جدید را زودتر از همه می‌بینید.",
+          title: t("contact", "newsletter.okTitle"),
+          description: t("contact", "newsletter.okDesc"),
         });
       } else {
         throw new Error("failed");
@@ -64,8 +65,8 @@ export function NewsletterForm() {
     } catch {
       setStatus("error");
       toast({
-        title: "عضویت ثبت نشد",
-        description: "اتصال برقرار نشد؛ لطفاً دوباره تلاش کنید.",
+        title: t("contact", "newsletter.failTitle"),
+        description: t("contact", "newsletter.failDesc"),
         variant: "destructive",
       });
     }
@@ -86,14 +87,14 @@ export function NewsletterForm() {
           </span>
           <div className="min-w-0">
             <p className="font-extrabold text-sm sm:text-base flex items-center gap-1.5">
-              خبرنامه سروش
+              {t("contact", "newsletter.title")}
               <Sparkles className="w-3.5 h-3.5 text-brand" aria-hidden />
             </p>
             <p className="text-xs text-muted-foreground leading-6 mt-0.5">
-              نوشته‌ها و پروژه‌های جدید، مستقیم در ایمیل شما — بدون اسپم.
+              {t("contact", "newsletter.desc")}
               {count !== null && count > 0 && (
-                <span className="mr-1.5 inline-flex items-center gap-1 text-brand/90 font-bold">
-                  👥 {count.toLocaleString("fa-IR")} عضو
+                <span className="ms-1.5 inline-flex items-center gap-1 text-brand/90 font-bold">
+                  {t("contact", "newsletter.members", { n: num(count) })}
                 </span>
               )}
             </p>
@@ -107,12 +108,12 @@ export function NewsletterForm() {
             role="status"
           >
             <Check className="w-4.5 h-4.5" />
-            {status === "duplicate" ? "از قبل عضو هستید" : "عضویت شما ثبت شد"}
+            {t("contact", status === "duplicate" ? "newsletter.doneDuplicate" : "newsletter.done")}
           </p>
         ) : (
           <form onSubmit={submit} className="flex items-center gap-2 shrink-0" noValidate>
             <label htmlFor="newsletter-email" className="sr-only">
-              ایمیل برای خبرنامه
+              {t("contact", "newsletter.emailLabel")}
             </label>
             <input
               id="newsletter-email"
@@ -135,9 +136,9 @@ export function NewsletterForm() {
               {status === "loading" ? (
                 <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
               ) : (
-                <Send className="w-4 h-4 -scale-x-100" aria-hidden />
+                <Send className={`w-4 h-4 ${isRtl ? "-scale-x-100" : ""}`} aria-hidden />
               )}
-              عضویت
+              {t("contact", "newsletter.subscribe")}
             </button>
           </form>
         )}

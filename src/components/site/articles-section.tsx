@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Eye, ArrowLeft, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send, History, Trash2, Minus, Plus, Type } from "lucide-react";
+import { Clock, Eye, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send, History, Trash2, Minus, Plus, Type } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,8 @@ import { ArticleComments } from "@/components/site/article-comments";
 import { ProjectCover } from "@/components/site/project-cover";
 import { EmptyState } from "@/components/site/empty-state";
 import { cn } from "@/lib/utils";
+import { useT, pickEn, relativeTime } from "@/lib/i18n";
+import { DirArrow } from "@/components/site/dir-arrow";
 import type { Article } from "@/lib/types";
 
 const DETAIL_INIT = Symbol("detail-init");
@@ -56,9 +58,10 @@ function writeLiked(next: Set<string>) {
   window.dispatchEvent(new Event(LIKES_EVENT));
 }
 
-const CATEGORY_META: Record<string, { label: string; color: string }> = {
-  self: { label: "توسعه فردی", color: "text-fuchsia-500 border-fuchsia-500/30 bg-fuchsia-500/10" },
-  sports: { label: "علوم ورزشی", color: "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" },
+// Category chip colors only — labels come from the core dict (wcat.*) per locale
+const CATEGORY_META: Record<string, { color: string }> = {
+  self: { color: "text-fuchsia-500 border-fuchsia-500/30 bg-fuchsia-500/10" },
+  sports: { color: "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" },
 };
 
 // ---------- Reading progress store (localStorage-backed, SSR-safe) ----------
@@ -123,24 +126,6 @@ function clearReadingHistory() {
   writeReadingMap({});
 }
 
-// Persian relative time (same wording as article-comments)
-function relativeTime(ts: number) {
-  try {
-    const mins = Math.floor((Date.now() - ts) / 60000);
-    if (mins < 1) return "همین حالا";
-    if (mins < 60) return `${mins.toLocaleString("fa-IR")} دقیقه پیش`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours.toLocaleString("fa-IR")} ساعت پیش`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days.toLocaleString("fa-IR")} روز پیش`;
-    const weeks = Math.floor(days / 7);
-    if (weeks < 5) return `${weeks.toLocaleString("fa-IR")} هفته پیش`;
-    return new Date(ts).toLocaleDateString("fa-IR");
-  } catch {
-    return "";
-  }
-}
-
 // Reader font-size steps (percent, persisted via external store — SSR-safe)
 const FONT_STEPS = [100, 108, 117, 126];
 const FONT_KEY = "imsoroush-reader-font";
@@ -176,10 +161,11 @@ function writeFontStep(step: number) {
   window.dispatchEvent(new Event(FONT_EVENT));
 }
 
+// "all" lives in the articles ns; category chips reuse the shared core labels (wcat.*)
 const ART_FILTERS = [
-  { id: "all", label: "همه نوشته‌ها", icon: "📚" },
-  { id: "self", label: "توسعه فردی", icon: "🧠" },
-  { id: "sports", label: "علوم ورزشی", icon: "💪" },
+  { id: "all", ns: "articles", key: "filter.all", icon: "📚" },
+  { id: "self", ns: "core", key: "wcat.self", icon: "🧠" },
+  { id: "sports", ns: "core", key: "wcat.sports", icon: "💪" },
 ];
 
 // Same normalization as the API (ي→ی ك→ک + ZWNJ → space)
@@ -195,18 +181,6 @@ const childrenText = (children: React.ReactNode): string => {
   if (Array.isArray(children)) return children.map((c) => (typeof c === "string" ? c : "")).join("");
   return String(children ?? "");
 };
-
-function formatDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleDateString("fa-IR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  } catch {
-    return "";
-  }
-}
 
 // Brand share-target links for the reader (URL-safe, hash-routed)
 function shareLinksFor(a: Article) {
@@ -292,9 +266,17 @@ export function ArticlesSection({
   }, []);
 
   const { toast } = useToast();
+  const { t, num, lang, date } = useT();
   const onSpotlightMove = useSpotlight();
 
   const likesOf = (a: Article) => likesOverrides[a.slug] ?? a.likes;
+
+  // Localized title for stored reading entries (falls back to the stored
+  // Persian title if the article no longer exists)
+  const titleOf = (slug: string, stored: string) => {
+    const a = articles.find((x) => x.slug === slug);
+    return a ? pickEn(lang, a.titleEn, a.title) : stored;
+  };
 
   // Most recent unfinished (and not dismissed) reading session — for the resume card
   const resumeEntry = useMemo(() => {
@@ -339,7 +321,7 @@ export function ArticlesSection({
         setSelected((s) => (s && s.slug === a.slug ? { ...s, likes: data.likes as number } : s));
       }
     } catch {
-      toast({ title: "ثبت لایک ناموفق بود", description: "اتصال برقرار نشد؛ بعداً تلاش کنید.", variant: "destructive" });
+      toast({ title: t("articles", "toast.likeFailedTitle"), description: t("articles", "toast.likeFailedDesc"), variant: "destructive" });
     }
   };
 
@@ -486,7 +468,7 @@ export function ArticlesSection({
     setTimeout(() => setCopied(false), 1600);
     if (navigator.share) {
       try {
-        await navigator.share({ title: a.title, url });
+        await navigator.share({ title: pickEn(lang, a.titleEn, a.title), url });
         return;
       } catch {
         // cancelled → clipboard fallback
@@ -494,9 +476,9 @@ export function ArticlesSection({
     }
     try {
       await navigator.clipboard.writeText(url);
-      toast({ title: "لینک کپی شد", description: "لینک نوشته در کلیپ‌بورد ذخیره شد." });
+      toast({ title: t("articles", "toast.linkCopiedTitle"), description: t("articles", "toast.linkCopiedDesc") });
     } catch {
-      toast({ title: "کپی نشد", description: url, variant: "destructive" });
+      toast({ title: t("articles", "toast.copyFailedTitle"), description: url, variant: "destructive" });
     }
   };
 
@@ -557,7 +539,7 @@ export function ArticlesSection({
   }, [changeFilter]);
 
   return (
-    <section id="articles" aria-label="نوشته‌ها" className="max-w-6xl mx-auto px-4 sm:px-6">
+    <section id="articles" aria-label={t("articles", "section.aria")} className="max-w-6xl mx-auto px-4 sm:px-6">
       {/* Continue-reading resume card */}
       {resumeEntry && (
         <motion.div
@@ -565,7 +547,7 @@ export function ArticlesSection({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
           role="region"
-          aria-label="ادامه مطالعه"
+          aria-label={t("articles", "resume.title")}
           className="resume-card mb-7 max-w-xl mx-auto"
         >
           <div className="flex items-center gap-3.5">
@@ -575,21 +557,21 @@ export function ArticlesSection({
             <div className="flex-grow min-w-0">
               <p className="text-[11px] font-black text-brand flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5" aria-hidden />
-                ادامه مطالعه
+                {t("articles", "resume.title")}
               </p>
-              <p className="font-extrabold text-sm truncate mt-0.5">{resumeEntry.title}</p>
+              <p className="font-extrabold text-sm truncate mt-0.5">{titleOf(resumeEntry.slug, resumeEntry.title)}</p>
               <div
                 className="resume-progress mt-2"
                 role="progressbar"
                 aria-valuenow={Math.round(resumeEntry.progress * 100)}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-label="پیشرفت مطالعه"
+                aria-label={t("articles", "resume.progressAria")}
               >
                 <span style={{ width: `${Math.round(resumeEntry.progress * 100)}%` }} />
               </div>
               <p className="text-[10px] text-muted-foreground mt-1.5">
-                {Math.round(resumeEntry.progress * 100).toLocaleString("fa-IR")}٪ خوانده شده
+                {t("articles", "resume.readPercent", { n: num(Math.round(resumeEntry.progress * 100)) })}
               </p>
             </div>
             <div className="flex flex-col items-stretch gap-1.5 shrink-0">
@@ -597,13 +579,13 @@ export function ArticlesSection({
                 onClick={resumeReading}
                 className="btn-shine inline-flex items-center gap-1.5 rounded-xl bg-brand text-primary-foreground font-bold text-xs px-4 py-2.5 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[38px]"
               >
-                ادامه
-                <ArrowLeft className="w-3.5 h-3.5" aria-hidden />
+                {t("articles", "resume.continue")}
+                <DirArrow className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => dismissReadingEntry(resumeEntry.slug)}
-                aria-label="بستن کارت ادامه مطالعه"
-                title="بستن"
+                aria-label={t("articles", "resume.dismissAria")}
+                title={t("articles", "resume.close")}
                 className="w-full h-7 grid place-items-center rounded-lg border border-border text-muted-foreground/60 hover:text-foreground hover:border-border/80 transition-all"
               >
                 <X className="w-3.5 h-3.5" aria-hidden />
@@ -616,27 +598,27 @@ export function ArticlesSection({
       {/* Search + Filters */}
       <div className="mb-8 space-y-4">
         <div className="relative max-w-xl mx-auto">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
+          <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="جستجو در نوشته‌ها..."
-            aria-label="جستجوی نوشته"
+            placeholder={t("articles", "search.placeholder")}
+            aria-label={t("articles", "search.aria")}
             className="w-full rounded-2xl border border-border bg-card px-11 py-3.5 text-sm outline-none focus:border-brand/60 focus:ring-2 focus:ring-brand/20 transition-all min-h-[46px]"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              aria-label="پاک کردن جستجو"
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-brand"
+              aria-label={t("articles", "search.clear")}
+              className="absolute end-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-brand"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        <div className="flex flex-wrap justify-center gap-2" role="tablist" aria-label="فیلتر دسته‌بندی نوشته‌ها">
+        <div className="flex flex-wrap justify-center gap-2" role="tablist" aria-label={t("articles", "filter.aria")}>
           {ART_FILTERS.map((f) => (
             <button
               key={f.id}
@@ -651,20 +633,20 @@ export function ArticlesSection({
               )}
             >
               <span aria-hidden>{f.icon} </span>
-              {f.label}
+              {t(f.ns, f.key)}
             </button>
           ))}
         </div>
 
         <div className="flex items-center justify-center gap-3">
           <p className="text-center text-xs text-muted-foreground" aria-live="polite">
-            {`${visible.length.toLocaleString("fa-IR")} نوشته یافت شد`}
+            {t("articles", "results.count", { n: num(visible.length) })}
           </p>
           <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
           <button
             onClick={() => setSort((s) => (s === "popular" ? "default" : "popular"))}
             aria-pressed={sort === "popular"}
-            title={sort === "popular" ? "بازگشت به چیدمان پیش‌فرض" : "مرتب‌سازی بر اساس پربازدیدترین"}
+            title={sort === "popular" ? t("articles", "sort.title.default") : t("articles", "sort.title.popular")}
             className={cn(
               "inline-flex items-center gap-1.5 text-xs font-bold rounded-full border px-3.5 py-1.5 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[30px]",
               sort === "popular"
@@ -677,19 +659,19 @@ export function ArticlesSection({
             ) : (
               <LayoutGrid className="w-3.5 h-3.5" />
             )}
-            {sort === "popular" ? "پربازدیدترین" : "چیدمان پیش‌فرض"}
+            {sort === "popular" ? t("articles", "sort.popular") : t("articles", "sort.default")}
           </button>
           {historyList.length > 0 && (
             <button
               onClick={() => setHistoryOpen(true)}
-              title="تاریخچه مطالعه شما"
-              aria-label={`تاریخچه مطالعه، ${historyList.length.toLocaleString("fa-IR")} نوشته`}
+              title={t("articles", "history.triggerTitle")}
+              aria-label={t("articles", "history.triggerAria", { n: num(historyList.length) })}
               className="history-trigger inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 hover:bg-brand/20 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[30px]"
             >
               <History className="w-3.5 h-3.5" aria-hidden />
-              تاریخچه
+              {t("articles", "history.short")}
               <span className="text-[10px] font-black bg-brand text-primary-foreground rounded-full px-1.5 min-w-[18px] text-center">
-                {historyList.length.toLocaleString("fa-IR")}
+                {num(historyList.length)}
               </span>
             </button>
           )}
@@ -704,8 +686,8 @@ export function ArticlesSection({
         </div>
       ) : visible.length === 0 ? (
         <EmptyState
-          title="نوشته‌ای یافت نشد"
-          description="عبارت دیگری را جستجو کنید یا فیلتر دسته‌بندی را تغییر دهید."
+          title={t("articles", "empty.title")}
+          description={t("articles", "empty.desc")}
           onReset={query || filter !== "all" || sort !== "default" ? resetFilters : undefined}
         />
       ) : (
@@ -726,7 +708,7 @@ export function ArticlesSection({
                   transition={{ duration: 0.45, delay: i * 0.08 }}
                   onClick={() => openArticle(a)}
                   onMouseMove={onSpotlightMove}
-                  className="glow-card spotlight group text-right rounded-2xl border border-border bg-card p-6 flex flex-col h-full"
+                  className="glow-card spotlight group text-start rounded-2xl border border-border bg-card p-6 flex flex-col h-full"
                 >
                   {/* generative cover art */}
                   <div className="cover-wrap -mx-6 -mt-6 mb-4 rounded-t-2xl overflow-hidden">
@@ -742,12 +724,12 @@ export function ArticlesSection({
                         <span
                           className={`text-[10px] font-bold rounded-full border px-2.5 py-1 ${meta.color}`}
                         >
-                          {meta.label}
+                          {t("core", `wcat.${a.category}`)}
                         </span>
                       )}
                       <span className="text-[10px] font-medium text-muted-foreground inline-flex items-center gap-1 border border-border rounded-full px-2.5 py-1">
                         <Clock className="w-3 h-3" />
-                        {a.readTime.toLocaleString("fa-IR")} دقیقه
+                        {t("articles", "card.readTimeShort", { n: num(a.readTime) })}
                       </span>
                       <span
                         className={cn(
@@ -764,26 +746,26 @@ export function ArticlesSection({
                             burstSlug === a.slug && "like-burst"
                           )}
                         />
-                        {likesOf(a).toLocaleString("fa-IR")}
+                        {num(likesOf(a))}
                       </span>
                       {(commentCounts[a.slug] ?? 0) > 0 && (
                         <span className="text-[10px] font-bold text-muted-foreground inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1">
                           <MessageCircle className="w-3 h-3" />
-                          {commentCounts[a.slug].toLocaleString("fa-IR")}
+                          {num(commentCounts[a.slug])}
                         </span>
                       )}
                       {isDone && (
                         <span className="text-[10px] font-black text-emerald-500 inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1">
                           <Check className="w-3 h-3" aria-hidden />
-                          خوانده شد
+                          {t("articles", "badge.done")}
                         </span>
                       )}
                   </div>
                   <h3 className="font-extrabold text-lg mb-2 leading-8 group-hover:text-brand transition-colors">
-                    {a.title}
+                    {pickEn(lang, a.titleEn, a.title)}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-7 flex-grow line-clamp-3 mb-4">
-                    {a.excerpt}
+                    {pickEn(lang, a.excerptEn, a.excerpt)}
                   </p>
                   {isInProgress && (
                     <div className="mb-4">
@@ -793,21 +775,21 @@ export function ArticlesSection({
                         aria-valuenow={readPct}
                         aria-valuemin={0}
                         aria-valuemax={100}
-                        aria-label={`پیشرفت مطالعه ${a.title}`}
+                        aria-label={t("articles", "badge.progressAria", { title: pickEn(lang, a.titleEn, a.title) })}
                       >
                         <span style={{ width: `${readPct}%` }} />
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1">
                         <BookOpen className="w-3 h-3 text-brand" aria-hidden />
-                        {readPct.toLocaleString("fa-IR")}٪ خوانده شده — ادامه دهید
+                        {t("articles", "badge.progress", { n: num(readPct) })}
                       </p>
                     </div>
                   )}
                   <div className="pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{formatDate(a.publishedAt)}</span>
+                    <span>{date(a.publishedAt, { year: "numeric", month: "long", day: "numeric" })}</span>
                     <span className="font-bold text-brand inline-flex items-center gap-1.5">
-                      مطالعه
-                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1.5 transition-transform" />
+                      {t("articles", "card.read")}
+                      <DirArrow className="w-4 h-4 dir-slide" />
                     </span>
                   </div>
                 </motion.button>
@@ -858,42 +840,42 @@ export function ArticlesSection({
                   idPrefix="artdlg"
                   className="h-28 sm:h-32 w-full"
                 />
-                <span className="absolute bottom-3 right-5 text-4xl card-emoji drop-shadow-xl" aria-hidden>
+                <span className="absolute bottom-3 start-5 text-4xl card-emoji drop-shadow-xl" aria-hidden>
                   {selected.icon}
                 </span>
               </div>
 
               <DialogHeader>
-                <DialogTitle className="text-xl sm:text-2xl leading-9 text-right">
-                  {selected.title}
+                <DialogTitle className="text-xl sm:text-2xl leading-9 text-start">
+                  {pickEn(lang, selected.titleEn, selected.title)}
                 </DialogTitle>
-                <DialogDescription className="text-right text-sm leading-7 pt-1">
-                  {selected.excerpt}
+                <DialogDescription className="text-start text-sm leading-7 pt-1">
+                  {pickEn(lang, selected.excerptEn, selected.excerpt)}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="flex flex-wrap items-center gap-2 my-4">
                 {CATEGORY_META[selected.category] && (
                   <Badge variant="secondary">
-                    {CATEGORY_META[selected.category].label}
+                    {t("core", `wcat.${selected.category}`)}
                   </Badge>
                 )}
                 <Badge variant="outline" className="gap-1">
                   <Clock className="w-3 h-3" />
-                  {selected.readTime.toLocaleString("fa-IR")} دقیقه مطالعه
+                  {t("articles", "meta.readTime", { n: num(selected.readTime) })}
                 </Badge>
                 <Badge variant="outline" className="gap-1">
                   <Eye className="w-3 h-3" />
-                  {selected.views.toLocaleString("fa-IR")} بازدید
+                  {t("articles", "meta.views", { n: num(selected.views) })}
                 </Badge>
-                <div className="mr-auto flex items-center gap-1.5">
+                <div className="ms-auto flex items-center gap-1.5">
                   <button
                     onClick={() => toggleLike(selected)}
                     aria-pressed={likedSlugs.has(selected.slug)}
                     aria-label={
-                      likedSlugs.has(selected.slug) ? "برداشتن لایک" : "لایک کردن این نوشته"
+                      likedSlugs.has(selected.slug) ? t("articles", "like.remove") : t("articles", "like.add")
                     }
-                    title={likedSlugs.has(selected.slug) ? "لایک شده" : "لایک"}
+                    title={likedSlugs.has(selected.slug) ? t("articles", "like.liked") : t("articles", "like.like")}
                     className={cn(
                       "inline-flex items-center gap-1.5 text-[11px] font-bold rounded-full border px-3 py-1.5 transition-all min-h-[30px] active:scale-95",
                       likedSlugs.has(selected.slug)
@@ -908,18 +890,18 @@ export function ArticlesSection({
                         burstSlug === selected.slug && "like-burst"
                       )}
                     />
-                    {selected.likes.toLocaleString("fa-IR")}
+                    {num(selected.likes)}
                   </button>
                   <button
                     onClick={() => shareArticle(selected)}
-                    aria-label="هم‌رسانی لینک نوشته"
-                    title="هم‌رسانی لینک"
+                    aria-label={t("articles", "share.aria")}
+                    title={t("articles", "share.title")}
                     className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3 py-1.5 hover:bg-brand/20 active:scale-95 transition-all min-h-[30px]"
                   >
                     {copied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
-                    هم‌رسانی
+                    {t("articles", "share.label")}
                   </button>
-                  <div className="flex items-center gap-1.5" role="group" aria-label="هم‌رسانی در شبکه‌های اجتماعی">
+                  <div className="flex items-center gap-1.5" role="group" aria-label={t("articles", "share.groupAria")}>
                     {(() => {
                       const links = shareLinksFor(selected);
                       return (
@@ -928,8 +910,8 @@ export function ArticlesSection({
                             href={links.telegram}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="هم‌رسانی در تلگرام"
-                            title="تلگرام"
+                            aria-label={t("articles", "share.telegramAria")}
+                            title={t("articles", "share.telegram")}
                             className="share-bubble share-telegram"
                           >
                             <Send className="w-4 h-4" aria-hidden />
@@ -938,8 +920,8 @@ export function ArticlesSection({
                             href={links.whatsapp}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="هم‌رسانی در واتساپ"
-                            title="واتساپ"
+                            aria-label={t("articles", "share.whatsappAria")}
+                            title={t("articles", "share.whatsapp")}
                             className="share-bubble share-whatsapp"
                           >
                             <WhatsAppIcon className="w-4 h-4" />
@@ -948,8 +930,8 @@ export function ArticlesSection({
                             href={links.x}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="هم‌رسانی در ایکس"
-                            title="ایکس"
+                            aria-label={t("articles", "share.xAria")}
+                            title={t("articles", "share.x")}
                             className="share-bubble share-x"
                           >
                             <XLogoIcon className="w-3.5 h-3.5" />
@@ -963,7 +945,7 @@ export function ArticlesSection({
 
               {/* Table of contents */}
               {tocItems.length > 1 && (
-                <nav aria-label="فهرست مطالب" className="toc-box mb-5">
+                <nav aria-label={t("articles", "toc.aria")} className="toc-box mb-5">
                   <button
                     type="button"
                     onClick={() => setTocOpen((v) => !v)}
@@ -971,13 +953,13 @@ export function ArticlesSection({
                     className="w-full flex items-center gap-2 font-extrabold text-sm"
                   >
                     <ListTree className="w-4 h-4 text-brand" aria-hidden />
-                    فهرست مطالب
+                    {t("articles", "toc.title")}
                     <span className="text-[10px] font-bold text-brand bg-brand/10 border border-brand/25 rounded-full px-2 py-0.5">
-                      {tocItems.length.toLocaleString("fa-IR")} بخش
+                      {t("articles", "toc.sections", { n: num(tocItems.length) })}
                     </span>
                     <ChevronDown
                       className={cn(
-                        "w-4 h-4 mr-auto text-muted-foreground transition-transform duration-300",
+                        "w-4 h-4 ms-auto text-muted-foreground transition-transform duration-300",
                         tocOpen && "rotate-180"
                       )}
                       aria-hidden
@@ -997,13 +979,13 @@ export function ArticlesSection({
                             <button
                               type="button"
                               onClick={() => jumpToSection(item.id)}
-                              className="toc-link w-full text-right flex items-baseline gap-2.5 rounded-xl px-2.5 py-2 text-xs text-muted-foreground hover:text-brand hover:bg-brand/5 transition-all min-h-[34px]"
+                              className="toc-link w-full text-start flex items-baseline gap-2.5 rounded-xl px-2.5 py-2 text-xs text-muted-foreground hover:text-brand hover:bg-brand/5 transition-all min-h-[34px]"
                             >
                               <span
                                 className="shrink-0 w-5 h-5 grid place-items-center rounded-lg border border-brand/25 bg-brand/10 text-[9px] font-black text-brand"
                                 aria-hidden
                               >
-                                {(i + 1).toLocaleString("fa-IR")}
+                                {num(i + 1)}
                               </span>
                               <span className="leading-6">{item.title}</span>
                             </button>
@@ -1016,31 +998,31 @@ export function ArticlesSection({
               )}
 
               {/* Reader font-size controls */}
-              <div className="reader-font-group flex items-center gap-2 justify-end -mt-1 mb-3" role="group" aria-label="اندازه قلم نوشته">
+              <div className="reader-font-group flex items-center gap-2 justify-end -mt-1 mb-3" role="group" aria-label={t("articles", "reader.fontAria")}>
                 <span className="text-[10px] font-bold text-muted-foreground inline-flex items-center gap-1.5">
                   <Type className="w-3.5 h-3.5 text-brand" aria-hidden />
-                  اندازه قلم
+                  {t("articles", "reader.font")}
                 </span>
                 <div className="flex items-center rounded-full border border-border bg-card p-0.5">
                   <button
                     type="button"
                     onClick={() => changeFontStep(fontStep - 1)}
                     disabled={fontStep === 0}
-                    aria-label="کوچک‌تر کردن قلم"
-                    title="قلم کوچک‌تر"
+                    aria-label={t("articles", "reader.smallerAria")}
+                    title={t("articles", "reader.smaller")}
                     className="w-8 h-8 grid place-items-center rounded-full text-muted-foreground hover:text-brand hover:bg-brand/10 disabled:opacity-30 disabled:pointer-events-none transition-all"
                   >
                     <Minus className="w-4 h-4" aria-hidden />
                   </button>
                   <span className="text-[10px] font-black text-brand min-w-[44px] text-center tabular-nums" aria-live="polite">
-                    {FONT_STEPS[fontStep].toLocaleString("fa-IR")}٪
+                    {t("articles", "reader.fontPercent", { n: num(FONT_STEPS[fontStep]) })}
                   </span>
                   <button
                     type="button"
                     onClick={() => changeFontStep(fontStep + 1)}
                     disabled={fontStep === FONT_STEPS.length - 1}
-                    aria-label="بزرگ‌تر کردن قلم"
-                    title="قلم بزرگ‌تر"
+                    aria-label={t("articles", "reader.largerAria")}
+                    title={t("articles", "reader.larger")}
                     className="w-8 h-8 grid place-items-center rounded-full text-muted-foreground hover:text-brand hover:bg-brand/10 disabled:opacity-30 disabled:pointer-events-none transition-all"
                   >
                     <Plus className="w-4 h-4" aria-hidden />
@@ -1057,14 +1039,14 @@ export function ArticlesSection({
                 <div className="mt-6">
                   <h4 className="text-sm font-extrabold mb-2.5 flex items-center gap-2">
                     <BookOpen className="w-4 h-4 text-brand" aria-hidden />
-                    نوشته‌های مرتبط
+                    {t("articles", "related.title")}
                   </h4>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {relatedArticles.map((r) => (
                       <button
                         key={r.slug}
                         onClick={() => openArticle(r)}
-                        className="related-item text-right rounded-2xl border border-border bg-card px-3.5 py-3 flex items-center gap-3 hover:border-brand/40 transition-all min-h-[52px]"
+                        className="related-item text-start rounded-2xl border border-border bg-card px-3.5 py-3 flex items-center gap-3 hover:border-brand/40 transition-all min-h-[52px]"
                       >
                         <span
                           className="w-9 h-9 grid place-items-center rounded-xl bg-secondary text-xl shrink-0"
@@ -1073,12 +1055,12 @@ export function ArticlesSection({
                           {r.icon}
                         </span>
                         <span className="flex-grow min-w-0">
-                          <span className="block text-xs font-bold truncate">{r.title}</span>
+                          <span className="block text-xs font-bold truncate">{pickEn(lang, r.titleEn, r.title)}</span>
                           <span className="block text-[10px] text-muted-foreground mt-0.5">
-                            <Clock className="w-3 h-3 inline -mt-0.5" aria-hidden /> {r.readTime.toLocaleString("fa-IR")} دقیقه
+                            <Clock className="w-3 h-3 inline -mt-0.5" aria-hidden /> {t("articles", "card.readTimeShort", { n: num(r.readTime) })}
                           </span>
                         </span>
-                        <ArrowLeft className="w-4 h-4 text-brand shrink-0" aria-hidden />
+                        <DirArrow className="w-4 h-4 text-brand shrink-0" />
                       </button>
                     ))}
                   </div>
@@ -1098,21 +1080,21 @@ export function ArticlesSection({
           className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col p-0 rounded-3xl dialog-accent"
         >
           <DialogHeader className="px-5 pt-5 pb-3 border-b border-border shrink-0">
-            <DialogTitle className="text-base flex items-center gap-2 text-right">
+            <DialogTitle className="text-base flex items-center gap-2 text-start">
               <History className="w-4.5 h-4.5 text-brand" aria-hidden />
-              تاریخچه مطالعه
+              {t("articles", "history.title")}
               <span className="text-[10px] font-black text-brand bg-brand/10 border border-brand/25 rounded-full px-2 py-0.5">
-                {historyList.length.toLocaleString("fa-IR")} نوشته
+                {t("articles", "history.count", { n: num(historyList.length) })}
               </span>
             </DialogTitle>
-            <DialogDescription className="text-right text-xs">
-              پیشرفت مطالعه شما روی همین دستگاه ذخیره می‌شود.
+            <DialogDescription className="text-start text-xs">
+              {t("articles", "history.desc")}
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto px-4 py-3 space-y-2 reading-history-scroll" role="list">
             {historyList.length === 0 ? (
               <p className="text-center text-xs text-muted-foreground py-10">
-                هنوز چیزی در تاریخچه نیست؛ یکی از نوشته‌ها را باز کنید ✨
+                {t("articles", "history.empty")}
               </p>
             ) : (
               historyList.map((h) => {
@@ -1132,20 +1114,20 @@ export function ArticlesSection({
                       {h.icon}
                     </span>
                     <div className="flex-grow min-w-0">
-                      <p className="text-xs font-bold truncate">{h.title}</p>
+                      <p className="text-xs font-bold truncate">{titleOf(h.slug, h.title)}</p>
                       <div className="flex items-center gap-2 mt-1">
                         {done ? (
                           <span className="text-[10px] font-black text-emerald-500 inline-flex items-center gap-1">
                             <Check className="w-3 h-3" aria-hidden />
-                            کامل خوانده شد
+                            {t("articles", "history.completed")}
                           </span>
                         ) : (
-                          <span className="text-[10px] font-bold text-brand">{pct.toLocaleString("fa-IR")}٪</span>
+                          <span className="text-[10px] font-bold text-brand">{t("articles", "history.percent", { n: num(pct) })}</span>
                         )}
                         {catMeta && (
-                          <span className="text-[9px] font-bold text-muted-foreground">• {catMeta.label}</span>
+                          <span className="text-[9px] font-bold text-muted-foreground">• {t("core", `wcat.${h.category}`)}</span>
                         )}
-                        <span className="text-[9px] text-muted-foreground/70">• {relativeTime(h.updatedAt)}</span>
+                        <span className="text-[9px] text-muted-foreground/70">• {relativeTime(new Date(h.updatedAt).toISOString(), lang)}</span>
                       </div>
                       {!done && (
                         <div
@@ -1154,7 +1136,7 @@ export function ArticlesSection({
                           aria-valuenow={pct}
                           aria-valuemin={0}
                           aria-valuemax={100}
-                          aria-label={`پیشرفت ${h.title}`}
+                          aria-label={t("articles", "history.progressAria", { title: titleOf(h.slug, h.title) })}
                         >
                           <span style={{ width: `${pct}%` }} />
                         </div>
@@ -1163,16 +1145,16 @@ export function ArticlesSection({
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() => resumeFromHistory(h.slug, h.progress)}
-                        aria-label={`ادامه ${h.title}`}
-                        title={done ? "مطالعه دوباره" : "ادامه مطالعه"}
+                        aria-label={t("articles", "history.resumeAria", { title: titleOf(h.slug, h.title) })}
+                        title={done ? t("articles", "history.reread") : t("articles", "history.resume")}
                         className="w-9 h-9 grid place-items-center rounded-xl border border-brand/30 bg-brand/10 text-brand hover:bg-brand/20 active:scale-90 transition-all"
                       >
-                        <ArrowLeft className="w-4 h-4" aria-hidden />
+                        <DirArrow className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => removeReadingEntry(h.slug)}
-                        aria-label={`حذف ${h.title} از تاریخچه`}
-                        title="حذف از تاریخچه"
+                        aria-label={t("articles", "history.deleteAria", { title: titleOf(h.slug, h.title) })}
+                        title={t("articles", "history.delete")}
                         className="history-delete w-9 h-9 grid place-items-center rounded-xl border border-border text-muted-foreground/60 hover:text-destructive hover:border-destructive/40 active:scale-90 transition-all"
                       >
                         <Trash2 className="w-4 h-4" aria-hidden />
@@ -1188,14 +1170,14 @@ export function ArticlesSection({
               <button
                 onClick={() => {
                   clearReadingHistory();
-                  toast({ title: "تاریخچه پاک شد", description: "همه رکوردهای مطالعه حذف شدند." });
+                  toast({ title: t("articles", "toast.historyClearedTitle"), description: t("articles", "toast.historyClearedDesc") });
                 }}
                 className="inline-flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground hover:text-destructive transition-colors min-h-[34px] px-2 rounded-lg"
               >
                 <Trash2 className="w-3.5 h-3.5" aria-hidden />
-                پاک کردن همه
+                {t("articles", "history.clearAll")}
               </button>
-              <span className="text-[10px] text-muted-foreground/70">روی همین دستگاه ذخیره شده</span>
+              <span className="text-[10px] text-muted-foreground/70">{t("articles", "history.storedLocal")}</span>
             </div>
           )}
         </DialogContent>

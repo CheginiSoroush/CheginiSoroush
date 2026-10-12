@@ -1,16 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
+import { Rocket, PenLine, Target, Eye } from "lucide-react";
+import { useT } from "@/lib/i18n";
 import type { SiteStats } from "@/lib/types";
-
-const ROLES = [
-  "توسعه‌دهنده نرم‌افزار",
-  "سازنده ربات‌های تلگرام",
-  "خالق تجربه‌های سه‌بعدی",
-  "نویسنده و کاوشگر",
-];
 
 function useTypewriter(words: string[]) {
   const [text, setText] = useState("");
@@ -18,7 +13,7 @@ function useTypewriter(words: string[]) {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const word = words[wordIndex % words.length];
+    const word = words[wordIndex % words.length] ?? "";
     let delay = deleting ? 40 : 90;
 
     if (!deleting && text === word) {
@@ -44,7 +39,7 @@ function useTypewriter(words: string[]) {
   return text;
 }
 
-function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
+function Counter({ value, format }: { value: number; format: (n: number) => string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
   const [display, setDisplay] = useState(0);
@@ -64,43 +59,22 @@ function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
     return () => cancelAnimationFrame(raf);
   }, [inView, value]);
 
-  return (
-    <span ref={ref}>
-      {display.toLocaleString("fa-IR")}
-      {suffix}
-    </span>
-  );
-}
-
-// Time-aware Persian greeting for the visitor (client-only via external store, no hydration mismatch)
-function greetingForHour(h: number): { text: string; emoji: string } {
-  if (h >= 5 && h < 12) return { text: "صبح بخیر", emoji: "🌅" };
-  if (h >= 12 && h < 17) return { text: "بعدازظهر بخیر", emoji: "☀️" };
-  if (h >= 17 && h < 20) return { text: "عصر بخیر", emoji: "🌇" };
-  return { text: "شب بخیر", emoji: "🌙" };
-}
-let greetCache: { key: number; value: { text: string; emoji: string } } | null = null;
-function getGreetSnapshot() {
-  const h = new Date().getHours();
-  if (!greetCache || greetCache.key !== h) {
-    greetCache = { key: h, value: greetingForHour(h) };
-  }
-  return greetCache.value;
+  return <span ref={ref}>{format(display)}</span>;
 }
 
 export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore: () => void }) {
-  const typed = useTypewriter(ROLES);
-  const greet = useSyncExternalStore(
-    () => () => {},
-    getGreetSnapshot,
-    () => null
+  const { t, num } = useT();
+  const roles = useMemo(
+    () => [0, 1, 2, 3].map((i) => t("core", `hero.role.${i}`)),
+    [t]
   );
+  const typed = useTypewriter(roles);
 
   const statItems = [
-    { value: stats?.projects ?? 0, label: "پروژه", icon: "🚀" },
-    { value: stats?.articles ?? 0, label: "نوشته", icon: "📝" },
-    { value: 4, label: "حوزه تخصصی", icon: "🎯" },
-    { value: stats?.visits ?? 0, label: "بازدید سایت", icon: "👁️" },
+    { value: stats?.projects ?? 0, label: t("core", "hero.stats.projects"), icon: Rocket },
+    { value: stats?.articles ?? 0, label: t("core", "hero.stats.articles"), icon: PenLine },
+    { value: 4, label: t("core", "hero.stats.domains"), icon: Target },
+    { value: stats?.visits ?? 0, label: t("core", "hero.stats.visits"), icon: Eye },
   ];
 
   return (
@@ -110,14 +84,14 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
       <div className="aurora w-[360px] h-[360px] top-20 -left-32" aria-hidden />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-28 pb-16 sm:pt-36 sm:pb-20 text-center">
-        {/* Logo */}
+        {/* Logo — the morphing clone (see morphing-logo.tsx) takes over from here on scroll */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="flex justify-center mb-8"
         >
-          <div className="relative float-y">
+          <div className="relative float-y" id="hero-logo-anchor">
             <div
               className="absolute inset-0 blur-2xl opacity-40"
               style={{ background: "var(--brand)" }}
@@ -126,7 +100,7 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
             <div className="conic-ring" aria-hidden />
             <Image
               src="/photos/logo_dark.png"
-              alt="لوگوی شخصی سروش"
+              alt={t("core", "hero.logoAlt")}
               width={280}
               height={100}
               priority
@@ -135,7 +109,7 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
             />
             <Image
               src="/photos/logo_light.png"
-              alt="لوگوی شخصی سروش"
+              alt={t("core", "hero.logoAlt")}
               width={280}
               height={100}
               priority
@@ -145,22 +119,6 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
           </div>
         </motion.div>
 
-        {/* Time-aware greeting */}
-        {greet && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.35 }}
-            className="greet-pill mx-auto mb-6 w-fit"
-            role="status"
-          >
-            <span className="greet-dot" aria-hidden />
-            <span aria-hidden>{greet.emoji}</span>
-            <span>{greet.text}</span>
-            <span className="text-muted-foreground/70">— خوش آمدید</span>
-          </motion.div>
-        )}
-
         {/* Name */}
         <motion.h1
           initial={{ opacity: 0, y: 24 }}
@@ -168,7 +126,8 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
           transition={{ duration: 0.6, delay: 0.15 }}
           className="text-5xl sm:text-7xl font-black tracking-tight mb-4"
         >
-          <span className="brand-gradient-text">سروش</span> چگینی
+          <span className="brand-gradient-text">{t("core", "hero.name.first")}</span>{" "}
+          {t("core", "hero.name.last")}
         </motion.h1>
 
         {/* Typing role */}
@@ -188,9 +147,7 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
           transition={{ duration: 0.6, delay: 0.42 }}
           className="mt-5 max-w-2xl mx-auto text-muted-foreground leading-8 text-sm sm:text-base"
         >
-          به دنیای دیجیتال من خوش آمدید؛ جایی که کد، خلاقیت و یادگیری مستمر به هم
-          می‌رسند. از ربات‌های هوش مصنوعی تا شبیه‌سازهای سه‌بعدی — همه‌چیز را خودم
-          ساخته‌ام.
+          {t("core", "hero.desc")}
         </motion.p>
 
         {/* CTA buttons */}
@@ -204,7 +161,7 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
             onClick={onExplore}
             className="px-7 py-3 rounded-2xl bg-brand text-primary-foreground font-bold text-sm sm:text-base shadow-[0_10px_30px_-10px_var(--brand-glow)] hover:shadow-[0_14px_38px_-10px_var(--brand-glow)] hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
           >
-            کاوش در پروژه‌ها
+            {t("core", "hero.cta.projects")}
           </button>
           <a
             href="https://github.com/CheginiSoroush"
@@ -219,7 +176,7 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
                 clipRule="evenodd"
               />
             </svg>
-            گیت‌هاب
+            {t("core", "hero.cta.github")}
           </a>
         </motion.div>
 
@@ -235,11 +192,9 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
               key={s.label}
               className="rounded-2xl border border-border bg-card/70 backdrop-blur px-4 py-5 hover:border-brand/40 transition-colors"
             >
-              <div className="text-xl mb-1" aria-hidden>
-                {s.icon}
-              </div>
+              <s.icon className="w-5 h-5 text-brand mx-auto mb-2" aria-hidden />
               <div className="text-2xl sm:text-3xl font-black text-brand tabular-nums">
-                <Counter value={s.value} />
+                <Counter value={s.value} format={num} />
               </div>
               <div className="text-xs sm:text-sm text-muted-foreground mt-1">{s.label}</div>
             </div>
@@ -252,10 +207,10 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
           onClick={onExplore}
-          aria-label="رفتن به بخش بعدی"
+          aria-label={t("core", "aria.scrollToExplore")}
           className="mt-14 mx-auto flex flex-col items-center gap-1 text-muted-foreground bounce-soft"
         >
-          <span className="text-[11px] tracking-wide">اسکرول کنید</span>
+          <span className="text-[11px] tracking-wide">{t("core", "hero.scroll")}</span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>

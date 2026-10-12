@@ -35,6 +35,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { AdminCommentsPanel } from "@/components/site/admin-comments-panel";
 import { cn } from "@/lib/utils";
+import { useT, pickEn } from "@/lib/i18n";
 
 type Message = {
   id: string;
@@ -58,6 +59,7 @@ type ListPayload = {
 type TopProject = {
   slug: string;
   title: string;
+  titleEn?: string | null;
   icon: string;
   views: number;
   category: string;
@@ -66,6 +68,7 @@ type TopProject = {
 type TopArticle = {
   slug: string;
   title: string;
+  titleEn?: string | null;
   icon: string;
   views: number;
   likes: number;
@@ -89,21 +92,13 @@ type StatsPayload = {
   generatedAt: string;
 };
 
-const fa = (n: number) => n.toLocaleString("fa-IR");
-
-function formatDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleString("fa-IR", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
+const DATE_OPTS: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+};
 
 function AdminStatsPanel({ apiKey }: { apiKey: string }) {
   const [stats, setStats] = useState<StatsPayload | null>(null);
@@ -111,6 +106,7 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
   const [failed, setFailed] = useState(false);
   const [exporting, setExporting] = useState(false);
   const { toast } = useToast();
+  const { t, num, lang } = useT();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -145,29 +141,34 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <BarChart3 className="w-10 h-10 mx-auto mb-3 opacity-50" />
-        <p className="text-sm mb-4">آمار بارگذاری نشد.</p>
+        <p className="text-sm mb-4">{t("admin", "statsFailed")}</p>
         <button
           onClick={load}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-4 py-2 hover:bg-brand/20 transition-all min-h-[34px]"
         >
           <RefreshCw className="w-3.5 h-3.5" />
-          تلاش دوباره
+          {t("admin", "retry")}
         </button>
       </div>
     );
   }
 
-  const t = stats.totals;
+  const totals = stats.totals;
   const tiles = [
-    { icon: Eye, label: "بازدید سایت", value: t.visits },
-    { icon: FolderGit2, label: "بازدید پروژه‌ها", value: t.projectViews },
-    { icon: Heart, label: "مجموع لایک‌ها", value: t.likes },
-    { icon: MessageSquare, label: "دیدگاه‌ها", value: t.comments },
-    { icon: MessageSquare, label: "پیام‌ها", value: t.messages, hint: `${fa(t.unread)} خوانده‌نشده` },
-    { icon: CalendarClock, label: "پیام این هفته", value: t.messagesLastWeek },
-    { icon: FolderGit2, label: "پروژه‌ها", value: t.projects },
-    { icon: FileText, label: "نوشته‌ها", value: t.articles },
-    { icon: Users, label: "اعضای خبرنامه", value: t.subscribers },
+    { icon: Eye, label: t("admin", "tileVisits"), value: totals.visits },
+    { icon: FolderGit2, label: t("admin", "tileProjectViews"), value: totals.projectViews },
+    { icon: Heart, label: t("admin", "tileLikes"), value: totals.likes },
+    { icon: MessageSquare, label: t("admin", "tileComments"), value: totals.comments },
+    {
+      icon: MessageSquare,
+      label: t("admin", "tileMessages"),
+      value: totals.messages,
+      hint: t("admin", "unreadCount", { n: num(totals.unread) }),
+    },
+    { icon: CalendarClock, label: t("admin", "tileMessagesWeek"), value: totals.messagesLastWeek },
+    { icon: FolderGit2, label: t("admin", "tileProjects"), value: totals.projects },
+    { icon: FileText, label: t("admin", "tileArticles"), value: totals.articles },
+    { icon: Users, label: t("admin", "tileSubscribers"), value: totals.subscribers },
   ];
 
   const maxProjectViews = Math.max(1, ...stats.topProjects.map((p) => p.views));
@@ -184,7 +185,7 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
       const data = (await res.json()) as { subscribers?: { email: string; createdAt: string }[] };
       const subs = data.subscribers ?? [];
       if (subs.length === 0) {
-        toast({ title: "هنوز عضوی نیست", description: "خبرنامه هنوز هیچ عضوی ندارد." });
+        toast({ title: t("admin", "exportEmpty"), description: t("admin", "exportEmptyDesc") });
         return;
       }
       const rows: string[][] = [
@@ -204,13 +205,13 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
       a.remove();
       URL.revokeObjectURL(a.href);
       toast({
-        title: "فایل CSV دانلود شد",
-        description: `${subs.length.toLocaleString("fa-IR")} عضو خبرنامه استخراج شد.`,
+        title: t("admin", "exportOk"),
+        description: t("admin", "exportOkDesc", { n: num(subs.length) }),
       });
     } catch {
       toast({
-        title: "استخراج ناموفق بود",
-        description: "دوباره تلاش کنید.",
+        title: t("admin", "exportFail"),
+        description: t("admin", "exportFailDesc"),
         variant: "destructive",
       });
     } finally {
@@ -228,7 +229,7 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
               <tile.icon className="w-3.5 h-3.5 text-brand" aria-hidden />
               <span className="stat-label">{tile.label}</span>
             </div>
-            <p className="stat-value">{fa(tile.value)}</p>
+            <p className="stat-value">{num(tile.value)}</p>
             {tile.hint && <p className="text-[10px] text-muted-foreground mt-0.5">{tile.hint}</p>}
           </div>
         ))}
@@ -238,25 +239,25 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
       <div className="rounded-2xl border border-border bg-card/60 p-4">
         <h4 className="flex items-center gap-2 text-sm font-extrabold mb-3">
           <FolderGit2 className="w-4 h-4 text-brand" />
-          پربازدیدترین پروژه‌ها
+          {t("admin", "topProjects")}
         </h4>
         <ul className="space-y-3">
           {stats.topProjects.map((p, i) => (
             <li key={p.slug}>
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <span className="text-xs font-bold truncate">
-                  <span aria-hidden className="ml-1">{p.icon}</span>
-                  {p.title}
+                  <span aria-hidden className="me-1">{p.icon}</span>
+                  {pickEn(lang, p.titleEn, p.title)}
                 </span>
                 <span className="text-[11px] font-bold text-brand shrink-0 tabular-nums">
-                  {fa(p.views)} 👁️
+                  {num(p.views)} 👁️
                 </span>
               </div>
               <div className="top-bar">
                 <span style={{ width: `${Math.max(6, (p.views / maxProjectViews) * 100)}%` }} />
               </div>
               {i === 0 && (
-                <p className="text-[10px] text-muted-foreground mt-1">🏆 صدرنشین جدول بازدید</p>
+                <p className="text-[10px] text-muted-foreground mt-1">{t("admin", "topLeader")}</p>
               )}
             </li>
           ))}
@@ -267,20 +268,20 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
       <div className="rounded-2xl border border-border bg-card/60 p-4">
         <h4 className="flex items-center gap-2 text-sm font-extrabold mb-3">
           <FileText className="w-4 h-4 text-brand" />
-          پربازدیدترین نوشته‌ها
+          {t("admin", "topArticles")}
         </h4>
         <ul className="space-y-3">
           {stats.topArticles.map((a) => (
             <li key={a.slug}>
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <span className="text-xs font-bold truncate">
-                  <span aria-hidden className="ml-1">{a.icon}</span>
-                  {a.title}
+                  <span aria-hidden className="me-1">{a.icon}</span>
+                  {pickEn(lang, a.titleEn, a.title)}
                 </span>
                 <span className="flex items-center gap-2 shrink-0 text-[11px] font-bold tabular-nums">
-                  <span className="text-brand">{fa(a.views)} 👁️</span>
+                  <span className="text-brand">{num(a.views)} 👁️</span>
                   <span className="inline-flex items-center gap-0.5 text-muted-foreground">
-                    <Heart className="w-3 h-3 fill-brand text-brand" /> {fa(a.likes)}
+                    <Heart className="w-3 h-3 fill-brand text-brand" /> {num(a.likes)}
                   </span>
                 </span>
               </div>
@@ -297,10 +298,10 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
         <div className="flex-grow min-w-0">
           <h4 className="flex items-center gap-2 text-sm font-extrabold">
             <Users className="w-4 h-4 text-brand" />
-            اعضای خبرنامه
+            {t("admin", "exportTitle")}
           </h4>
           <p className="text-[11px] text-muted-foreground mt-1 leading-5">
-            دریافت فایل CSV ایمیل‌های عضو برای ارسال گروهی یا پشتیبان‌گیری.
+            {t("admin", "exportDesc")}
           </p>
         </div>
         <button
@@ -309,20 +310,21 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
           className="btn-shine shrink-0 inline-flex items-center justify-center gap-1.5 text-xs font-bold rounded-xl bg-brand text-primary-foreground px-4 py-2.5 hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 min-h-[38px]"
         >
           {exporting ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> : <Download className="w-4 h-4" aria-hidden />}
-          دانلود CSV
+          {t("admin", "exportCsv")}
         </button>
       </div>
 
       <div className="flex items-center justify-between">
         <p className="text-[10px] text-muted-foreground">
-          آخرین به‌روزرسانی: {new Date(stats.generatedAt).toLocaleTimeString("fa-IR")}
+          {t("admin", "lastUpdate")}{" "}
+          {new Date(stats.generatedAt).toLocaleTimeString(lang === "fa" ? "fa-IR" : "en-US")}
         </p>
         <button
           onClick={load}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 hover:bg-brand/20 active:scale-95 transition-all min-h-[30px]"
         >
           <RefreshCw className="w-3.5 h-3.5" />
-          به‌روزرسانی
+          {t("admin", "refresh")}
         </button>
       </div>
     </div>
@@ -337,6 +339,7 @@ export function AdminMessagesDialog({
   onOpenChange: (v: boolean) => void;
 }) {
   const { toast } = useToast();
+  const { t, num, isRtl, date } = useT();
   const [authed, setAuthed] = useState(false);
   const [key, setKey] = useState("");
   const [checking, setChecking] = useState(false);
@@ -366,19 +369,31 @@ export function AdminMessagesDialog({
     }
   }, [open]);
 
+  const fmtDate = (iso: string) => {
+    try {
+      return date(iso, DATE_OPTS);
+    } catch {
+      return iso;
+    }
+  };
+
   const fetchList = useCallback(
     async (opts?: { page?: number; tab?: "all" | "unread" }) => {
       const p = opts?.page ?? page;
-      const t = opts?.tab ?? tab;
+      const tb = opts?.tab ?? tab;
       setLoading(true);
       try {
-        const params = new URLSearchParams({ page: String(p), pageSize: "8", filter: t });
+        const params = new URLSearchParams({ page: String(p), pageSize: "8", filter: tb });
         const res = await fetch(`/api/admin/messages?${params.toString()}`, {
           headers: { "x-admin-key": key.trim() },
           cache: "no-store",
         });
         if (res.status === 401) {
-          toast({ title: "کلید اشتباه است", description: "کلید مدیریتی درست نیست.", variant: "destructive" });
+          toast({
+            title: t("admin", "badKey"),
+            description: t("admin", "badKeyDesc"),
+            variant: "destructive",
+          });
           setAuthed(false);
           return;
         }
@@ -391,15 +406,15 @@ export function AdminMessagesDialog({
         setAuthed(true);
       } catch {
         toast({
-          title: "خطای شبکه",
-          description: "اتصال برقرار نشد، دوباره تلاش کنید",
+          title: t("admin", "networkTitle"),
+          description: t("admin", "networkDesc"),
           variant: "destructive",
         });
       } finally {
         setLoading(false);
       }
     },
-    [key, page, tab, toast]
+    [key, page, tab, toast, t]
   );
 
   const unlock = async (e?: React.FormEvent) => {
@@ -410,9 +425,9 @@ export function AdminMessagesDialog({
     setChecking(false);
   };
 
-  const switchTab = (t: "all" | "unread") => {
-    setTab(t);
-    fetchList({ page: 1, tab: t });
+  const switchTab = (tb: "all" | "unread") => {
+    setTab(tb);
+    fetchList({ page: 1, tab: tb });
   };
 
   const goToPage = (p: number) => {
@@ -474,22 +489,25 @@ export function AdminMessagesDialog({
         body: JSON.stringify({ id: m.id }),
       });
       if (res.ok) {
-        toast({ title: "پیام حذف شد", description: `پیام «${m.subject}» پاک شد.` });
+        toast({
+          title: t("admin", "deleted"),
+          description: t("admin", "deletedDesc", { s: m.subject }),
+        });
         setConfirmDeleteId(null);
         fetchList();
       } else {
-        toast({ title: "حذف ناموفق", variant: "destructive" });
+        toast({ title: t("admin", "deleteFailed"), variant: "destructive" });
       }
     } catch {
-      toast({ title: "خطای شبکه", variant: "destructive" });
+      toast({ title: t("admin", "networkTitle"), variant: "destructive" });
     } finally {
       setBusyId(null);
     }
   };
 
   const replyTo = (m: Message) => {
-    const subject = encodeURIComponent(`پاسخ: ${m.subject}`);
-    const body = encodeURIComponent(`سلام ${m.name} عزیز،\n\n`);
+    const subject = encodeURIComponent(t("admin", "replySubject", { s: m.subject }));
+    const body = encodeURIComponent(`${t("admin", "replyBody", { name: m.name })}\n\n`);
     window.location.href = `mailto:${m.email}?subject=${subject}&body=${body}`;
   };
 
@@ -502,9 +520,9 @@ export function AdminMessagesDialog({
               <div className="w-14 h-14 rounded-2xl bg-brand/10 border border-brand/30 grid place-items-center text-brand mb-2 mx-auto">
                 <Lock className="w-6 h-6" />
               </div>
-              <DialogTitle className="text-center">ورود مدیر</DialogTitle>
+              <DialogTitle className="text-center">{t("admin", "login")}</DialogTitle>
               <DialogDescription className="text-center">
-                برای دیدن پیام‌های دریافتی، کلید مدیریتی را وارد کنید.
+                {t("admin", "loginDesc")}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={unlock} className="space-y-4 mt-2">
@@ -514,7 +532,7 @@ export function AdminMessagesDialog({
                 value={key}
                 onChange={(e) => setKey(e.target.value)}
                 placeholder="admin key"
-                aria-label="کلید مدیریتی"
+                aria-label={t("admin", "keyAria")}
                 className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm text-left outline-none focus:border-brand/60 focus:ring-2 focus:ring-brand/20 transition-all font-mono min-h-[46px]"
               />
               <button
@@ -525,12 +543,12 @@ export function AdminMessagesDialog({
                 {checking ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    در حال بررسی...
+                    {t("admin", "checking")}
                   </>
                 ) : (
                   <>
                     <ShieldCheck className="w-5 h-5" />
-                    ورود به پنل
+                    {t("admin", "enter")}
                   </>
                 )}
               </button>
@@ -541,29 +559,33 @@ export function AdminMessagesDialog({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Inbox className="w-5 h-5 text-brand" />
-                پنل مدیریت
+                {t("admin", "panel")}
                 {unread > 0 && (
                   <span className="text-[11px] font-bold bg-brand text-primary-foreground rounded-full px-2.5 py-0.5">
-                    {fa(unread)} خوانده‌نشده
+                    {t("admin", "unreadCount", { n: num(unread) })}
                   </span>
                 )}
               </DialogTitle>
               <DialogDescription>
                 {panel === "inbox"
-                  ? `مجموع ${fa(total)} پیام از فرم تماس`
+                  ? t("admin", "inboxDesc", { n: num(total) })
                   : panel === "comments"
-                    ? "مدیریت دیدگاه‌های نوشته‌ها"
-                    : "نگاه کلی به عملکرد سایت"}
+                    ? t("admin", "commentsDesc")
+                    : t("admin", "statsDesc")}
               </DialogDescription>
             </DialogHeader>
 
             {/* Panel tabs */}
-            <div className="flex items-center gap-1 rounded-2xl border border-border bg-secondary/60 p-1 mt-1" role="tablist" aria-label="بخش‌های پنل">
+            <div
+              className="flex items-center gap-1 rounded-2xl border border-border bg-secondary/60 p-1 mt-1"
+              role="tablist"
+              aria-label={t("admin", "tabsAria")}
+            >
               {(
                 [
-                  { id: "inbox", label: "صندوق پیام", icon: Inbox },
-                  { id: "comments", label: "دیدگاه‌ها", icon: MessageSquare },
-                  { id: "stats", label: "آمار سایت", icon: BarChart3 },
+                  { id: "inbox", label: t("admin", "tabInbox"), icon: Inbox },
+                  { id: "comments", label: t("admin", "tabComments"), icon: MessageSquare },
+                  { id: "stats", label: t("admin", "tabStats"), icon: BarChart3 },
                 ] as const
               ).map((p) => (
                 <button
@@ -596,7 +618,7 @@ export function AdminMessagesDialog({
               <div className="text-center py-12 text-muted-foreground">
                 <Inbox className="w-10 h-10 mx-auto mb-3 opacity-50" />
                 <p className="text-sm">
-                  {tab === "unread" ? "همه پیام‌ها خوانده شده‌اند 🎉" : "هنوز پیامی دریافت نشده."}
+                  {tab === "unread" ? t("admin", "allRead") : t("admin", "noMessages")}
                 </p>
               </div>
             ) : (
@@ -615,7 +637,7 @@ export function AdminMessagesDialog({
                       <div className="min-w-0">
                         <p className="font-bold text-sm truncate">
                           {m.name}
-                          <span dir="ltr" className="font-mono text-[11px] text-muted-foreground mr-2">
+                          <span dir="ltr" className="font-mono text-[11px] text-muted-foreground ms-2">
                             {m.email}
                           </span>
                         </p>
@@ -624,7 +646,7 @@ export function AdminMessagesDialog({
                         {/* Read / unread toggle */}
                         <button
                           onClick={() => (m.read ? markUnread(m) : markRead(m))}
-                          aria-label={m.read ? "علامت‌گذاری خوانده‌نشده" : "علامت‌گذاری خوانده‌شده"}
+                          aria-label={m.read ? t("admin", "markUnread") : t("admin", "markRead")}
                           disabled={busyId === m.id}
                           className={cn(
                             "w-8 h-8 rounded-lg grid place-items-center transition-all",
@@ -643,24 +665,24 @@ export function AdminMessagesDialog({
                         </button>
                         {/* Reply via mailto */}
                         <a
-                          href={`mailto:${m.email}?subject=${encodeURIComponent(`پاسخ: ${m.subject}`)}`}
+                          href={`mailto:${m.email}?subject=${encodeURIComponent(t("admin", "replySubject", { s: m.subject }))}`}
                           onClick={(e) => {
                             e.preventDefault();
                             replyTo(m);
                           }}
-                          aria-label="پاسخ با ایمیل"
-                          title="پاسخ با ایمیل"
+                          aria-label={t("admin", "replyAria")}
+                          title={t("admin", "replyAria")}
                           className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground/60 hover:text-brand hover:bg-brand/10 transition-all"
                         >
-                          <Reply className="w-4 h-4 -scale-x-100" />
+                          <Reply className={`w-4 h-4 ${isRtl ? "-scale-x-100" : ""}`} />
                         </a>
                         {/* Delete with confirm step */}
                         {confirmDeleteId === m.id ? (
                           <span className="flex items-center gap-0.5">
                             <button
                               onClick={() => deleteMessage(m)}
-                              aria-label="تأیید حذف"
-                              title="تأیید حذف"
+                              aria-label={t("admin", "confirmDelete")}
+                              title={t("admin", "confirmDelete")}
                               disabled={busyId === m.id}
                               className="w-8 h-8 rounded-lg grid place-items-center text-destructive hover:bg-destructive/15 transition-all"
                             >
@@ -672,8 +694,8 @@ export function AdminMessagesDialog({
                             </button>
                             <button
                               onClick={() => setConfirmDeleteId(null)}
-                              aria-label="انصراف"
-                              title="انصراف"
+                              aria-label={t("admin", "cancel")}
+                              title={t("admin", "cancel")}
                               className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground/60 hover:text-foreground transition-all"
                             >
                               <RotateCcw className="w-4 h-4" />
@@ -682,8 +704,8 @@ export function AdminMessagesDialog({
                         ) : (
                           <button
                             onClick={() => setConfirmDeleteId(m.id)}
-                            aria-label="حذف پیام"
-                            title="حذف"
+                            aria-label={t("admin", "deleteMessage")}
+                            title={t("admin", "deleteShort")}
                             className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-all"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -695,7 +717,7 @@ export function AdminMessagesDialog({
                     <p className="text-sm text-foreground/90 leading-7 whitespace-pre-wrap">
                       {m.message}
                     </p>
-                    <p className="text-[11px] text-muted-foreground mt-2">{formatDate(m.createdAt)}</p>
+                    <p className="text-[11px] text-muted-foreground mt-2">{fmtDate(m.createdAt)}</p>
                   </li>
                 ))}
               </ul>
@@ -707,21 +729,21 @@ export function AdminMessagesDialog({
                 <button
                   onClick={() => goToPage(page - 1)}
                   disabled={page <= 1}
-                  aria-label="صفحه قبل"
+                  aria-label={t("admin", "prevPage")}
                   className="w-9 h-9 grid place-items-center rounded-xl border border-border text-muted-foreground hover:text-brand hover:border-brand/50 transition-all disabled:opacity-40 disabled:pointer-events-none"
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  {isRtl ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
                 </button>
                 <span className="text-xs text-muted-foreground tabular-nums">
-                  صفحه {fa(page)} از {fa(totalPages)}
+                  {t("admin", "pageOf", { n: num(page), m: num(totalPages) })}
                 </span>
                 <button
                   onClick={() => goToPage(page + 1)}
                   disabled={page >= totalPages}
-                  aria-label="صفحه بعد"
+                  aria-label={t("admin", "nextPage")}
                   className="w-9 h-9 grid place-items-center rounded-xl border border-border text-muted-foreground hover:text-brand hover:border-brand/50 transition-all disabled:opacity-40 disabled:pointer-events-none"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  {isRtl ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                 </button>
               </div>
             )}

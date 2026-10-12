@@ -19,6 +19,7 @@ import { EmptyState } from "./empty-state";
 import type { Project } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useT, pickEn } from "@/lib/i18n";
 
 const DETAIL_INIT = Symbol("detail-init");
 const FAV_STORAGE_KEY = "imsoroush-fav-projects";
@@ -55,12 +56,13 @@ function writeFav(next: Set<string>) {
   window.dispatchEvent(new Event(FAV_EVENT));
 }
 
+// Category chips (labels via i18n: projects "filter.all" + core "cat.*")
 const FILTERS = [
-  { id: "all", label: "همه", icon: "✨" },
-  { id: "bots", label: "ربات‌های تلگرام", icon: "🤖" },
-  { id: "web", label: "وب و فروشگاه", icon: "🌐" },
-  { id: "3d", label: "سه‌بعدی و تعاملی", icon: "🪐" },
-  { id: "tools", label: "ابزارهای توسعه", icon: "🛠️" },
+  { id: "all", icon: "✨" },
+  { id: "bots", icon: "🤖" },
+  { id: "web", icon: "🌐" },
+  { id: "3d", icon: "🪐" },
+  { id: "tools", icon: "🛠️" },
 ];
 
 export function ProjectsExplorer({
@@ -94,6 +96,10 @@ export function ProjectsExplorer({
   const [favOnly, setFavOnly] = useState(false);
   const { toast } = useToast();
   const onSpotlightMove = useSpotlight();
+  const { t, num, lang, isRtl } = useT();
+  // Chip/heading labels: "all" lives in the projects dict, categories in core
+  const filterLabel = (id: string) =>
+    id === "all" ? t("projects", "filter.all") : t("core", `cat.${id}`);
 
   // Deep-link: sync filter when the category part of the hash changes (back/forward)
   const [prevCategory, setPrevCategory] = useState<string | undefined>(undefined);
@@ -192,7 +198,7 @@ export function ProjectsExplorer({
     setTimeout(() => setCopied(false), 1600);
     if (navigator.share) {
       try {
-        await navigator.share({ title: p.title, url });
+        await navigator.share({ title: pickEn(lang, p.titleEn, p.title), url });
         return;
       } catch {
         // user cancelled → fall through to clipboard
@@ -200,9 +206,12 @@ export function ProjectsExplorer({
     }
     try {
       await navigator.clipboard.writeText(url);
-      toast({ title: "لینک کپی شد", description: "لینک پروژه در کلیپ‌بورد ذخیره شد." });
+      toast({
+        title: t("projects", "toast.linkCopied.title"),
+        description: t("projects", "toast.linkCopied.desc"),
+      });
     } catch {
-      toast({ title: "کپی نشد", description: url, variant: "destructive" });
+      toast({ title: t("projects", "toast.copyFailed.title"), description: url, variant: "destructive" });
     }
   };
 
@@ -212,9 +221,12 @@ export function ProjectsExplorer({
       await navigator.clipboard.writeText(cmd);
       setCloneCopied(true);
       setTimeout(() => setCloneCopied(false), 1600);
-      toast({ title: "دستور کپی شد", description: "دستور کلون در کلیپ‌بورد ذخیره شد." });
+      toast({
+        title: t("projects", "toast.cmdCopied.title"),
+        description: t("projects", "toast.cmdCopied.desc"),
+      });
     } catch {
-      toast({ title: "کپی نشد", description: cmd, variant: "destructive" });
+      toast({ title: t("projects", "toast.copyFailed.title"), description: cmd, variant: "destructive" });
     }
   };
 
@@ -297,7 +309,7 @@ export function ProjectsExplorer({
       transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.4) }}
       onClick={() => openProject(p)}
       onMouseMove={onSpotlightMove}
-      className="glow-card spotlight group text-right rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col h-full w-full"
+      className="glow-card spotlight group text-start rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col h-full w-full"
     >
       {/* generative cover art */}
       <div className="cover-wrap -mx-5 sm:-mx-6 -mt-5 sm:-mt-6 mb-4 rounded-t-2xl overflow-hidden">
@@ -308,8 +320,8 @@ export function ProjectsExplorer({
           </span>
         </div>
         {p.featured && (
-          <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 text-[10px] font-bold text-[#05261f] bg-brand border border-white/20 rounded-full px-2 py-0.5 shadow-lg">
-            <Star className="w-3 h-3" /> منتخب
+          <span className="absolute top-2.5 end-2.5 inline-flex items-center gap-1 text-[10px] font-bold text-[#05261f] bg-brand border border-white/20 rounded-full px-2 py-0.5 shadow-lg">
+            <Star className="w-3 h-3" /> {t("projects", "card.featured")}
           </span>
         )}
         {/* Favorite toggle — span keeps the card's single-button semantics valid */}
@@ -319,10 +331,14 @@ export function ProjectsExplorer({
           aria-pressed={favSlugs.has(p.slug)}
           aria-label={
             favSlugs.has(p.slug)
-              ? `حذف ${p.title} از علاقه‌مندی‌ها`
-              : `افزودن ${p.title} به علاقه‌مندی‌ها`
+              ? t("projects", "favorites.remove", { title: pickEn(lang, p.titleEn, p.title) })
+              : t("projects", "favorites.add", { title: pickEn(lang, p.titleEn, p.title) })
           }
-          title={favSlugs.has(p.slug) ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
+          title={
+            favSlugs.has(p.slug)
+              ? t("projects", "favorites.removeShort")
+              : t("projects", "favorites.addShort")
+          }
           onClick={(e) => {
             e.stopPropagation();
             toggleFav(p.slug);
@@ -335,7 +351,7 @@ export function ProjectsExplorer({
             }
           }}
           className={cn(
-            "fav-star absolute top-2.5 right-2.5 z-10 w-8 h-8 grid place-items-center rounded-full border backdrop-blur-md",
+            "fav-star absolute top-2.5 start-2.5 z-10 w-8 h-8 grid place-items-center rounded-full border backdrop-blur-md",
             favSlugs.has(p.slug)
               ? "fav-star-on border-brand/60 bg-brand/30 text-brand"
               : "border-white/30 bg-black/30 text-white/90 hover:text-brand hover:border-brand/50"
@@ -345,54 +361,54 @@ export function ProjectsExplorer({
         </span>
       </div>
       <h3 className="font-extrabold text-base sm:text-lg mb-1.5 group-hover:text-brand transition-colors leading-7">
-        {p.title}
+        {pickEn(lang, p.titleEn, p.title)}
       </h3>
       <p dir="ltr" className="text-[11px] font-mono text-muted-foreground/70 truncate mb-3 text-left">
         {p.repo}
       </p>
       <p className="text-sm text-muted-foreground leading-7 flex-grow line-clamp-3">
-        {p.description}
+        {pickEn(lang, p.descriptionEn, p.description)}
       </p>
       <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
         <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
           <Eye className="w-3.5 h-3.5" />
-          {p.views.toLocaleString("fa-IR")}
+          {num(p.views)}
         </span>
         <span className="text-xs font-bold text-brand inline-flex items-center gap-1">
-          جزئیات
-          <ExternalLink className="w-3.5 h-3.5 -scale-x-100" />
+          {t("projects", "card.details")}
+          <ExternalLink className={cn("w-3.5 h-3.5", isRtl && "-scale-x-100")} />
         </span>
       </div>
     </motion.button>
   );
 
   return (
-    <section id="projects" aria-label="پروژه‌ها" className="max-w-6xl mx-auto px-4 sm:px-6">
+    <section id="projects" aria-label={t("projects", "aria.projects")} className="max-w-6xl mx-auto px-4 sm:px-6">
       {/* Search + Filters */}
       <div className="mb-8 space-y-4">
         <div className="relative max-w-xl mx-auto">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
+          <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
           <input
             ref={searchRef}
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="جستجو در پروژه‌ها، تکنولوژی‌ها و ریپوها..."
-            aria-label="جستجوی پروژه"
+            placeholder={t("projects", "controls.searchPlaceholder")}
+            aria-label={t("projects", "controls.search")}
             className="w-full rounded-2xl border border-border bg-card px-11 py-3.5 text-sm outline-none focus:border-brand/60 focus:ring-2 focus:ring-brand/20 transition-all min-h-[46px]"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              aria-label="پاک کردن جستجو"
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-brand"
+              aria-label={t("projects", "controls.clearSearch")}
+              className="absolute end-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-brand"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        <div className="flex flex-wrap justify-center gap-2" role="tablist" aria-label="فیلتر دسته‌بندی">
+        <div className="flex flex-wrap justify-center gap-2" role="tablist" aria-label={t("projects", "controls.filterAria")}>
           {FILTERS.map((f) => (
             <button
               key={f.id}
@@ -407,22 +423,22 @@ export function ProjectsExplorer({
               )}
             >
               <span aria-hidden>{f.icon} </span>
-              {f.label}
+              {filterLabel(f.id)}
             </button>
           ))}
         </div>
 
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <p className="text-center text-xs text-muted-foreground" aria-live="polite">
             {loading
-              ? "در حال جستجو..."
-              : `${displayList.length.toLocaleString("fa-IR")} پروژه یافت شد`}
+              ? t("projects", "controls.searching")
+              : t("projects", "controls.found", { n: num(displayList.length) })}
           </p>
           <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
           <button
             onClick={() => setSort((s) => (s === "views" ? "default" : "views"))}
             aria-pressed={sort === "views"}
-            title={sort === "views" ? "بازگشت به چیدمان پیش‌فرض" : "مرتب‌سازی بر اساس بیشترین بازدید"}
+            title={sort === "views" ? t("projects", "sort.toDefault") : t("projects", "sort.byViews")}
             className={cn(
               "inline-flex items-center gap-1.5 text-xs font-bold rounded-full border px-3.5 py-1.5 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[30px]",
               sort === "views"
@@ -435,7 +451,7 @@ export function ProjectsExplorer({
             ) : (
               <LayoutGrid className="w-3.5 h-3.5" />
             )}
-            {sort === "views" ? "پربازدیدترین" : "چیدمان پیش‌فرض"}
+            {sort === "views" ? t("projects", "sort.mostViewed") : t("projects", "sort.default")}
           </button>
           <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
           <button
@@ -444,13 +460,13 @@ export function ProjectsExplorer({
             className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 hover:bg-brand/20 hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 min-h-[30px]"
           >
             <Dices className={cn("w-3.5 h-3.5", rolling && "animate-spin")} />
-            {rolling ? "در حال چرخش..." : "پروژه تصادفی"}
+            {rolling ? t("projects", "controls.rolling") : t("projects", "controls.random")}
           </button>
           <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
           <button
             onClick={() => setFavOnly((v) => !v)}
             aria-pressed={favOnly}
-            title={favOnly ? "نمایش همه پروژه‌ها" : "فقط پروژه‌های نشان‌ستاره‌دار شما"}
+            title={favOnly ? t("projects", "favorites.showAll") : t("projects", "favorites.onlyStarred")}
             className={cn(
               "inline-flex items-center gap-1.5 text-xs font-bold rounded-full border px-3.5 py-1.5 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[30px]",
               favOnly
@@ -459,7 +475,7 @@ export function ProjectsExplorer({
             )}
           >
             <Star className={cn("w-3.5 h-3.5", favOnly && "fill-current")} aria-hidden />
-            علاقه‌مندی‌ها
+            {t("projects", "favorites.label")}
             {favSlugs.size > 0 && (
               <span
                 className={cn(
@@ -467,7 +483,7 @@ export function ProjectsExplorer({
                   favOnly ? "bg-primary-foreground/25" : "bg-brand/15"
                 )}
               >
-                {favSlugs.size.toLocaleString("fa-IR")}
+                {num(favSlugs.size)}
               </span>
             )}
           </button>
@@ -483,11 +499,11 @@ export function ProjectsExplorer({
         </div>
       ) : displayList.length === 0 ? (
         <EmptyState
-          title={favOnly ? "هنوز پروژه‌ای نشان نکرده‌اید" : "پروژه‌ای یافت نشد"}
+          title={favOnly ? t("projects", "empty.favs.title") : t("projects", "empty.search.title")}
           description={
             favOnly
-              ? "با زدن ستاره روی کارت پروژه‌ها، آن‌ها را برای مرور بعدی ذخیره کنید."
-              : "عبارت دیگری را جستجو کنید یا فیلتر دسته‌بندی را تغییر دهید."
+              ? t("projects", "empty.favs.desc")
+              : t("projects", "empty.search.desc")
           }
           onReset={
             favOnly
@@ -505,9 +521,9 @@ export function ProjectsExplorer({
               <div key={f.id}>
                 <h3 className="flex items-center gap-2 font-extrabold text-lg mb-4">
                   <span aria-hidden>{f.icon}</span>
-                  {f.label}
+                  {filterLabel(f.id)}
                   <span className="text-xs font-medium text-muted-foreground bg-secondary rounded-full px-2.5 py-1">
-                    {items.length.toLocaleString("fa-IR")}
+                    {num(items.length)}
                   </span>
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
@@ -540,15 +556,15 @@ export function ProjectsExplorer({
                   idPrefix="dlg"
                   className="h-32 sm:h-36 w-full"
                 />
-                <span className="absolute bottom-3 right-5 text-4xl card-emoji drop-shadow-xl" aria-hidden>
+                <span className="absolute bottom-3 start-5 text-4xl card-emoji drop-shadow-xl" aria-hidden>
                   {selected.icon}
                 </span>
               </div>
               <DialogHeader>
                 <div className="flex items-center gap-4 mb-1">
                   <div className="min-w-0 flex-grow">
-                    <DialogTitle className="text-lg sm:text-xl leading-8 text-right">
-                      {selected.title}
+                    <DialogTitle className="text-lg sm:text-xl leading-8 text-start">
+                      {pickEn(lang, selected.titleEn, selected.title)}
                     </DialogTitle>
                     <DialogDescription dir="ltr" className="text-left text-xs font-mono mt-1">
                       {selected.repo}
@@ -560,22 +576,26 @@ export function ProjectsExplorer({
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 <Badge variant="secondary" className="gap-1">
                   <span aria-hidden>{CATEGORY_LABELS[selected.category]?.icon}</span>
-                  {CATEGORY_LABELS[selected.category]?.label ?? selected.category}
+                  {CATEGORY_LABELS[selected.category]
+                    ? t("core", `cat.${selected.category}`)
+                    : selected.category}
                 </Badge>
                 {selected.featured && (
                   <Badge className="gap-1 bg-brand text-primary-foreground border-0">
-                    <Star className="w-3 h-3" /> پروژه منتخب
+                    <Star className="w-3 h-3" /> {t("projects", "detail.featuredBadge")}
                   </Badge>
                 )}
                 <Badge variant="outline" className="gap-1">
                   <Eye className="w-3 h-3" />
-                  {selected.views.toLocaleString("fa-IR")} بازدید
+                  {t("projects", "detail.views", { n: num(selected.views) })}
                 </Badge>
               </div>
 
-              <p className="text-sm leading-8 text-foreground/90 mb-5">{selected.description}</p>
+              <p className="text-sm leading-8 text-foreground/90 mb-5">
+                {pickEn(lang, selected.descriptionEn, selected.description)}
+              </p>
 
-              <h4 className="text-sm font-extrabold mb-2.5">پشته فناوری</h4>
+              <h4 className="text-sm font-extrabold mb-2.5">{t("projects", "detail.stack")}</h4>
               <div className="flex flex-wrap gap-2 mb-5">
                 {selected.tags.map((t) => (
                   <span
@@ -591,13 +611,13 @@ export function ProjectsExplorer({
               {/* Related projects (same category) */}
               {relatedProjects.length > 0 && (
                 <div className="mb-5">
-                  <h4 className="text-sm font-extrabold mb-2.5">پروژه‌های مرتبط</h4>
+                  <h4 className="text-sm font-extrabold mb-2.5">{t("projects", "detail.related")}</h4>
                   <div className="grid gap-2">
                     {relatedProjects.map((r) => (
                       <button
                         key={r.slug}
                         onClick={() => openProject(r)}
-                        className="related-item text-right rounded-2xl border border-border bg-card px-3.5 py-2.5 flex items-center gap-3 hover:border-brand/40 transition-all min-h-[48px]"
+                        className="related-item text-start rounded-2xl border border-border bg-card px-3.5 py-2.5 flex items-center gap-3 hover:border-brand/40 transition-all min-h-[48px]"
                       >
                         <span
                           className="w-9 h-9 grid place-items-center rounded-xl bg-secondary text-xl shrink-0"
@@ -605,10 +625,12 @@ export function ProjectsExplorer({
                         >
                           {r.icon}
                         </span>
-                        <span className="flex-grow min-w-0 text-xs font-bold truncate">{r.title}</span>
+                        <span className="flex-grow min-w-0 text-xs font-bold truncate">
+                          {pickEn(lang, r.titleEn, r.title)}
+                        </span>
                         <span className="shrink-0 text-[10px] text-muted-foreground inline-flex items-center gap-1">
                           <Eye className="w-3 h-3" aria-hidden />
-                          {r.views.toLocaleString("fa-IR")}
+                          {num(r.views)}
                         </span>
                       </button>
                     ))}
@@ -630,17 +652,21 @@ export function ProjectsExplorer({
                       clipRule="evenodd"
                     />
                   </svg>
-                  مشاهده در گیت‌هاب
+                  {t("projects", "detail.github")}
                 </a>
                 <button
                   onClick={() => toggleFav(selected.slug)}
                   aria-pressed={favSlugs.has(selected.slug)}
                   aria-label={
                     favSlugs.has(selected.slug)
-                      ? "حذف این پروژه از علاقه‌مندی‌ها"
-                      : "افزودن این پروژه به علاقه‌مندی‌ها"
+                      ? t("projects", "favorites.removeThis")
+                      : t("projects", "favorites.addThis")
                   }
-                  title={favSlugs.has(selected.slug) ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
+                  title={
+                    favSlugs.has(selected.slug)
+                      ? t("projects", "favorites.removeShort")
+                      : t("projects", "favorites.addShort")
+                  }
                   className={cn(
                     "w-[46px] rounded-2xl border grid place-items-center active:scale-95 transition-all",
                     favSlugs.has(selected.slug)
@@ -655,8 +681,8 @@ export function ProjectsExplorer({
                 </button>
                 <button
                   onClick={() => shareProject(selected)}
-                  aria-label="هم‌رسانی لینک پروژه"
-                  title="هم‌رسانی لینک"
+                  aria-label={t("projects", "detail.shareAria")}
+                  title={t("projects", "detail.shareTitle")}
                   className="w-[46px] rounded-2xl border border-border grid place-items-center text-muted-foreground hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 active:scale-95 transition-all"
                 >
                   {copied ? <Check className="w-5 h-5 text-brand" /> : <Share2 className="w-5 h-5" />}
@@ -671,8 +697,8 @@ export function ProjectsExplorer({
                 </code>
                 <button
                   onClick={() => copyCloneCommand(selected.repo)}
-                  aria-label="کپی دستور کلون"
-                  title="کپی دستور کلون"
+                  aria-label={t("projects", "detail.copyClone")}
+                  title={t("projects", "detail.copyClone")}
                   className="shrink-0 w-7 h-7 grid place-items-center rounded-lg text-muted-foreground hover:text-brand hover:bg-brand/10 transition-all"
                 >
                   {cloneCopied ? (
@@ -685,7 +711,7 @@ export function ProjectsExplorer({
 
               <p className="mt-2.5 text-[11px] text-muted-foreground flex items-center gap-1 justify-center">
                 <Link2 className="w-3 h-3" />
-                لینک این پروژه قابل هم‌رسانی و نشانی‌پذیر است
+                {t("projects", "detail.deeplinkNote")}
               </p>
             </>
           )}

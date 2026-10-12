@@ -13,8 +13,10 @@ async function main() {
       where: { slug: p.slug },
       update: {
         title: p.title,
+        titleEn: p.titleEn ?? null,
         repo: p.repo,
         description: p.description,
+        descriptionEn: p.descriptionEn ?? null,
         category: p.category,
         tags: JSON.stringify(p.tags),
         icon: p.icon,
@@ -24,8 +26,10 @@ async function main() {
       create: {
         slug: p.slug,
         title: p.title,
+        titleEn: p.titleEn ?? null,
         repo: p.repo,
         description: p.description,
+        descriptionEn: p.descriptionEn ?? null,
         category: p.category,
         tags: JSON.stringify(p.tags),
         icon: p.icon,
@@ -42,7 +46,9 @@ async function main() {
       where: { slug: a.slug },
       update: {
         title: a.title,
+        titleEn: a.titleEn ?? null,
         excerpt: a.excerpt,
+        excerptEn: a.excerptEn ?? null,
         content: a.content,
         category: a.category,
         icon: a.icon,
@@ -51,7 +57,9 @@ async function main() {
       create: {
         slug: a.slug,
         title: a.title,
+        titleEn: a.titleEn ?? null,
         excerpt: a.excerpt,
+        excerptEn: a.excerptEn ?? null,
         content: a.content,
         category: a.category,
         icon: a.icon,

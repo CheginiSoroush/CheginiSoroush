@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 const R = 20;
 const CIRC = 2 * Math.PI * R;
@@ -10,6 +11,7 @@ const CIRC = 2 * Math.PI * R;
 export function BackToTop() {
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
+  const { t } = useT();
 
   useEffect(() => {
     let raf = 0;
@@ -40,7 +42,7 @@ export function BackToTop() {
     <button
       type="button"
       onClick={scrollTop}
-      aria-label="بازگشت به بالای صفحه"
+      aria-label={t("misc", "btt.label")}
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       className={cn("back-to-top", visible && "back-to-top-visible")}

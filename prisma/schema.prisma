@@ -8,25 +8,29 @@ datasource db {
 }
 
 model Project {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
-  repo        String
-  description String
-  category    String
-  tags        String   @default("[]")
-  icon        String   @default("📦")
-  featured    Boolean  @default(false)
-  views       Int      @default(0)
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  titleEn       String?
+  repo          String
+  description   String
+  descriptionEn String?
+  category      String
+  tags          String   @default("[]")
+  icon          String   @default("📦")
+  featured      Boolean  @default(false)
+  views         Int      @default(0)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
 }
 
 model Article {
   id          String   @id @default(cuid())
   slug        String   @unique
   title       String
+  titleEn     String?
   excerpt     String
+  excerptEn   String?
   content     String
   category    String
   icon        String   @default("📝")

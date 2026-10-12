@@ -27,6 +27,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import { pickEn, useT } from "@/lib/i18n";
 import type { Article, Project } from "@/lib/types";
 
 // Same Persian normalization as the API (ي→ی ك→ک + ZWNJ → space)
@@ -41,6 +42,7 @@ export function CommandPalette({
   articles: Article[];
 }) {
   const [open, setOpen] = useState(false);
+  const { t, num, lang, dir } = useT();
 
   // Global ⌘K / Ctrl+K toggle
   useEffect(() => {
@@ -97,12 +99,12 @@ export function CommandPalette({
 
   const viewItems = useMemo(
     () => [
-      { icon: Home, label: "خانه", hint: "۱", hash: "#home" },
-      { icon: FolderKanban, label: "پروژه‌ها", hint: "۲", hash: "#projects" },
-      { icon: PenLine, label: "نوشته‌ها", hint: "۳", hash: "#writing" },
-      { icon: Mail, label: "تماس با من", hint: "۴", hash: "#contact" },
+      { icon: Home, label: t("misc", "palette.nav.home"), hint: num(1), hash: "#home" },
+      { icon: FolderKanban, label: t("misc", "palette.nav.projects"), hint: num(2), hash: "#projects" },
+      { icon: PenLine, label: t("misc", "palette.nav.articles"), hint: num(3), hash: "#writing" },
+      { icon: Mail, label: t("misc", "palette.nav.contact"), hint: num(4), hash: "#contact" },
     ],
-    []
+    [t, num]
   );
 
   const filteredViews = viewItems.filter((v) => matches([v.label]));
@@ -120,11 +122,11 @@ export function CommandPalette({
 
   const actionItems = useMemo(
     () => [
-      { icon: Moon, label: "تغییر تم روشن/تاریک", hint: "T", run: () => runAction("toggle-site-theme") },
-      { icon: Dices, label: "پروژه تصادفی", hint: "", run: randomProject },
+      { icon: Moon, label: t("misc", "palette.quick.theme"), hint: t("misc", "palette.quick.theme.hint"), run: () => runAction("toggle-site-theme") },
+      { icon: Dices, label: t("misc", "palette.quick.random"), hint: "", run: randomProject },
       {
         icon: Star,
-        label: "نمایش علاقه‌مندی‌های من",
+        label: t("misc", "palette.quick.favorites"),
         hint: "",
         run: () => {
           go("#projects");
@@ -134,7 +136,7 @@ export function CommandPalette({
       },
       {
         icon: History,
-        label: "تاریخچه مطالعه",
+        label: t("misc", "palette.quick.history"),
         hint: "",
         run: () => {
           go("#writing");
@@ -142,10 +144,10 @@ export function CommandPalette({
           window.setTimeout(() => window.dispatchEvent(new CustomEvent("imsoroush-open-history")), 350);
         },
       },
-      { icon: Keyboard, label: "راهنمای میان‌برها", hint: "؟", run: () => runAction("open-shortcuts") },
-      { icon: LockKeyhole, label: "پنل مدیریت", hint: "", run: () => runAction("open-admin-panel") },
+      { icon: Keyboard, label: t("misc", "palette.quick.shortcuts"), hint: t("misc", "palette.quick.shortcuts.hint"), run: () => runAction("open-shortcuts") },
+      { icon: LockKeyhole, label: t("misc", "palette.quick.admin"), hint: "", run: () => runAction("open-admin-panel") },
     ],
-    [randomProject, runAction, go]
+    [t, randomProject, runAction, go]
   );
 
   const filteredActions = actionItems.filter((a) => matches([a.label]));
@@ -155,21 +157,21 @@ export function CommandPalette({
     <CommandDialog
       open={open}
       onOpenChange={setOpen}
-      title="پالت فرمان"
-      description="جستجو در پروژه‌ها، نوشته‌ها و اقدامات سریع"
+      title={t("misc", "palette.title")}
+      description={t("misc", "palette.description")}
       shouldFilter={false}
       className="command-palette max-w-xl rounded-3xl dialog-accent border-0"
     >
       <CommandInput
         value={query}
         onValueChange={setQuery}
-        placeholder="جستجو کنید: پروژه، نوشته، اقدام..."
+        placeholder={t("misc", "palette.placeholder")}
       />
-      <CommandList dir="rtl">
-        <CommandEmpty>نتیجه‌ای یافت نشد — عبارت دیگری امتحان کنید.</CommandEmpty>
+      <CommandList dir={dir}>
+        <CommandEmpty>{t("misc", "palette.noResults")}</CommandEmpty>
 
         {filteredViews.length > 0 && (
-          <CommandGroup heading="ناوبری">
+          <CommandGroup heading={t("misc", "palette.group.nav")}>
             {filteredViews.map((v) => (
               <CommandItem key={v.hash} value={v.hash} onSelect={() => go(v.hash)}>
                 <v.icon className="text-brand" />
@@ -183,7 +185,7 @@ export function CommandPalette({
         {showActions && filteredActions.length > 0 && (
           <>
             <CommandSeparator />
-            <CommandGroup heading="اقدامات سریع">
+            <CommandGroup heading={t("misc", "palette.group.actions")}>
               {filteredActions.map((a) => (
                 <CommandItem key={a.label} value={a.label} onSelect={a.run}>
                   <a.icon className="text-brand" />
@@ -198,7 +200,7 @@ export function CommandPalette({
         {filteredProjects.length > 0 && (
           <>
             <CommandSeparator />
-            <CommandGroup heading="پروژه‌ها">
+            <CommandGroup heading={t("misc", "palette.group.projects")}>
               {filteredProjects.map((p) => (
                 <CommandItem
                   key={p.slug}
@@ -208,7 +210,7 @@ export function CommandPalette({
                   <span className="text-lg leading-none" aria-hidden>
                     {p.icon}
                   </span>
-                  <span className="truncate">{p.title}</span>
+                  <span className="truncate">{pickEn(lang, p.titleEn, p.title)}</span>
                   <CommandShortcut dir="ltr" className="font-mono text-[10px] truncate max-w-[38%]">
                     {p.repo}
                   </CommandShortcut>
@@ -221,7 +223,7 @@ export function CommandPalette({
         {filteredArticles.length > 0 && (
           <>
             <CommandSeparator />
-            <CommandGroup heading="نوشته‌ها">
+            <CommandGroup heading={t("misc", "palette.group.articles")}>
               {filteredArticles.map((a) => (
                 <CommandItem
                   key={a.slug}
@@ -231,11 +233,11 @@ export function CommandPalette({
                   <span className="text-lg leading-none" aria-hidden>
                     {a.icon}
                   </span>
-                  <span className="truncate">{a.title}</span>
+                  <span className="truncate">{pickEn(lang, a.titleEn, a.title)}</span>
                   <CommandShortcut>
                     <span className="inline-flex items-center gap-1 text-[10px]">
                       <FileText className="w-3 h-3" />
-                      نوشته
+                      {t("misc", "palette.badge.article")}
                     </span>
                   </CommandShortcut>
                 </CommandItem>
@@ -250,12 +252,14 @@ export function CommandPalette({
       <div className="command-palette-foot border-t border-border px-4 py-2.5 flex items-center justify-between text-[10px] text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <Sparkles className="w-3 h-3 text-brand" />
-          {projects.length.toLocaleString("fa-IR")} پروژه و{" "}
-          {articles.length.toLocaleString("fa-IR")} نوشته ایندکس شده
+          {t("misc", "palette.indexed", {
+            n: num(projects.length),
+            m: num(articles.length),
+          })}
         </span>
         <span className="inline-flex items-center gap-1" dir="ltr">
           <CornerDownLeft className="w-3 h-3" />
-          انتخاب
+          {t("misc", "palette.hint")}
         </span>
       </div>
     </CommandDialog>

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, MessageCircle, Send, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useT, relativeTime } from "@/lib/i18n";
 import type { Comment } from "@/lib/types";
 
 const NAME_KEY = "imsoroush-comment-name";
@@ -32,28 +33,6 @@ function initialOf(name: string) {
   return clean.slice(0, 2);
 }
 
-function relativeTime(iso: string) {
-  try {
-    const diff = Date.now() - new Date(iso).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "همین حالا";
-    if (mins < 60) return `${mins.toLocaleString("fa-IR")} دقیقه پیش`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours.toLocaleString("fa-IR")} ساعت پیش`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days.toLocaleString("fa-IR")} روز پیش`;
-    const weeks = Math.floor(days / 7);
-    if (weeks < 5) return `${weeks.toLocaleString("fa-IR")} هفته پیش`;
-    return new Date(iso).toLocaleDateString("fa-IR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  } catch {
-    return "";
-  }
-}
-
 function readStoredName(): string {
   try {
     return localStorage.getItem(NAME_KEY) ?? "";
@@ -70,6 +49,7 @@ export function ArticleComments({
   onCountChange?: (slug: string, total: number) => void;
 }) {
   const { toast } = useToast();
+  const { t, num, lang, isRtl } = useT();
   const [comments, setComments] = useState<Comment[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -128,11 +108,15 @@ export function ArticleComments({
       setPage(data.page);
       setTotalPages(data.totalPages);
     } catch {
-      toast({ title: "بارگذاری نشد", description: "دیدگاه‌های بیشتر لود نشدند.", variant: "destructive" });
+      toast({
+        title: t("articles", "comments.toast.loadMoreFailedTitle"),
+        description: t("articles", "comments.toast.loadMoreFailedDesc"),
+        variant: "destructive",
+      });
     } finally {
       setLoadingMore(false);
     }
-  }, [loadingMore, page, totalPages, slug, toast]);
+  }, [loadingMore, page, totalPages, slug, toast, t]);
 
   // Reset per-article state when the reader opens a different article
   useEffect(() => {
@@ -147,11 +131,19 @@ export function ArticleComments({
     const trimmedName = name.trim();
     const trimmedBody = body.trim();
     if (trimmedName.length < 2) {
-      toast({ title: "نام کوتاه است", description: "نام باید حداقل ۲ حرف باشد.", variant: "destructive" });
+      toast({
+        title: t("articles", "comments.toast.nameShortTitle"),
+        description: t("articles", "comments.toast.nameShortDesc"),
+        variant: "destructive",
+      });
       return;
     }
     if (trimmedBody.length < 3) {
-      toast({ title: "متن کوتاه است", description: "دیدگاه باید حداقل ۳ حرف باشد.", variant: "destructive" });
+      toast({
+        title: t("articles", "comments.toast.bodyShortTitle"),
+        description: t("articles", "comments.toast.bodyShortDesc"),
+        variant: "destructive",
+      });
       return;
     }
     setSubmitting(true);
@@ -163,7 +155,11 @@ export function ArticleComments({
       });
       const data = (await res.json()) as { comment?: Comment; total?: number; error?: string };
       if (!res.ok || !data.comment) {
-        toast({ title: "ارسال نشد", description: data.error ?? "خطایی رخ داد.", variant: "destructive" });
+        toast({
+          title: t("articles", "comments.toast.postFailedTitle"),
+          description: data.error ?? t("articles", "comments.toast.postFailedDesc"),
+          variant: "destructive",
+        });
         return;
       }
       setComments((list) => [data.comment as Comment, ...list]);
@@ -180,21 +176,25 @@ export function ArticleComments({
       } catch {
         // storage unavailable
       }
-      toast({ title: "دیدگاه ثبت شد 🎉", description: "ممنون از همراهی‌ات!" });
+      toast({ title: t("articles", "comments.toast.postedTitle"), description: t("articles", "comments.toast.postedDesc") });
     } catch {
-      toast({ title: "خطای شبکه", description: "اتصال برقرار نشد.", variant: "destructive" });
+      toast({
+        title: t("articles", "comments.toast.networkTitle"),
+        description: t("articles", "comments.toast.networkDesc"),
+        variant: "destructive",
+      });
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="mt-8 pt-6 border-t border-border" aria-label="دیدگاه‌ها">
+    <div className="mt-8 pt-6 border-t border-border" aria-label={t("articles", "comments.aria")}>
       <h4 className="flex items-center gap-2 text-sm font-extrabold mb-4">
         <MessageCircle className="w-4 h-4 text-brand" />
-        دیدگاه‌ها
+        {t("articles", "comments.title")}
         <span className="text-[11px] font-bold text-brand bg-brand/10 border border-brand/30 rounded-full px-2 py-0.5 tabular-nums">
-          {total.toLocaleString("fa-IR")}
+          {num(total)}
         </span>
       </h4>
 
@@ -205,8 +205,8 @@ export function ArticleComments({
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="نام شما"
-            aria-label="نام شما"
+            placeholder={t("articles", "comments.namePlaceholder")}
+            aria-label={t("articles", "comments.nameAria")}
             maxLength={40}
             className="flex-1 rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none focus:border-brand/60 focus:ring-2 focus:ring-brand/20 transition-all min-h-[42px]"
           />
@@ -217,29 +217,29 @@ export function ArticleComments({
               name.trim().length >= 2 ? avatarClass(name.trim()) : "from-muted-foreground/30 to-muted-foreground/20 text-muted-foreground"
             )}
           >
-            {name.trim().length >= 2 ? initialOf(name.trim()) : "؟"}
+            {name.trim().length >= 2 ? initialOf(name.trim()) : t("articles", "comments.avatarFallback")}
           </span>
         </div>
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="نظرت راجع به این نوشته چیه؟"
-          aria-label="متن دیدگاه"
+          placeholder={t("articles", "comments.bodyPlaceholder")}
+          aria-label={t("articles", "comments.bodyAria")}
           rows={3}
           maxLength={1000}
           className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm leading-7 outline-none resize-none focus:border-brand/60 focus:ring-2 focus:ring-brand/20 transition-all"
         />
         <div className="flex items-center justify-between gap-2">
           <span className="text-[10px] text-muted-foreground tabular-nums" dir="ltr">
-            {body.length}/۱۰۰۰
+            {num(body.length)}/{num(1000, { useGrouping: false })}
           </span>
           <button
             type="submit"
             disabled={submitting || name.trim().length < 2 || body.trim().length < 3}
             className="btn-shine inline-flex items-center gap-2 rounded-xl bg-brand text-primary-foreground font-bold text-xs px-5 py-2.5 hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none min-h-[38px]"
           >
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 -scale-x-100" />}
-            ثبت دیدگاه
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className={cn("w-4 h-4", isRtl && "-scale-x-100")} />}
+            {t("articles", "comments.submit")}
           </button>
         </div>
       </form>
@@ -260,18 +260,18 @@ export function ArticleComments({
         </div>
       ) : failed ? (
         <div className="mt-4 text-center py-6 text-muted-foreground text-sm">
-          دیدگاه‌ها بارگذاری نشد.
+          {t("articles", "comments.loadFailed")}
           <button
             onClick={() => load(slug)}
-            className="mr-2 text-brand font-bold hover:underline"
+            className="ms-2 text-brand font-bold hover:underline"
           >
-            تلاش دوباره
+            {t("articles", "comments.retry")}
           </button>
         </div>
       ) : comments.length === 0 ? (
         <div className="mt-5 text-center py-7 rounded-2xl border border-dashed border-border text-muted-foreground">
           <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-40" />
-          <p className="text-sm">اولین دیدگاه را شما بنویسید ✨</p>
+          <p className="text-sm">{t("articles", "comments.empty")}</p>
         </div>
       ) : (
         <>
@@ -301,7 +301,7 @@ export function ArticleComments({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-bold text-sm">{c.name}</span>
-                      <span className="text-[10px] text-muted-foreground">{relativeTime(c.createdAt)}</span>
+                      <span className="text-[10px] text-muted-foreground">{relativeTime(c.createdAt, lang)}</span>
                     </div>
                     <p className="text-sm leading-7 text-foreground/90 whitespace-pre-wrap break-words">{c.body}</p>
                   </div>
@@ -320,9 +320,9 @@ export function ArticleComments({
               ) : (
                 <ChevronDown className="w-4 h-4" />
               )}
-              نمایش دیدگاه‌های بیشتر
+              {t("articles", "comments.more")}
               <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
-                ({comments.length.toLocaleString("fa-IR")} از {total.toLocaleString("fa-IR")})
+                {t("articles", "comments.moreCount", { shown: num(comments.length), total: num(total) })}
               </span>
             </button>
           )}

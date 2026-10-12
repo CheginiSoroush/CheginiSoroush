@@ -42,12 +42,12 @@ export async function GET(request: NextRequest) {
       db.project.findMany({
         orderBy: { views: "desc" },
         take: 5,
-        select: { slug: true, title: true, icon: true, views: true, category: true },
+        select: { slug: true, title: true, titleEn: true, icon: true, views: true, category: true },
       }),
       db.article.findMany({
         orderBy: { views: "desc" },
         take: 4,
-        select: { slug: true, title: true, icon: true, views: true, likes: true },
+        select: { slug: true, title: true, titleEn: true, icon: true, views: true, likes: true },
       }),
     ]);
 
