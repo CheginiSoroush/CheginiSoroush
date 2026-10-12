@@ -14,6 +14,8 @@ import { SiteHeader } from "./site-header";
 import { ScrollProgress } from "./scroll-progress";
 import { AdminMessagesDialog } from "./admin-messages-dialog";
 import { CommandPalette } from "./command-palette";
+import { NewsletterForm } from "./newsletter-form";
+import { BackToTop } from "./back-to-top";
 import { Hero } from "./hero";
 import { HomeContent } from "./home-content";
 import { ProjectsExplorer } from "./projects-explorer";
@@ -312,8 +314,15 @@ export function SiteShell({
 
       {/* Sticky footer */}
       <footer className="footer-gradient mt-auto border-t border-border bg-card/60 backdrop-blur relative z-10 pb-[env(safe-area-inset-bottom)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+          {/* Newsletter strip */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl">
+              <NewsletterForm />
+            </div>
+          </div>
+
+          <div className="border-t border-border/70 pt-6 flex flex-col sm:flex-row items-center justify-between gap-5">
             <nav aria-label="شبکه‌های اجتماعی" className="flex items-center gap-3">
               <a
                 href="https://github.com/CheginiSoroush"
@@ -362,6 +371,8 @@ export function SiteShell({
           </div>
         </div>
       </footer>
+
+      <BackToTop />
 
       <AdminMessagesDialog open={adminOpen} onOpenChange={setAdminOpen} />
       <CommandPalette projects={projects} articles={articles} />

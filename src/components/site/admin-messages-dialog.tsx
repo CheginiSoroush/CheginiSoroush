@@ -22,6 +22,7 @@ import {
   FolderGit2,
   FileText,
   RefreshCw,
+  Users,
 } from "lucide-react";
 import {
   Dialog,
@@ -80,6 +81,7 @@ type StatsPayload = {
     messagesLastWeek: number;
     likes: number;
     comments: number;
+    subscribers: number;
   };
   topProjects: TopProject[];
   topArticles: TopArticle[];
@@ -162,6 +164,7 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
     { icon: CalendarClock, label: "پیام این هفته", value: t.messagesLastWeek },
     { icon: FolderGit2, label: "پروژه‌ها", value: t.projects },
     { icon: FileText, label: "نوشته‌ها", value: t.articles },
+    { icon: Users, label: "اعضای خبرنامه", value: t.subscribers },
   ];
 
   const maxProjectViews = Math.max(1, ...stats.topProjects.map((p) => p.views));

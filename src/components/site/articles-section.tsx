@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Eye, ArrowLeft, Github, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid } from "lucide-react";
+import { Clock, Eye, ArrowLeft, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -71,6 +71,16 @@ const ART_FILTERS = [
 const norm = (s: string) =>
   s.replace(/ي/g, "ی").replace(/ك/g, "ک").replace(/‌/g, " ").trim().toLowerCase();
 
+// Deterministic anchor id for a TOC heading (same on both TOC list and rendered h3)
+const headingId = (text: string) => `sec-${norm(text).replace(/\s+/g, "-").slice(0, 60)}`;
+
+// Flatten ReactMarkdown heading children into plain text
+const childrenText = (children: React.ReactNode): string => {
+  if (typeof children === "string") return children;
+  if (Array.isArray(children)) return children.map((c) => (typeof c === "string" ? c : "")).join("");
+  return String(children ?? "");
+};
+
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleDateString("fa-IR", {
@@ -109,6 +119,7 @@ export function ArticlesSection({
   const scrollRef = useRef<HTMLDivElement>(null);
   const postedRef = useRef<Set<string>>(new Set());
   const [query, setQuery] = useState("");
+  const [tocOpen, setTocOpen] = useState(true);
   const validCat =
     initialCategory && ART_FILTERS.some((f) => f.id === initialCategory) ? initialCategory : "all";
   const [filter, setFilter] = useState(validCat);
@@ -187,7 +198,7 @@ export function ArticlesSection({
 
   // Deep-link: derive reader state from hash during render (prop-change adjustment)
   // Sentinel so a detailSlug present at mount still triggers the first adjustment
-  const [prevDetail, setPrevDetail] = useState<string | symbol>(DETAIL_INIT);
+  const [prevDetail, setPrevDetail] = useState<string | undefined | symbol>(DETAIL_INIT);
   if (prevDetail !== detailSlug) {
     setPrevDetail(detailSlug);
     if (!detailSlug) {
@@ -222,6 +233,7 @@ export function ArticlesSection({
   if ((selected?.slug ?? null) !== prevOpenSlug) {
     setPrevOpenSlug(selected?.slug ?? null);
     setProgress(0);
+    setTocOpen(true);
   }
 
   // Reset scroll position imperatively
@@ -255,6 +267,33 @@ export function ArticlesSection({
       toast({ title: "کپی نشد", description: url, variant: "destructive" });
     }
   };
+
+  // Table of contents: level-3 headings act as sections (the leading `##` is the opener)
+  const tocItems = useMemo(() => {
+    if (!selected) return [];
+    const out: { id: string; title: string }[] = [];
+    const re = /^###\s+(.+)$/gm;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(selected.content)) !== null) {
+      const title = m[1].trim();
+      out.push({ id: headingId(title), title });
+    }
+    return out;
+  }, [selected]);
+
+  const jumpToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // Deterministic h3 anchors — same id math as tocItems above
+  const markdownComponents = useMemo(
+    () => ({
+      h3: ({ children }: { children?: React.ReactNode }) => (
+        <h3 id={headingId(childrenText(children))} className="scroll-mt-8">{children}</h3>
+      ),
+    }),
+    []
+  );
 
   // Client-side search + filter + sort (list is small; no API round-trip needed)
   const visible = useMemo(() => {
@@ -526,21 +565,63 @@ export function ArticlesSection({
                 </div>
               </div>
 
-              <div className="prose-fa max-w-none">
-                <ReactMarkdown>{selected.content}</ReactMarkdown>
-              </div>
-
-              {selected.repo && (
-                <a
-                  href={`https://github.com/${selected.repo}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 inline-flex items-center justify-center gap-2 w-full rounded-2xl border border-brand/40 bg-brand/10 text-brand font-bold px-6 py-3 hover:bg-brand hover:text-primary-foreground transition-all min-h-[46px]"
-                >
-                  <Github className="w-5 h-5" />
-                  مشاهده پروژه تعاملی در گیت‌هاب
-                </a>
+              {/* Table of contents */}
+              {tocItems.length > 1 && (
+                <nav aria-label="فهرست مطالب" className="toc-box mb-5">
+                  <button
+                    type="button"
+                    onClick={() => setTocOpen((v) => !v)}
+                    aria-expanded={tocOpen}
+                    className="w-full flex items-center gap-2 font-extrabold text-sm"
+                  >
+                    <ListTree className="w-4 h-4 text-brand" aria-hidden />
+                    فهرست مطالب
+                    <span className="text-[10px] font-bold text-brand bg-brand/10 border border-brand/25 rounded-full px-2 py-0.5">
+                      {tocItems.length.toLocaleString("fa-IR")} بخش
+                    </span>
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 mr-auto text-muted-foreground transition-transform duration-300",
+                        tocOpen && "rotate-180"
+                      )}
+                      aria-hidden
+                    />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {tocOpen && (
+                      <motion.ol
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: "easeOut" }}
+                        className="toc-list overflow-hidden list-none space-y-0.5 mt-2"
+                      >
+                        {tocItems.map((item, i) => (
+                          <li key={item.id}>
+                            <button
+                              type="button"
+                              onClick={() => jumpToSection(item.id)}
+                              className="toc-link w-full text-right flex items-baseline gap-2.5 rounded-xl px-2.5 py-2 text-xs text-muted-foreground hover:text-brand hover:bg-brand/5 transition-all min-h-[34px]"
+                            >
+                              <span
+                                className="shrink-0 w-5 h-5 grid place-items-center rounded-lg border border-brand/25 bg-brand/10 text-[9px] font-black text-brand"
+                                aria-hidden
+                              >
+                                {(i + 1).toLocaleString("fa-IR")}
+                              </span>
+                              <span className="leading-6">{item.title}</span>
+                            </button>
+                          </li>
+                        ))}
+                      </motion.ol>
+                    )}
+                  </AnimatePresence>
+                </nav>
               )}
+
+              <div className="prose-fa max-w-none">
+                <ReactMarkdown components={markdownComponents}>{selected.content}</ReactMarkdown>
+              </div>
 
               <ArticleComments slug={selected.slug} onCountChange={handleCommentCount} />
             </>

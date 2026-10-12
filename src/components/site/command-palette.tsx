@@ -14,6 +14,7 @@ import {
   FileText,
   Sparkles,
   CornerDownLeft,
+  Star,
 } from "lucide-react";
 import {
   CommandDialog,
@@ -120,10 +121,20 @@ export function CommandPalette({
     () => [
       { icon: Moon, label: "تغییر تم روشن/تاریک", hint: "T", run: () => runAction("toggle-site-theme") },
       { icon: Dices, label: "پروژه تصادفی", hint: "", run: randomProject },
+      {
+        icon: Star,
+        label: "نمایش علاقه‌مندی‌های من",
+        hint: "",
+        run: () => {
+          go("#projects");
+          // let the projects view mount, then switch it to favorites mode
+          window.setTimeout(() => window.dispatchEvent(new CustomEvent("toggle-projects-favorites")), 350);
+        },
+      },
       { icon: Keyboard, label: "راهنمای میان‌برها", hint: "؟", run: () => runAction("open-shortcuts") },
       { icon: LockKeyhole, label: "پنل مدیریت", hint: "", run: () => runAction("open-admin-panel") },
     ],
-    [randomProject, runAction]
+    [randomProject, runAction, go]
   );
 
   const filteredActions = actionItems.filter((a) => matches([a.label]));

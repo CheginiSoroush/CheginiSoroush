@@ -15,7 +15,7 @@ export default async function Page() {
     ]);
 
     projects = rawProjects.map((p) => ({ ...p, tags: JSON.parse(p.tags) as string[] }));
-    articles = rawArticles;
+    articles = rawArticles.map((a) => ({ ...a, publishedAt: a.publishedAt.toISOString() }));
   } catch (error) {
     console.error("Failed to load initial data:", error);
   }

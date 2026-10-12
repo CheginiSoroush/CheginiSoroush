@@ -931,3 +931,187 @@ body {
     animation: none;
   }
 }
+
+/* ---------- Newsletter strip (footer) ---------- */
+.newsletter-card {
+  position: relative;
+  border-radius: 1.5rem;
+  border: 1px solid var(--border);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--card) 88%, transparent),
+    color-mix(in srgb, var(--secondary) 50%, transparent)
+  );
+  padding: 1rem 1.1rem;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.newsletter-card::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -30%;
+  top: -70%;
+  width: 60%;
+  height: 160%;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--brand) 14%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+.newsletter-card:hover {
+  border-color: color-mix(in srgb, var(--brand) 40%, transparent);
+  box-shadow: 0 14px 34px -18px var(--brand-glow);
+}
+.newsletter-badge {
+  animation: badge-glow 3.2s ease-in-out infinite;
+}
+@keyframes badge-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--brand-glow);
+  }
+  50% {
+    box-shadow: 0 0 18px 2px var(--brand-glow);
+  }
+}
+.newsletter-input:focus {
+  border-color: color-mix(in srgb, var(--brand) 60%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+.newsletter-done {
+  animation: fade-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Favorite star (projects) ---------- */
+.fav-star {
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.fav-star:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 16px -4px var(--brand-glow);
+}
+.fav-star:active {
+  transform: scale(0.9);
+}
+.fav-star-on {
+  animation: fav-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 14px -3px var(--brand-glow);
+}
+@keyframes fav-pop {
+  0% {
+    transform: scale(0.55) rotate(-25deg);
+  }
+  60% {
+    transform: scale(1.28) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* ---------- Back to top (progress ring) ---------- */
+.back-to-top {
+  position: fixed;
+  left: 1.5rem;
+  z-index: 60;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  opacity: 0;
+  transform: translateY(18px) scale(0.85);
+  pointer-events: none;
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.4);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.back-to-top-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.back-to-top:hover {
+  color: var(--brand);
+  border-color: color-mix(in srgb, var(--brand) 55%, transparent);
+  box-shadow: 0 0 26px -6px var(--brand-glow);
+}
+.back-to-top-ring {
+  position: absolute;
+  inset: 3px;
+  transform: rotate(-90deg);
+}
+.back-to-top-ring circle {
+  fill: none;
+  stroke-width: 2.5;
+}
+.ring-track {
+  stroke: color-mix(in srgb, var(--border) 95%, transparent);
+}
+.ring-fill {
+  stroke: var(--brand);
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px var(--brand-glow));
+  transition: stroke-dashoffset 0.12s linear;
+}
+
+/* ---------- Article table of contents ---------- */
+.toc-box {
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 22%, var(--border));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--brand) 7%, var(--card)),
+    color-mix(in srgb, var(--secondary) 45%, transparent)
+  );
+  padding: 0.85rem 1rem;
+}
+.toc-link:hover {
+  transform: translateX(-3px);
+}
+.toc-link {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .newsletter-badge,
+  .fav-star-on,
+  .newsletter-done {
+    animation: none;
+  }
+  .fav-star,
+  .back-to-top,
+  .back-to-top .ring-fill,
+  .toc-link {
+    transition: none;
+  }
+}
+
+/* r10 css bump */

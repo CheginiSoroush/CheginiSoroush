@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ExternalLink, X, Eye, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy } from "lucide-react";
 import {
@@ -21,6 +21,39 @@ import { CATEGORY_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const DETAIL_INIT = Symbol("detail-init");
+const FAV_STORAGE_KEY = "imsoroush-fav-projects";
+const FAV_EVENT = "imsoroush-favs-change";
+const EMPTY_FAV: ReadonlySet<string> = new Set();
+
+// External store over localStorage so favorite stars survive reloads (SSR-safe)
+let favCache: Set<string> | null = null;
+function subscribeFav(onChange: () => void) {
+  window.addEventListener(FAV_EVENT, onChange);
+  return () => window.removeEventListener(FAV_EVENT, onChange);
+}
+function getFavSnapshot(): ReadonlySet<string> {
+  if (!favCache) {
+    try {
+      const raw = JSON.parse(localStorage.getItem(FAV_STORAGE_KEY) ?? "[]") as string[];
+      favCache = new Set(Array.isArray(raw) ? raw : []);
+    } catch {
+      favCache = new Set();
+    }
+  }
+  return favCache;
+}
+function getServerFav(): ReadonlySet<string> {
+  return EMPTY_FAV;
+}
+function writeFav(next: Set<string>) {
+  favCache = next;
+  try {
+    localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify([...next]));
+  } catch {
+    // storage unavailable — in-memory only
+  }
+  window.dispatchEvent(new Event(FAV_EVENT));
+}
 
 const FILTERS = [
   { id: "all", label: "همه", icon: "✨" },
@@ -57,6 +90,8 @@ export function ProjectsExplorer({
   const [bumpedSlugs, setBumpedSlugs] = useState<Set<string>>(new Set());
   const searchRef = useRef<HTMLInputElement>(null);
   const postedRef = useRef<Set<string>>(new Set());
+  const favSlugs = useSyncExternalStore(subscribeFav, getFavSnapshot, getServerFav);
+  const [favOnly, setFavOnly] = useState(false);
   const { toast } = useToast();
   const onSpotlightMove = useSpotlight();
 
@@ -93,7 +128,7 @@ export function ProjectsExplorer({
 
   // Deep-link: derive dialog state from hash during render (prop-change adjustment)
   // Sentinel so a detailSlug present at mount still triggers the first adjustment
-  const [prevDetail, setPrevDetail] = useState<string | symbol>(DETAIL_INIT);
+  const [prevDetail, setPrevDetail] = useState<string | undefined | symbol>(DETAIL_INIT);
   if (prevDetail !== detailSlug) {
     setPrevDetail(detailSlug);
     if (!detailSlug) {
@@ -128,6 +163,20 @@ export function ProjectsExplorer({
     const onFocus = () => searchRef.current?.focus();
     window.addEventListener("focus-project-search", onFocus);
     return () => window.removeEventListener("focus-project-search", onFocus);
+  }, []);
+
+  // Command palette / footer action: open projects in favorites mode
+  useEffect(() => {
+    const onFav = () => setFavOnly(true);
+    window.addEventListener("toggle-projects-favorites", onFav);
+    return () => window.removeEventListener("toggle-projects-favorites", onFav);
+  }, []);
+
+  const toggleFav = useCallback((slug: string) => {
+    const next = new Set(getFavSnapshot());
+    if (next.has(slug)) next.delete(slug);
+    else next.add(slug);
+    writeFav(next);
   }, []);
 
   const closeDialog = (open: boolean) => {
@@ -214,7 +263,7 @@ export function ProjectsExplorer({
   }, [query, filter, sort]);
 
   const grouped = useMemo(() => {
-    if (filter !== "all" || sort === "views") return null;
+    if (filter !== "all" || sort === "views" || favOnly) return null;
     const map = new Map<string, Project[]>();
     for (const p of projects) {
       const arr = map.get(p.category) ?? [];
@@ -222,7 +271,13 @@ export function ProjectsExplorer({
       map.set(p.category, arr);
     }
     return map;
-  }, [projects, filter, sort]);
+  }, [projects, filter, sort, favOnly]);
+
+  // Favorites mode filters the fetched list client-side by starred slugs
+  const displayList = useMemo(
+    () => (favOnly ? projects.filter((p) => favSlugs.has(p.slug)) : projects),
+    [projects, favOnly, favSlugs]
+  );
 
   const renderCard = (p: Project, index: number) => (
     <motion.button
@@ -249,6 +304,37 @@ export function ProjectsExplorer({
             <Star className="w-3 h-3" /> منتخب
           </span>
         )}
+        {/* Favorite toggle — span keeps the card's single-button semantics valid */}
+        <span
+          role="button"
+          tabIndex={0}
+          aria-pressed={favSlugs.has(p.slug)}
+          aria-label={
+            favSlugs.has(p.slug)
+              ? `حذف ${p.title} از علاقه‌مندی‌ها`
+              : `افزودن ${p.title} به علاقه‌مندی‌ها`
+          }
+          title={favSlugs.has(p.slug) ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFav(p.slug);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFav(p.slug);
+            }
+          }}
+          className={cn(
+            "fav-star absolute top-2.5 right-2.5 z-10 w-8 h-8 grid place-items-center rounded-full border backdrop-blur-md",
+            favSlugs.has(p.slug)
+              ? "fav-star-on border-brand/60 bg-brand/30 text-brand"
+              : "border-white/30 bg-black/30 text-white/90 hover:text-brand hover:border-brand/50"
+          )}
+        >
+          <Star className={cn("w-4 h-4", favSlugs.has(p.slug) && "fill-brand")} aria-hidden />
+        </span>
       </div>
       <h3 className="font-extrabold text-base sm:text-lg mb-1.5 group-hover:text-brand transition-colors leading-7">
         {p.title}
@@ -322,7 +408,7 @@ export function ProjectsExplorer({
           <p className="text-center text-xs text-muted-foreground" aria-live="polite">
             {loading
               ? "در حال جستجو..."
-              : `${projects.length.toLocaleString("fa-IR")} پروژه یافت شد`}
+              : `${displayList.length.toLocaleString("fa-IR")} پروژه یافت شد`}
           </p>
           <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
           <button
@@ -352,6 +438,31 @@ export function ProjectsExplorer({
             <Dices className={cn("w-3.5 h-3.5", rolling && "animate-spin")} />
             {rolling ? "در حال چرخش..." : "پروژه تصادفی"}
           </button>
+          <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
+          <button
+            onClick={() => setFavOnly((v) => !v)}
+            aria-pressed={favOnly}
+            title={favOnly ? "نمایش همه پروژه‌ها" : "فقط پروژه‌های نشان‌ستاره‌دار شما"}
+            className={cn(
+              "inline-flex items-center gap-1.5 text-xs font-bold rounded-full border px-3.5 py-1.5 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[30px]",
+              favOnly
+                ? "text-primary-foreground bg-brand border-brand chip-active"
+                : "text-brand border-brand/30 bg-brand/10 hover:bg-brand/20"
+            )}
+          >
+            <Star className={cn("w-3.5 h-3.5", favOnly && "fill-current")} aria-hidden />
+            علاقه‌مندی‌ها
+            {favSlugs.size > 0 && (
+              <span
+                className={cn(
+                  "rounded-full px-1.5 text-[10px]",
+                  favOnly ? "bg-primary-foreground/25" : "bg-brand/15"
+                )}
+              >
+                {favSlugs.size.toLocaleString("fa-IR")}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -362,11 +473,21 @@ export function ProjectsExplorer({
             <Skeleton key={i} className="h-56 rounded-2xl" />
           ))}
         </div>
-      ) : projects.length === 0 ? (
+      ) : displayList.length === 0 ? (
         <EmptyState
-          title="پروژه‌ای یافت نشد"
-          description="عبارت دیگری را جستجو کنید یا فیلتر دسته‌بندی را تغییر دهید."
-          onReset={query || filter !== "all" ? () => { setQuery(""); changeFilter("all"); } : undefined}
+          title={favOnly ? "هنوز پروژه‌ای نشان نکرده‌اید" : "پروژه‌ای یافت نشد"}
+          description={
+            favOnly
+              ? "با زدن ستاره روی کارت پروژه‌ها، آن‌ها را برای مرور بعدی ذخیره کنید."
+              : "عبارت دیگری را جستجو کنید یا فیلتر دسته‌بندی را تغییر دهید."
+          }
+          onReset={
+            favOnly
+              ? () => setFavOnly(false)
+              : query || filter !== "all"
+                ? () => { setQuery(""); changeFilter("all"); }
+                : undefined
+          }
         />
       ) : grouped ? (
         <div className="space-y-10">
@@ -393,7 +514,7 @@ export function ProjectsExplorer({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           <AnimatePresence mode="popLayout">
-            {projects.map((p, i) => renderCard(p, i))}
+            {displayList.map((p, i) => renderCard(p, i))}
           </AnimatePresence>
         </div>
       )}
@@ -459,7 +580,7 @@ export function ProjectsExplorer({
                 ))}
               </div>
 
-              <div className="grid grid-cols-[1fr_auto] gap-2.5">
+              <div className="grid grid-cols-[1fr_auto_auto] gap-2.5">
                 <a
                   href={`https://github.com/${selected.repo}`}
                   target="_blank"
@@ -475,6 +596,27 @@ export function ProjectsExplorer({
                   </svg>
                   مشاهده در گیت‌هاب
                 </a>
+                <button
+                  onClick={() => toggleFav(selected.slug)}
+                  aria-pressed={favSlugs.has(selected.slug)}
+                  aria-label={
+                    favSlugs.has(selected.slug)
+                      ? "حذف این پروژه از علاقه‌مندی‌ها"
+                      : "افزودن این پروژه به علاقه‌مندی‌ها"
+                  }
+                  title={favSlugs.has(selected.slug) ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}
+                  className={cn(
+                    "w-[46px] rounded-2xl border grid place-items-center active:scale-95 transition-all",
+                    favSlugs.has(selected.slug)
+                      ? "border-brand/50 bg-brand/15 text-brand"
+                      : "border-border text-muted-foreground hover:text-brand hover:border-brand/50"
+                  )}
+                >
+                  <Star
+                    className={cn("w-5 h-5", favSlugs.has(selected.slug) && "fill-brand fav-star-on")}
+                    aria-hidden
+                  />
+                </button>
                 <button
                   onClick={() => shareProject(selected)}
                   aria-label="هم‌رسانی لینک پروژه"

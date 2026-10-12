@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
       messagesLastWeek,
       likeSum,
       comments,
+      subscribers,
       topProjects,
       topArticles,
     ] = await Promise.all([
@@ -37,6 +38,7 @@ export async function GET(request: NextRequest) {
       db.contactMessage.count({ where: { createdAt: { gte: weekAgo } } }),
       db.article.aggregate({ _sum: { likes: true } }),
       db.comment.count(),
+      db.subscriber.count(),
       db.project.findMany({
         orderBy: { views: "desc" },
         take: 5,
@@ -60,6 +62,7 @@ export async function GET(request: NextRequest) {
         messagesLastWeek,
         likes: likeSum._sum.likes ?? 0,
         comments,
+        subscribers,
       },
       topProjects,
       topArticles,

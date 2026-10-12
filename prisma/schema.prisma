@@ -56,6 +56,12 @@ model Comment {
   @@index([articleSlug, createdAt])
 }
 
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
 model SiteStat {
   key       String   @id
   value     Int      @default(0)
