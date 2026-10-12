@@ -23,6 +23,7 @@ import {
   FileText,
   RefreshCw,
   Users,
+  Download,
 } from "lucide-react";
 import {
   Dialog,
@@ -108,6 +109,8 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
   const [stats, setStats] = useState<StatsPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const { toast } = useToast();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -169,6 +172,51 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
 
   const maxProjectViews = Math.max(1, ...stats.topProjects.map((p) => p.views));
   const maxArticleViews = Math.max(1, ...stats.topArticles.map((a) => a.views));
+
+  const exportSubscribersCsv = async () => {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/admin/subscribers", {
+        headers: { "x-admin-key": apiKey },
+        cache: "no-store",
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const data = (await res.json()) as { subscribers?: { email: string; createdAt: string }[] };
+      const subs = data.subscribers ?? [];
+      if (subs.length === 0) {
+        toast({ title: "هنوز عضوی نیست", description: "خبرنامه هنوز هیچ عضوی ندارد." });
+        return;
+      }
+      const rows: string[][] = [
+        ["email", "joinedAt"],
+        ...subs.map((s) => [s.email, s.createdAt]),
+      ];
+      // BOM so Excel opens UTF-8 correctly
+      const csv =
+        "\uFEFF" +
+        rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `newsletter-subscribers-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+      toast({
+        title: "فایل CSV دانلود شد",
+        description: `${subs.length.toLocaleString("fa-IR")} عضو خبرنامه استخراج شد.`,
+      });
+    } catch {
+      toast({
+        title: "استخراج ناموفق بود",
+        description: "دوباره تلاش کنید.",
+        variant: "destructive",
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-5">
@@ -242,6 +290,27 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
             </li>
           ))}
         </ul>
+      </div>
+
+      {/* Newsletter export */}
+      <div className="rounded-2xl border border-border bg-card/60 p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <div className="flex-grow min-w-0">
+          <h4 className="flex items-center gap-2 text-sm font-extrabold">
+            <Users className="w-4 h-4 text-brand" />
+            اعضای خبرنامه
+          </h4>
+          <p className="text-[11px] text-muted-foreground mt-1 leading-5">
+            دریافت فایل CSV ایمیل‌های عضو برای ارسال گروهی یا پشتیبان‌گیری.
+          </p>
+        </div>
+        <button
+          onClick={exportSubscribersCsv}
+          disabled={exporting}
+          className="btn-shine shrink-0 inline-flex items-center justify-center gap-1.5 text-xs font-bold rounded-xl bg-brand text-primary-foreground px-4 py-2.5 hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 min-h-[38px]"
+        >
+          {exporting ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> : <Download className="w-4 h-4" aria-hidden />}
+          دانلود CSV
+        </button>
       </div>
 
       <div className="flex items-center justify-between">

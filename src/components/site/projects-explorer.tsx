@@ -279,6 +279,14 @@ export function ProjectsExplorer({
     [projects, favOnly, favSlugs]
   );
 
+  // Related projects in the same category (detail dialog)
+  const relatedProjects = useMemo(() => {
+    if (!selected) return [];
+    return initialProjects
+      .filter((p) => p.category === selected.category && p.slug !== selected.slug)
+      .slice(0, 3);
+  }, [initialProjects, selected]);
+
   const renderCard = (p: Project, index: number) => (
     <motion.button
       key={p.id}
@@ -568,7 +576,7 @@ export function ProjectsExplorer({
               <p className="text-sm leading-8 text-foreground/90 mb-5">{selected.description}</p>
 
               <h4 className="text-sm font-extrabold mb-2.5">پشته فناوری</h4>
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex flex-wrap gap-2 mb-5">
                 {selected.tags.map((t) => (
                   <span
                     key={t}
@@ -579,6 +587,34 @@ export function ProjectsExplorer({
                   </span>
                 ))}
               </div>
+
+              {/* Related projects (same category) */}
+              {relatedProjects.length > 0 && (
+                <div className="mb-5">
+                  <h4 className="text-sm font-extrabold mb-2.5">پروژه‌های مرتبط</h4>
+                  <div className="grid gap-2">
+                    {relatedProjects.map((r) => (
+                      <button
+                        key={r.slug}
+                        onClick={() => openProject(r)}
+                        className="related-item text-right rounded-2xl border border-border bg-card px-3.5 py-2.5 flex items-center gap-3 hover:border-brand/40 transition-all min-h-[48px]"
+                      >
+                        <span
+                          className="w-9 h-9 grid place-items-center rounded-xl bg-secondary text-xl shrink-0"
+                          aria-hidden
+                        >
+                          {r.icon}
+                        </span>
+                        <span className="flex-grow min-w-0 text-xs font-bold truncate">{r.title}</span>
+                        <span className="shrink-0 text-[10px] text-muted-foreground inline-flex items-center gap-1">
+                          <Eye className="w-3 h-3" aria-hidden />
+                          {r.views.toLocaleString("fa-IR")}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-[1fr_auto_auto] gap-2.5">
                 <a

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Eye, ArrowLeft, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown } from "lucide-react";
+import { Clock, Eye, ArrowLeft, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -61,6 +61,65 @@ const CATEGORY_META: Record<string, { label: string; color: string }> = {
   sports: { label: "علوم ورزشی", color: "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" },
 };
 
+// ---------- Reading progress store (localStorage-backed, SSR-safe) ----------
+const READING_KEY = "imsoroush-reading-progress";
+const READING_EVENT = "imsoroush-reading-change";
+export type ReadingEntry = {
+  slug: string;
+  title: string;
+  icon: string;
+  category: string;
+  progress: number; // 0..1
+  updatedAt: number;
+  dismissed?: boolean;
+};
+type ReadingMap = Record<string, ReadingEntry>;
+const EMPTY_READING: ReadingMap = {};
+
+let readingCache: ReadingMap | null = null;
+function subscribeReading(onChange: () => void) {
+  window.addEventListener(READING_EVENT, onChange);
+  return () => window.removeEventListener(READING_EVENT, onChange);
+}
+function getReadingSnapshot(): ReadingMap {
+  if (!readingCache) {
+    try {
+      const raw = JSON.parse(localStorage.getItem(READING_KEY) ?? "{}") as ReadingMap;
+      readingCache = raw && typeof raw === "object" ? raw : {};
+    } catch {
+      readingCache = {};
+    }
+  }
+  return readingCache;
+}
+function getServerReading(): ReadingMap {
+  return EMPTY_READING;
+}
+function writeReadingMap(next: ReadingMap) {
+  readingCache = next;
+  try {
+    localStorage.setItem(READING_KEY, JSON.stringify(next));
+  } catch {
+    // storage unavailable — in-memory only
+  }
+  window.dispatchEvent(new Event(READING_EVENT));
+}
+function saveReadingEntry(entry: ReadingEntry) {
+  const map = { ...getReadingSnapshot() };
+  map[entry.slug] = { ...entry, dismissed: false };
+  writeReadingMap(map);
+}
+function dismissReadingEntry(slug: string) {
+  const map = { ...getReadingSnapshot() };
+  if (map[slug]) map[slug] = { ...map[slug], dismissed: true };
+  writeReadingMap(map);
+}
+function removeReadingEntry(slug: string) {
+  const map = { ...getReadingSnapshot() };
+  delete map[slug];
+  writeReadingMap(map);
+}
+
 const ART_FILTERS = [
   { id: "all", label: "همه نوشته‌ها", icon: "📚" },
   { id: "self", label: "توسعه فردی", icon: "🧠" },
@@ -93,6 +152,33 @@ function formatDate(iso: string) {
   }
 }
 
+// Brand share-target links for the reader (URL-safe, hash-routed)
+function shareLinksFor(a: Article) {
+  const url = encodeURIComponent(`${window.location.origin}/#/writing/${encodeURIComponent(a.slug)}`);
+  const text = encodeURIComponent(a.title);
+  return {
+    telegram: `https://t.me/share/url?url=${url}&text=${text}`,
+    whatsapp: `https://wa.me/?text=${text}%20${url}`,
+    x: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+  };
+}
+
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+    </svg>
+  );
+}
+
+function XLogoIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
 export function ArticlesSection({
   articles,
   loading,
@@ -118,6 +204,10 @@ export function ArticlesSection({
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const postedRef = useRef<Set<string>>(new Set());
+  const readingMap = useSyncExternalStore(subscribeReading, getReadingSnapshot, getServerReading);
+  const pendingResumeRef = useRef<number | null>(null);
+  const progressRef = useRef(0);
+  const lastWriteRef = useRef(0);
   const [query, setQuery] = useState("");
   const [tocOpen, setTocOpen] = useState(true);
   const validCat =
@@ -147,6 +237,15 @@ export function ArticlesSection({
   const onSpotlightMove = useSpotlight();
 
   const likesOf = (a: Article) => likesOverrides[a.slug] ?? a.likes;
+
+  // Most recent unfinished (and not dismissed) reading session — for the resume card
+  const resumeEntry = useMemo(() => {
+    const list = Object.values(readingMap).filter(
+      (e) => e && !e.dismissed && e.progress < 0.97 && e.progress > 0.01
+    );
+    if (list.length === 0) return null;
+    return list.reduce((a, b) => (b.updatedAt > a.updatedAt ? b : a));
+  }, [readingMap]);
 
   const handleCommentCount = useCallback((slug: string, total: number) => {
     setCommentCounts((prev) => ({ ...prev, [slug]: total }));
@@ -196,6 +295,17 @@ export function ArticlesSection({
     onOpenDetail(a.slug);
   };
 
+  const resumeReading = () => {
+    if (!resumeEntry) return;
+    const a = articles.find((x) => x.slug === resumeEntry.slug);
+    if (!a) {
+      removeReadingEntry(resumeEntry.slug);
+      return;
+    }
+    pendingResumeRef.current = resumeEntry.progress;
+    openArticle(a);
+  };
+
   // Deep-link: derive reader state from hash during render (prop-change adjustment)
   // Sentinel so a detailSlug present at mount still triggers the first adjustment
   const [prevDetail, setPrevDetail] = useState<string | undefined | symbol>(DETAIL_INIT);
@@ -236,16 +346,48 @@ export function ArticlesSection({
     setTocOpen(true);
   }
 
-  // Reset scroll position imperatively
+  // Reset scroll position imperatively (then apply a pending resume position)
   useEffect(() => {
+    const target = pendingResumeRef.current;
+    pendingResumeRef.current = null;
     scrollRef.current?.scrollTo({ top: 0 });
+    if (selected && typeof target === "number") {
+      const t = window.setTimeout(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+        const max = el.scrollHeight - el.clientHeight;
+        el.scrollTo({ top: max * target, behavior: "auto" });
+      }, 120);
+      return () => window.clearTimeout(t);
+    }
   }, [selected?.slug]);
 
   const onReaderScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
     const max = el.scrollHeight - el.clientHeight;
-    setProgress(max > 0 ? Math.min(el.scrollTop / max, 1) : 0);
+    const p = max > 0 ? Math.min(el.scrollTop / max, 1) : 0;
+    setProgress(p);
+    progressRef.current = p;
+
+    // Persist reading position (throttled) for the continue-reading card
+    const now = Date.now();
+    if (selected && now - lastWriteRef.current > 700) {
+      lastWriteRef.current = now;
+      if (p >= 0.97 || p < 0.005) {
+        // finished or barely started — nothing worth resuming
+        removeReadingEntry(selected.slug);
+      } else {
+        saveReadingEntry({
+          slug: selected.slug,
+          title: selected.title,
+          icon: selected.icon,
+          category: selected.category,
+          progress: p,
+          updatedAt: now,
+        });
+      }
+    }
   };
 
   const shareArticle = async (a: Article) => {
@@ -295,6 +437,14 @@ export function ArticlesSection({
     []
   );
 
+  // Related articles in the same category (reader)
+  const relatedArticles = useMemo(() => {
+    if (!selected) return [];
+    return articles
+      .filter((a) => a.category === selected.category && a.slug !== selected.slug)
+      .slice(0, 2);
+  }, [articles, selected]);
+
   // Client-side search + filter + sort (list is small; no API round-trip needed)
   const visible = useMemo(() => {
     const tokens = query ? norm(query).split(/\s+/) : [];
@@ -318,6 +468,61 @@ export function ArticlesSection({
 
   return (
     <section id="articles" aria-label="نوشته‌ها" className="max-w-6xl mx-auto px-4 sm:px-6">
+      {/* Continue-reading resume card */}
+      {resumeEntry && (
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          role="region"
+          aria-label="ادامه مطالعه"
+          className="resume-card mb-7 max-w-xl mx-auto"
+        >
+          <div className="flex items-center gap-3.5">
+            <span className="resume-cover grid place-items-center shrink-0 w-14 h-14 rounded-2xl text-3xl" aria-hidden>
+              {resumeEntry.icon}
+            </span>
+            <div className="flex-grow min-w-0">
+              <p className="text-[11px] font-black text-brand flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5" aria-hidden />
+                ادامه مطالعه
+              </p>
+              <p className="font-extrabold text-sm truncate mt-0.5">{resumeEntry.title}</p>
+              <div
+                className="resume-progress mt-2"
+                role="progressbar"
+                aria-valuenow={Math.round(resumeEntry.progress * 100)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="پیشرفت مطالعه"
+              >
+                <span style={{ width: `${Math.round(resumeEntry.progress * 100)}%` }} />
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1.5">
+                {Math.round(resumeEntry.progress * 100).toLocaleString("fa-IR")}٪ خوانده شده
+              </p>
+            </div>
+            <div className="flex flex-col items-stretch gap-1.5 shrink-0">
+              <button
+                onClick={resumeReading}
+                className="btn-shine inline-flex items-center gap-1.5 rounded-xl bg-brand text-primary-foreground font-bold text-xs px-4 py-2.5 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[38px]"
+              >
+                ادامه
+                <ArrowLeft className="w-3.5 h-3.5" aria-hidden />
+              </button>
+              <button
+                onClick={() => dismissReadingEntry(resumeEntry.slug)}
+                aria-label="بستن کارت ادامه مطالعه"
+                title="بستن"
+                className="w-full h-7 grid place-items-center rounded-lg border border-border text-muted-foreground/60 hover:text-foreground hover:border-border/80 transition-all"
+              >
+                <X className="w-3.5 h-3.5" aria-hidden />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Search + Filters */}
       <div className="mb-8 space-y-4">
         <div className="relative max-w-xl mx-auto">
@@ -481,7 +686,27 @@ export function ArticlesSection({
       )}
 
       {/* Reader dialog */}
-      <Dialog open={!!selected} onOpenChange={(open) => { if (!open) { setSelected(null); onCloseDetail(); } }}>
+      <Dialog
+        open={!!selected}
+        onOpenChange={(open) => {
+          if (!open) {
+            // Persist the final position so the resume card stays accurate
+            const now = Date.now();
+            if (selected && progressRef.current > 0.01 && progressRef.current < 0.97) {
+              saveReadingEntry({
+                slug: selected.slug,
+                title: selected.title,
+                icon: selected.icon,
+                category: selected.category,
+                progress: progressRef.current,
+                updatedAt: now,
+              });
+            }
+            setSelected(null);
+            onCloseDetail();
+          }
+        }}
+      >
         <DialogContent
           ref={scrollRef}
           onScroll={onReaderScroll}
@@ -562,6 +787,45 @@ export function ArticlesSection({
                     {copied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
                     هم‌رسانی
                   </button>
+                  <div className="flex items-center gap-1.5" role="group" aria-label="هم‌رسانی در شبکه‌های اجتماعی">
+                    {(() => {
+                      const links = shareLinksFor(selected);
+                      return (
+                        <>
+                          <a
+                            href={links.telegram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="هم‌رسانی در تلگرام"
+                            title="تلگرام"
+                            className="share-bubble share-telegram"
+                          >
+                            <Send className="w-4 h-4" aria-hidden />
+                          </a>
+                          <a
+                            href={links.whatsapp}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="هم‌رسانی در واتساپ"
+                            title="واتساپ"
+                            className="share-bubble share-whatsapp"
+                          >
+                            <WhatsAppIcon className="w-4 h-4" />
+                          </a>
+                          <a
+                            href={links.x}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="هم‌رسانی در ایکس"
+                            title="ایکس"
+                            className="share-bubble share-x"
+                          >
+                            <XLogoIcon className="w-3.5 h-3.5" />
+                          </a>
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
               </div>
 
@@ -622,6 +886,39 @@ export function ArticlesSection({
               <div className="prose-fa max-w-none">
                 <ReactMarkdown components={markdownComponents}>{selected.content}</ReactMarkdown>
               </div>
+
+              {/* Related articles (same category) */}
+              {relatedArticles.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="text-sm font-extrabold mb-2.5 flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-brand" aria-hidden />
+                    نوشته‌های مرتبط
+                  </h4>
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {relatedArticles.map((r) => (
+                      <button
+                        key={r.slug}
+                        onClick={() => openArticle(r)}
+                        className="related-item text-right rounded-2xl border border-border bg-card px-3.5 py-3 flex items-center gap-3 hover:border-brand/40 transition-all min-h-[52px]"
+                      >
+                        <span
+                          className="w-9 h-9 grid place-items-center rounded-xl bg-secondary text-xl shrink-0"
+                          aria-hidden
+                        >
+                          {r.icon}
+                        </span>
+                        <span className="flex-grow min-w-0">
+                          <span className="block text-xs font-bold truncate">{r.title}</span>
+                          <span className="block text-[10px] text-muted-foreground mt-0.5">
+                            <Clock className="w-3 h-3 inline -mt-0.5" aria-hidden /> {r.readTime.toLocaleString("fa-IR")} دقیقه
+                          </span>
+                        </span>
+                        <ArrowLeft className="w-4 h-4 text-brand shrink-0" aria-hidden />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <ArticleComments slug={selected.slug} onCountChange={handleCommentCount} />
             </>
