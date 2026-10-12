@@ -10,6 +10,8 @@ import {
   Github,
   Copy,
   Clock3,
+  Lock,
+  Globe,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { GitHubRepo } from "@/lib/types";
@@ -40,6 +42,7 @@ const LANG_COLORS: Record<string, string> = {
 };
 
 type SortKey = "recent" | "stars" | "name";
+type VisFilter = "all" | "public" | "private";
 
 function normalize(s: string): string {
   return s
@@ -59,18 +62,29 @@ export function ReposExplorer() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [langFilter, setLangFilter] = useState<string>("all");
+  const [visFilter, setVisFilter] = useState<VisFilter>("all");
   const [sort, setSort] = useState<SortKey>("recent");
+  const [includesPrivate, setIncludesPrivate] = useState(false);
+
+  const apply = (data: {
+    repos: GitHubRepo[];
+    source: "live" | "db" | "seed";
+    includesPrivate?: boolean;
+  }) => {
+    setRepos(data.repos);
+    setSource(data.source);
+    setIncludesPrivate(
+      data.includesPrivate ?? data.repos.some((r) => r.isPrivate)
+    );
+    setLoading(false);
+  };
 
   const load = (refresh = false) => {
     setLoading(true);
     setError(false);
     fetch(`/api/repos${refresh ? "?refresh=1" : ""}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((data: { repos: GitHubRepo[]; source: "live" | "db" | "seed" }) => {
-        setRepos(data.repos);
-        setSource(data.source);
-        setLoading(false);
-      })
+      .then(apply)
       .catch(() => {
         setError(true);
         setLoading(false);
@@ -82,16 +96,17 @@ export function ReposExplorer() {
     // happen in promise callbacks (no sync setState in the effect body).
     fetch("/api/repos")
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((data: { repos: GitHubRepo[]; source: "live" | "db" | "seed" }) => {
-        setRepos(data.repos);
-        setSource(data.source);
-        setLoading(false);
-      })
+      .then(apply)
       .catch(() => {
         setError(true);
         setLoading(false);
       });
   }, []);
+
+  const privateCount = useMemo(
+    () => repos?.filter((r) => r.isPrivate).length ?? 0,
+    [repos]
+  );
 
   const languages = useMemo(() => {
     if (!repos) return [];
@@ -107,9 +122,17 @@ export function ReposExplorer() {
     const q = normalize(query);
     let list = repos.filter((r) => {
       if (langFilter !== "all" && r.language !== langFilter) return false;
+      if (visFilter === "private" && !r.isPrivate) return false;
+      if (visFilter === "public" && r.isPrivate) return false;
       if (!q) return true;
       const haystack = normalize(
-        [r.name, r.description ?? "", r.topics.join(" "), r.language ?? ""].join(" ")
+        [
+          r.name,
+          r.description ?? "",
+          r.descriptionFa ?? "",
+          r.topics.join(" "),
+          r.language ?? "",
+        ].join(" ")
       );
       return haystack.includes(q);
     });
@@ -119,7 +142,7 @@ export function ReposExplorer() {
       return b.pushedAt.localeCompare(a.pushedAt);
     });
     return list;
-  }, [repos, query, langFilter, sort]);
+  }, [repos, query, langFilter, visFilter, sort]);
 
   const copyClone = async (repo: GitHubRepo) => {
     const cmd = `git clone ${repo.url}.git`;
@@ -164,6 +187,41 @@ export function ReposExplorer() {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-2">
+          {/* Visibility filter chips (all / public / private) */}
+          <div
+            role="group"
+            aria-label={t("repos", "filter.visAria")}
+            className="flex flex-wrap items-center justify-center gap-2"
+          >
+            {(
+              [
+                ["all", t("repos", "filter.allVis"), null, repos?.length ?? 0],
+                ["public", t("repos", "filter.public"), Globe, (repos?.length ?? 0) - privateCount],
+                ["private", t("repos", "filter.private"), Lock, privateCount],
+              ] as [VisFilter, string, typeof Lock | null, number][]
+            )
+              .filter(([key, , , count]) => key === "all" || count > 0)
+              .map(([key, label, Icon, count]) => (
+                <button
+                  key={key}
+                  onClick={() => setVisFilter(key)}
+                  aria-pressed={visFilter === key}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold border transition-all min-h-[36px]",
+                    visFilter === key
+                      ? key === "private"
+                        ? "bg-amber-500/90 text-amber-950 border-amber-500"
+                        : "bg-brand text-primary-foreground border-brand"
+                      : "border-border bg-card/60 text-muted-foreground hover:text-foreground hover:border-brand/40"
+                  )}
+                >
+                  {Icon && <Icon className="w-3.5 h-3.5" aria-hidden />}
+                  {label}
+                  <span className="opacity-70">{num(count)}</span>
+                </button>
+              ))}
+          </div>
+
           {/* Language filter chips */}
           <div
             role="group"
@@ -243,6 +301,13 @@ export function ReposExplorer() {
             {t("repos", "staleNote")}
           </p>
         )}
+
+        {includesPrivate && !loading && !error && (
+          <p className="text-center text-[11px] text-amber-600 dark:text-amber-400/90 flex items-center justify-center gap-1.5">
+            <Lock className="w-3 h-3" aria-hidden />
+            {t("repos", "privateNote")}
+          </p>
+        )}
       </div>
 
       {/* Content */}
@@ -290,6 +355,10 @@ export function ReposExplorer() {
         >
           {shown.map((repo) => {
             const langColor = repo.language ? LANG_COLORS[repo.language] ?? "#8b949e" : null;
+            const desc =
+              lang === "fa"
+                ? repo.descriptionFa ?? repo.description
+                : repo.description ?? repo.descriptionFa;
             return (
               <article
                 key={repo.name}
@@ -307,6 +376,15 @@ export function ReposExplorer() {
                     <span dir="ltr" className="truncate">
                       {repo.name}
                     </span>
+                    {repo.isPrivate && (
+                      <span
+                        title={t("repos", "badge.private")}
+                        className="inline-flex items-center gap-0.5 shrink-0 px-1.5 py-0.5 rounded-md text-[9px] font-black bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30"
+                      >
+                        <Lock className="w-2.5 h-2.5" aria-hidden />
+                        {t("repos", "badge.private")}
+                      </span>
+                    )}
                     <ExternalLink
                       className="w-3 h-3 shrink-0 opacity-0 group-hover:opacity-70 transition-opacity"
                       aria-hidden
@@ -323,10 +401,10 @@ export function ReposExplorer() {
                 </div>
 
                 <p
-                  dir={repo.description ? "ltr" : undefined}
+                  dir="auto"
                   className="text-start text-[13px] leading-6 text-muted-foreground line-clamp-2 min-h-[3rem]"
                 >
-                  {repo.description ?? t("repos", "noDesc")}
+                  {desc ?? t("repos", "noDesc")}
                 </p>
 
                 {repo.topics.length > 0 && (
@@ -371,6 +449,12 @@ export function ReposExplorer() {
                         {t("repos", "badge.archived")}
                       </span>
                     )}
+                    {repo.isPrivate && (
+                      <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0 inline-flex items-center gap-0.5">
+                        <Lock className="w-2.5 h-2.5" aria-hidden />
+                        {t("repos", "badge.private")}
+                      </span>
+                    )}
                   </span>
                   <span className="flex items-center gap-2.5 shrink-0 tabular-nums" dir="ltr">
                     <span className="inline-flex items-center gap-1" title={t("repos", "stats.stars")}>
@@ -397,8 +481,18 @@ export function ReposExplorer() {
       {/* Summary line */}
       {!loading && !error && repos && repos.length > 0 && (
         <p className="mt-8 text-center text-xs text-muted-foreground">
-          {num(repos.length)} {t("repos", "summary.repos")} · {num(totalStars)}{" "}
-          {t("repos", "summary.stars")} · {num(langCount)} {t("repos", "summary.langs")} ·{" "}
+          {num(repos.length)} {t("repos", "summary.repos")}
+          {privateCount > 0 && (
+            <>
+              {" \u00b7 "}
+              <span className="inline-flex items-center gap-1">
+                <Lock className="w-3 h-3" aria-hidden />
+                {t("repos", "privateCount", { n: num(privateCount) })}
+              </span>
+            </>
+          )}
+          {" \u00b7 "}{num(totalStars)} {t("repos", "summary.stars")} · {num(langCount)}{" "}
+          {t("repos", "summary.langs")} ·{" "}
           <a
             href="https://github.com/CheginiSoroush"
             target="_blank"

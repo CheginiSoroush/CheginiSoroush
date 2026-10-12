@@ -3,7 +3,14 @@ import type { Dict } from "../dict-type";
 /** Dedicated GitHub-repositories view. */
 export const reposDict: Dict = {
   fa: {
-    "aria.section": "ریپازیتوری‌های عمومی گیت‌هاب",
+    "aria.section": "ریپازیتوری‌های گیت‌هاب",
+    "filter.visAria": "فیلتر بر اساس دسترسی",
+    "filter.allVis": "همه",
+    "filter.public": "عمومی",
+    "filter.private": "خصوصی",
+    "badge.private": "خصوصی",
+    "privateNote": "چند ریپازیتوری خصوصی هم اینجاست — به‌زودی عمومی می‌شوند.",
+    "privateCount": "{n} خصوصی",
     "aria.search": "جستجو در ریپازیتوری‌ها",
     "search.placeholder": "جستجو در ریپازیتوری‌ها...",
     "search.clear": "پاک کردن جستجو",
@@ -38,7 +45,14 @@ export const reposDict: Dict = {
     "summary.langs": "زبان"
   },
   "en": {
-    "aria.section": "Public GitHub repositories",
+    "aria.section": "GitHub repositories",
+    "filter.visAria": "Filter by visibility",
+    "filter.allVis": "All",
+    "filter.public": "Public",
+    "filter.private": "Private",
+    "badge.private": "Private",
+    "privateNote": "A few private repositories are listed too — they\u2019re going public soon.",
+    "privateCount": "{n} private",
     "aria.search": "Search repositories",
     "search.placeholder": "Search repositories...",
     "search.clear": "Clear search",

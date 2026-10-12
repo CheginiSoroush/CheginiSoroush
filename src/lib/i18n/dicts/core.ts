@@ -47,7 +47,7 @@ export const coreDict: Dict = {
     "heading.contact.sub": "خوشحال می‌شم نظرات، پیشنهادات یا ایده‌های همکاری‌تون رو بشنوم.",
     "heading.repos.title": "ریپازیتوری‌های گیت‌هاب",
     "heading.repos.sub":
-      "همه ریپازیتوری‌های عمومی من، مستقیم و زنده از گیت‌هاب — کد، ستاره‌ها و آخرین فعالیت‌ها.",
+      "کل آرشیو گیت‌هاب من — عمومی و خصوصی — مستقیم و زنده از گیت‌هاب؛ کد، ستاره‌ها و آخرین فعالیت‌ها.",
 
     // ---------- footer ----------
     "footer.social": "شبکه‌های اجتماعی",
@@ -132,7 +132,7 @@ export const coreDict: Dict = {
     "heading.contact.sub": "I'd love to hear your feedback, suggestions or collaboration ideas.",
     "heading.repos.title": "GitHub Repositories",
     "heading.repos.sub":
-      "All of my public repositories, live from GitHub — code, stars and the latest activity.",
+      "My full GitHub archive — public and private — live from GitHub: code, stars and the latest activity.",
 
     // ---------- footer ----------
     "footer.social": "Social links",

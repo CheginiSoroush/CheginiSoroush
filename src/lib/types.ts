@@ -52,10 +52,14 @@ export type GitHubRepo = {
   name: string;
   url: string;
   description: string | null;
+  /** Persian description (curated) used when GitHub has none. */
+  descriptionFa?: string | null;
   language: string | null;
   stars: number;
   forks: number;
   isFork: boolean;
+  /** True for private repos (listed via authenticated server-side fetch). */
+  isPrivate?: boolean;
   archived: boolean;
   topics: string[];
   homepage: string | null;
