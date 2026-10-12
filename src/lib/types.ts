@@ -22,6 +22,7 @@ export type Article = {
   icon: string;
   readTime: number;
   views: number;
+  likes: number;
   publishedAt: string;
 };
 

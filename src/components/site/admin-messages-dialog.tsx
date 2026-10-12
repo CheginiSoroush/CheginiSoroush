@@ -14,6 +14,14 @@ import {
   ChevronLeft,
   CheckCircle2,
   RotateCcw,
+  BarChart3,
+  Eye,
+  Heart,
+  MessageSquare,
+  CalendarClock,
+  FolderGit2,
+  FileText,
+  RefreshCw,
 } from "lucide-react";
 import {
   Dialog,
@@ -44,6 +52,40 @@ type ListPayload = {
   totalPages: number;
 };
 
+type TopProject = {
+  slug: string;
+  title: string;
+  icon: string;
+  views: number;
+  category: string;
+};
+
+type TopArticle = {
+  slug: string;
+  title: string;
+  icon: string;
+  views: number;
+  likes: number;
+};
+
+type StatsPayload = {
+  totals: {
+    visits: number;
+    projectViews: number;
+    projects: number;
+    articles: number;
+    messages: number;
+    unread: number;
+    messagesLastWeek: number;
+    likes: number;
+  };
+  topProjects: TopProject[];
+  topArticles: TopArticle[];
+  generatedAt: string;
+};
+
+const fa = (n: number) => n.toLocaleString("fa-IR");
+
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleString("fa-IR", {
@@ -58,7 +100,159 @@ function formatDate(iso: string) {
   }
 }
 
-const fa = (n: number) => n.toLocaleString("fa-IR");
+function AdminStatsPanel({ apiKey }: { apiKey: string }) {
+  const [stats, setStats] = useState<StatsPayload | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setFailed(false);
+    try {
+      const res = await fetch("/api/admin/stats", {
+        headers: { "x-admin-key": apiKey },
+        cache: "no-store",
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setStats((await res.json()) as StatsPayload);
+    } catch {
+      setFailed(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiKey]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  if (loading) {
+    return (
+      <div className="py-14 grid place-items-center text-muted-foreground">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
+
+  if (failed || !stats) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        <BarChart3 className="w-10 h-10 mx-auto mb-3 opacity-50" />
+        <p className="text-sm mb-4">آمار بارگذاری نشد.</p>
+        <button
+          onClick={load}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-4 py-2 hover:bg-brand/20 transition-all min-h-[34px]"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          تلاش دوباره
+        </button>
+      </div>
+    );
+  }
+
+  const t = stats.totals;
+  const tiles = [
+    { icon: Eye, label: "بازدید سایت", value: t.visits },
+    { icon: FolderGit2, label: "بازدید پروژه‌ها", value: t.projectViews },
+    { icon: Heart, label: "مجموع لایک‌ها", value: t.likes },
+    { icon: MessageSquare, label: "پیام‌ها", value: t.messages, hint: `${fa(t.unread)} خوانده‌نشده` },
+    { icon: CalendarClock, label: "پیام این هفته", value: t.messagesLastWeek },
+    { icon: FolderGit2, label: "پروژه‌ها", value: t.projects },
+    { icon: FileText, label: "نوشته‌ها", value: t.articles },
+  ];
+
+  const maxProjectViews = Math.max(1, ...stats.topProjects.map((p) => p.views));
+  const maxArticleViews = Math.max(1, ...stats.topArticles.map((a) => a.views));
+
+  return (
+    <div className="space-y-5">
+      {/* Stat tiles */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+        {tiles.map((tile) => (
+          <div key={tile.label} className="stat-tile">
+            <div className="flex items-center gap-1.5 mb-1">
+              <tile.icon className="w-3.5 h-3.5 text-brand" aria-hidden />
+              <span className="stat-label">{tile.label}</span>
+            </div>
+            <p className="stat-value">{fa(tile.value)}</p>
+            {tile.hint && <p className="text-[10px] text-muted-foreground mt-0.5">{tile.hint}</p>}
+          </div>
+        ))}
+      </div>
+
+      {/* Top projects */}
+      <div className="rounded-2xl border border-border bg-card/60 p-4">
+        <h4 className="flex items-center gap-2 text-sm font-extrabold mb-3">
+          <FolderGit2 className="w-4 h-4 text-brand" />
+          پربازدیدترین پروژه‌ها
+        </h4>
+        <ul className="space-y-3">
+          {stats.topProjects.map((p, i) => (
+            <li key={p.slug}>
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <span className="text-xs font-bold truncate">
+                  <span aria-hidden className="ml-1">{p.icon}</span>
+                  {p.title}
+                </span>
+                <span className="text-[11px] font-bold text-brand shrink-0 tabular-nums">
+                  {fa(p.views)} 👁️
+                </span>
+              </div>
+              <div className="top-bar">
+                <span style={{ width: `${Math.max(6, (p.views / maxProjectViews) * 100)}%` }} />
+              </div>
+              {i === 0 && (
+                <p className="text-[10px] text-muted-foreground mt-1">🏆 صدرنشین جدول بازدید</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Top articles */}
+      <div className="rounded-2xl border border-border bg-card/60 p-4">
+        <h4 className="flex items-center gap-2 text-sm font-extrabold mb-3">
+          <FileText className="w-4 h-4 text-brand" />
+          پربازدیدترین نوشته‌ها
+        </h4>
+        <ul className="space-y-3">
+          {stats.topArticles.map((a) => (
+            <li key={a.slug}>
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <span className="text-xs font-bold truncate">
+                  <span aria-hidden className="ml-1">{a.icon}</span>
+                  {a.title}
+                </span>
+                <span className="flex items-center gap-2 shrink-0 text-[11px] font-bold tabular-nums">
+                  <span className="text-brand">{fa(a.views)} 👁️</span>
+                  <span className="inline-flex items-center gap-0.5 text-muted-foreground">
+                    <Heart className="w-3 h-3 fill-brand text-brand" /> {fa(a.likes)}
+                  </span>
+                </span>
+              </div>
+              <div className="top-bar">
+                <span style={{ width: `${Math.max(6, (a.views / maxArticleViews) * 100)}%` }} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] text-muted-foreground">
+          آخرین به‌روزرسانی: {new Date(stats.generatedAt).toLocaleTimeString("fa-IR")}
+        </p>
+        <button
+          onClick={load}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 hover:bg-brand/20 active:scale-95 transition-all min-h-[30px]"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          به‌روزرسانی
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function AdminMessagesDialog({
   open,
@@ -82,6 +276,7 @@ export function AdminMessagesDialog({
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [panel, setPanel] = useState<"inbox" | "stats">("inbox");
 
   // Reset state when dialog closes
   useEffect(() => {
@@ -92,6 +287,7 @@ export function AdminMessagesDialog({
       setPage(1);
       setTab("all");
       setConfirmDeleteId(null);
+      setPanel("inbox");
     }
   }, [open]);
 
@@ -270,42 +466,47 @@ export function AdminMessagesDialog({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Inbox className="w-5 h-5 text-brand" />
-                صندوق پیام‌ها
+                پنل مدیریت
                 {unread > 0 && (
                   <span className="text-[11px] font-bold bg-brand text-primary-foreground rounded-full px-2.5 py-0.5">
                     {fa(unread)} خوانده‌نشده
                   </span>
                 )}
               </DialogTitle>
-              <DialogDescription>مجموع {fa(total)} پیام از فرم تماس</DialogDescription>
+              <DialogDescription>
+                {panel === "inbox" ? `مجموع ${fa(total)} پیام از فرم تماس` : "نگاه کلی به عملکرد سایت"}
+              </DialogDescription>
             </DialogHeader>
 
-            {/* Tabs */}
-            <div className="flex items-center gap-1 rounded-2xl border border-border bg-secondary/60 p-1 mt-1" role="tablist" aria-label="فیلتر پیام‌ها">
+            {/* Panel tabs */}
+            <div className="flex items-center gap-1 rounded-2xl border border-border bg-secondary/60 p-1 mt-1" role="tablist" aria-label="بخش‌های پنل">
               {(
                 [
-                  { id: "all", label: "همه" },
-                  { id: "unread", label: unread > 0 ? `خوانده‌نشده (${fa(unread)})` : "خوانده‌نشده" },
+                  { id: "inbox", label: "صندوق پیام", icon: Inbox },
+                  { id: "stats", label: "آمار سایت", icon: BarChart3 },
                 ] as const
-              ).map((t) => (
+              ).map((p) => (
                 <button
-                  key={t.id}
+                  key={p.id}
                   role="tab"
-                  aria-selected={tab === t.id}
-                  onClick={() => switchTab(t.id)}
+                  aria-selected={panel === p.id}
+                  onClick={() => setPanel(p.id)}
                   className={cn(
-                    "flex-1 rounded-xl px-3 py-2 text-xs font-bold transition-all min-h-[36px]",
-                    tab === t.id
+                    "flex-1 rounded-xl px-3 py-2 text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all min-h-[36px]",
+                    panel === p.id
                       ? "bg-brand text-primary-foreground chip-active"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  {t.label}
+                  <p.icon className="w-3.5 h-3.5" aria-hidden />
+                  {p.label}
                 </button>
               ))}
             </div>
 
-            {loading ? (
+            {panel === "stats" ? (
+              <AdminStatsPanel apiKey={key.trim()} />
+            ) : loading ? (
               <div className="py-10 grid place-items-center text-muted-foreground">
                 <Loader2 className="w-6 h-6 animate-spin" />
               </div>

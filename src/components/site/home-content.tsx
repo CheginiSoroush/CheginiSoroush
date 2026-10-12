@@ -115,7 +115,11 @@ export function HomeContent({
             {categories.map((c, i) => (
               <button
                 key={c.id}
-                onClick={() => onNavigate("projects")}
+                onClick={() => {
+                  // Category deep-link: #/projects/cat/<id>
+                  window.location.hash = `projects/cat/${c.id}`;
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
                 onMouseMove={onSpotlightMove}
                 className="spotlight w-full flex items-center gap-3 rounded-2xl border border-border bg-card/70 px-4 py-3 text-right hover:border-brand/40 hover:bg-card transition-all group"
               >

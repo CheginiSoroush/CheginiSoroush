@@ -32,6 +32,7 @@ model Article {
   icon        String   @default("📝")
   readTime    Int      @default(5)
   views       Int      @default(0)
+  likes       Int      @default(0)
   publishedAt DateTime @default(now())
 }
 

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ExternalLink, X, Eye, Star, Share2, Dices, Link2, Check } from "lucide-react";
+import { Search, ExternalLink, X, Eye, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -30,11 +30,13 @@ const FILTERS = [
 
 export function ProjectsExplorer({
   initialProjects,
+  initialCategory,
   detailSlug,
   onOpenDetail,
   onCloseDetail,
 }: {
   initialProjects: Project[];
+  initialCategory?: string;
   detailSlug?: string;
   onOpenDetail: (slug: string) => void;
   onCloseDetail: () => void;
@@ -42,9 +44,13 @@ export function ProjectsExplorer({
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState("all");
+  const validCategory =
+    initialCategory && FILTERS.some((f) => f.id === initialCategory) ? initialCategory : "all";
+  const [filter, setFilter] = useState(validCategory);
+  const [sort, setSort] = useState<"default" | "views">("default");
   const [selected, setSelected] = useState<Project | null>(null);
   const [copied, setCopied] = useState(false);
+  const [cloneCopied, setCloneCopied] = useState(false);
   const [rolling, setRolling] = useState(false);
   const [bumpedSlugs, setBumpedSlugs] = useState<Set<string>>(new Set());
   const searchRef = useRef<HTMLInputElement>(null);
@@ -52,7 +58,23 @@ export function ProjectsExplorer({
   const { toast } = useToast();
   const onSpotlightMove = useSpotlight();
 
-  
+  // Deep-link: sync filter when the category part of the hash changes (back/forward)
+  const [prevCategory, setPrevCategory] = useState<string | undefined>(undefined);
+  if (prevCategory !== initialCategory) {
+    setPrevCategory(initialCategory);
+    const next =
+      initialCategory && FILTERS.some((f) => f.id === initialCategory) ? initialCategory : "all";
+    if (filter !== next) setFilter(next);
+  }
+
+  // Shareable filter URL: keep #/projects/cat/<id> in the address bar (no history spam)
+  const changeFilter = useCallback((id: string) => {
+    setFilter(id);
+    const target = id === "all" ? "#projects" : `#/projects/cat/${id}`;
+    if (window.location.hash !== target) {
+      history.replaceState(null, "", target);
+    }
+  }, []);
 
   const openProject = useCallback(
     (p: Project) => {
@@ -133,6 +155,18 @@ export function ProjectsExplorer({
     }
   };
 
+  const copyCloneCommand = async (repo: string) => {
+    const cmd = `git clone https://github.com/${repo}.git`;
+    try {
+      await navigator.clipboard.writeText(cmd);
+      setCloneCopied(true);
+      setTimeout(() => setCloneCopied(false), 1600);
+      toast({ title: "دستور کپی شد", description: "دستور کلون در کلیپ‌بورد ذخیره شد." });
+    } catch {
+      toast({ title: "کپی نشد", description: cmd, variant: "destructive" });
+    }
+  };
+
   const randomProject = () => {
     const pool = initialProjects;
     if (pool.length === 0 || rolling) return;
@@ -150,7 +184,7 @@ export function ProjectsExplorer({
     }, 90);
   };
 
-  // Fetch with debounce when query/filter changes
+  // Fetch with debounce when query/filter/sort changes
   useEffect(() => {
     const controller = new AbortController();
     const timer = setTimeout(async () => {
@@ -159,6 +193,7 @@ export function ProjectsExplorer({
         const params = new URLSearchParams();
         if (filter !== "all") params.set("category", filter);
         if (query.trim()) params.set("q", query.trim());
+        if (sort === "views") params.set("sort", "views");
         const res = await fetch(`/api/projects?${params.toString()}`, {
           signal: controller.signal,
         });
@@ -174,10 +209,10 @@ export function ProjectsExplorer({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query, filter]);
+  }, [query, filter, sort]);
 
   const grouped = useMemo(() => {
-    if (filter !== "all") return null;
+    if (filter !== "all" || sort === "views") return null;
     const map = new Map<string, Project[]>();
     for (const p of projects) {
       const arr = map.get(p.category) ?? [];
@@ -185,7 +220,7 @@ export function ProjectsExplorer({
       map.set(p.category, arr);
     }
     return map;
-  }, [projects, filter]);
+  }, [projects, filter, sort]);
 
   const renderCard = (p: Project, index: number) => (
     <motion.button
@@ -265,7 +300,7 @@ export function ProjectsExplorer({
               key={f.id}
               role="tab"
               aria-selected={filter === f.id}
-              onClick={() => setFilter(f.id)}
+              onClick={() => changeFilter(f.id)}
               className={cn(
                 "px-4 py-2 rounded-full text-sm font-medium border transition-all min-h-[38px]",
                 filter === f.id
@@ -285,6 +320,25 @@ export function ProjectsExplorer({
               ? "در حال جستجو..."
               : `${projects.length.toLocaleString("fa-IR")} پروژه یافت شد`}
           </p>
+          <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
+          <button
+            onClick={() => setSort((s) => (s === "views" ? "default" : "views"))}
+            aria-pressed={sort === "views"}
+            title={sort === "views" ? "بازگشت به چیدمان پیش‌فرض" : "مرتب‌سازی بر اساس بیشترین بازدید"}
+            className={cn(
+              "inline-flex items-center gap-1.5 text-xs font-bold rounded-full border px-3.5 py-1.5 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[30px]",
+              sort === "views"
+                ? "text-primary-foreground bg-brand border-brand chip-active"
+                : "text-brand border-brand/30 bg-brand/10 hover:bg-brand/20"
+            )}
+          >
+            {sort === "views" ? (
+              <ArrowDownWideNarrow className="w-3.5 h-3.5" />
+            ) : (
+              <LayoutGrid className="w-3.5 h-3.5" />
+            )}
+            {sort === "views" ? "پربازدیدترین" : "چیدمان پیش‌فرض"}
+          </button>
           <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
           <button
             onClick={randomProject}
@@ -419,6 +473,27 @@ export function ProjectsExplorer({
                   {copied ? <Check className="w-5 h-5 text-brand" /> : <Share2 className="w-5 h-5" />}
                 </button>
               </div>
+
+              {/* Terminal-style clone command */}
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-border bg-secondary/60 px-3 py-2" dir="ltr">
+                <Terminal className="w-3.5 h-3.5 text-brand shrink-0" aria-hidden />
+                <code className="flex-grow min-w-0 truncate text-[11px] font-mono text-muted-foreground">
+                  git clone https://github.com/{selected.repo}.git
+                </code>
+                <button
+                  onClick={() => copyCloneCommand(selected.repo)}
+                  aria-label="کپی دستور کلون"
+                  title="کپی دستور کلون"
+                  className="shrink-0 w-7 h-7 grid place-items-center rounded-lg text-muted-foreground hover:text-brand hover:bg-brand/10 transition-all"
+                >
+                  {cloneCopied ? (
+                    <Check className="w-3.5 h-3.5 text-brand" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                </button>
+              </div>
+
               <p className="mt-2.5 text-[11px] text-muted-foreground flex items-center gap-1 justify-center">
                 <Link2 className="w-3 h-3" />
                 لینک این پروژه قابل هم‌رسانی و نشانی‌پذیر است

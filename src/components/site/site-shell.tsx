@@ -33,14 +33,18 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle: string }
   );
 }
 
-type Route = { view: ViewName; detail?: string };
+type Route = { view: ViewName; detail?: string; category?: string };
 
 function parseHash(): Route {
   if (typeof window === "undefined") return { view: "home" };
   const raw = decodeURIComponent(window.location.hash.replace(/^#\/?/, ""));
-  const [v, slug] = raw.split("/");
+  const [v, second, third] = raw.split("/");
   if (VIEWS.includes(v as ViewName)) {
-    return { view: v as ViewName, detail: slug || undefined };
+    // Category deep-link: #projects/cat/<id>
+    if (v === "projects" && second === "cat" && third) {
+      return { view: "projects", category: third };
+    }
+    return { view: v as ViewName, detail: second || undefined };
   }
   return { view: "home" };
 }
@@ -248,7 +252,10 @@ export function SiteShell({
                 />
                 <ProjectsExplorer
                   initialProjects={projects}
-                  detailSlug={route.view === "projects" ? route.detail : undefined}
+                  initialCategory={route.view === "projects" ? route.category : undefined}
+                  detailSlug={
+                    route.view === "projects" && !route.category ? route.detail : undefined
+                  }
                   onOpenDetail={(slug) => openDetail("projects", slug)}
                   onCloseDetail={() => closeDetail("projects")}
                 />

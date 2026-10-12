@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get("category") ?? "all";
     const q = normalize(searchParams.get("q") ?? "");
     const featured = searchParams.get("featured");
+    const sort = searchParams.get("sort") === "views" ? "views" : "default";
 
     const where: {
       category?: string;
@@ -37,7 +38,10 @@ export async function GET(request: NextRequest) {
 
     const projects = await db.project.findMany({
       where,
-      orderBy: [{ featured: "desc" }, { order: "asc" }],
+      orderBy:
+        sort === "views"
+          ? [{ views: "desc" }, { featured: "desc" }, { order: "asc" }]
+          : [{ featured: "desc" }, { order: "asc" }],
     });
 
     const parsed = projects.map((p) => ({

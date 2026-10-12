@@ -30,13 +30,30 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Increment article views
+// Increment article views — or toggle likes via { action: "like" | "unlike" }
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as { slug?: string };
+    const body = (await request.json()) as { slug?: string; action?: "view" | "like" | "unlike" };
     if (!body.slug) {
       return NextResponse.json({ error: "slug الزامی است" }, { status: 400 });
     }
+
+    if (body.action === "like" || body.action === "unlike") {
+      const current = await db.article.findUnique({
+        where: { slug: body.slug },
+        select: { likes: true },
+      });
+      if (!current) {
+        return NextResponse.json({ error: "مقاله یافت نشد" }, { status: 404 });
+      }
+      const likes =
+        body.action === "like"
+          ? current.likes + 1
+          : Math.max(0, current.likes - 1);
+      await db.article.update({ where: { slug: body.slug }, data: { likes } });
+      return NextResponse.json({ likes });
+    }
+
     const article = await db.article.update({
       where: { slug: body.slug },
       data: { views: { increment: 1 } },

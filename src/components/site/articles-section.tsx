@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Eye, ArrowLeft, Github, Share2, Check } from "lucide-react";
+import { Clock, Eye, ArrowLeft, Github, Share2, Check, Heart } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,9 +15,43 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
+import { cn } from "@/lib/utils";
 import type { Article } from "@/lib/types";
 
 const DETAIL_INIT = Symbol("detail-init");
+const LIKED_STORAGE_KEY = "imsoroush-liked-articles";
+const LIKES_EVENT = "imsoroush-likes-change";
+const EMPTY_LIKED: ReadonlySet<string> = new Set();
+
+// External store over localStorage so liked hearts survive reloads (SSR-safe)
+let likedCache: Set<string> | null = null;
+function subscribeLiked(onChange: () => void) {
+  window.addEventListener(LIKES_EVENT, onChange);
+  return () => window.removeEventListener(LIKES_EVENT, onChange);
+}
+function getLikedSnapshot(): ReadonlySet<string> {
+  if (!likedCache) {
+    try {
+      const raw = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY) ?? "[]") as string[];
+      likedCache = new Set(Array.isArray(raw) ? raw : []);
+    } catch {
+      likedCache = new Set();
+    }
+  }
+  return likedCache;
+}
+function getServerLiked(): ReadonlySet<string> {
+  return EMPTY_LIKED;
+}
+function writeLiked(next: Set<string>) {
+  likedCache = next;
+  try {
+    localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify([...next]));
+  } catch {
+    // storage unavailable — in-memory only
+  }
+  window.dispatchEvent(new Event(LIKES_EVENT));
+}
 
 const CATEGORY_META: Record<string, { label: string; color: string }> = {
   self: { label: "توسعه فردی", color: "text-fuchsia-500 border-fuchsia-500/30 bg-fuchsia-500/10" },
@@ -53,11 +87,50 @@ export function ArticlesSection({
   const [progress, setProgress] = useState(0);
   const [copied, setCopied] = useState(false);
   const [bumpedSlugs, setBumpedSlugs] = useState<Set<string>>(new Set());
+  const likedSlugs = useSyncExternalStore(subscribeLiked, getLikedSnapshot, getServerLiked);
+  const [likesOverrides, setLikesOverrides] = useState<Record<string, number>>({});
+  const [burstSlug, setBurstSlug] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const postedRef = useRef<Set<string>>(new Set());
-  
+
   const { toast } = useToast();
   const onSpotlightMove = useSpotlight();
+
+  const likesOf = (a: Article) => likesOverrides[a.slug] ?? a.likes;
+
+  const toggleLike = async (a: Article) => {
+    const wasLiked = likedSlugs.has(a.slug);
+    const action = wasLiked ? "unlike" : "like";
+    const delta = wasLiked ? -1 : 1;
+
+    // Optimistic update (persisted liked-set + card list + reader copy)
+    const nextLiked = new Set(likedSlugs);
+    if (wasLiked) nextLiked.delete(a.slug);
+    else nextLiked.add(a.slug);
+    writeLiked(nextLiked);
+    setLikesOverrides((prev) => ({ ...prev, [a.slug]: Math.max(0, likesOf(a) + delta) }));
+    setSelected((s) => (s && s.slug === a.slug ? { ...s, likes: Math.max(0, s.likes + delta) } : s));
+    if (!wasLiked) {
+      setBurstSlug(a.slug);
+      window.setTimeout(() => setBurstSlug((b) => (b === a.slug ? null : b)), 650);
+    }
+
+    // Sync with server; reconcile on response
+    try {
+      const res = await fetch("/api/articles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: a.slug, action }),
+      });
+      const data = (await res.json()) as { likes?: number };
+      if (typeof data.likes === "number") {
+        setLikesOverrides((prev) => ({ ...prev, [a.slug]: data.likes as number }));
+        setSelected((s) => (s && s.slug === a.slug ? { ...s, likes: data.likes as number } : s));
+      }
+    } catch {
+      toast({ title: "ثبت لایک ناموفق بود", description: "اتصال برقرار نشد؛ بعداً تلاش کنید.", variant: "destructive" });
+    }
+  };
 
   const openArticle = (a: Article) => {
     if (!bumpedSlugs.has(a.slug)) {
@@ -180,6 +253,23 @@ export function ArticlesSection({
                         <Clock className="w-3 h-3" />
                         {a.readTime.toLocaleString("fa-IR")} دقیقه
                       </span>
+                      <span
+                        className={cn(
+                          "text-[10px] font-bold inline-flex items-center gap-1 rounded-full border px-2.5 py-1 transition-colors",
+                          likedSlugs.has(a.slug)
+                            ? "text-brand border-brand/30 bg-brand/10"
+                            : "text-muted-foreground border-border"
+                        )}
+                      >
+                        <Heart
+                          className={cn(
+                            "w-3 h-3",
+                            likedSlugs.has(a.slug) && "fill-brand",
+                            burstSlug === a.slug && "like-burst"
+                          )}
+                        />
+                        {likesOf(a).toLocaleString("fa-IR")}
+                      </span>
                     </div>
                   </div>
                   <h3 className="font-extrabold text-lg mb-2 leading-8 group-hover:text-brand transition-colors">
@@ -241,15 +331,40 @@ export function ArticlesSection({
                   <Eye className="w-3 h-3" />
                   {selected.views.toLocaleString("fa-IR")} بازدید
                 </Badge>
-                <button
-                  onClick={() => shareArticle(selected)}
-                  aria-label="هم‌رسانی لینک نوشته"
-                  title="هم‌رسانی لینک"
-                  className="mr-auto inline-flex items-center gap-1.5 text-[11px] font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3 py-1.5 hover:bg-brand/20 active:scale-95 transition-all min-h-[30px]"
-                >
-                  {copied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
-                  هم‌رسانی
-                </button>
+                <div className="mr-auto flex items-center gap-1.5">
+                  <button
+                    onClick={() => toggleLike(selected)}
+                    aria-pressed={likedSlugs.has(selected.slug)}
+                    aria-label={
+                      likedSlugs.has(selected.slug) ? "برداشتن لایک" : "لایک کردن این نوشته"
+                    }
+                    title={likedSlugs.has(selected.slug) ? "لایک شده" : "لایک"}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 text-[11px] font-bold rounded-full border px-3 py-1.5 transition-all min-h-[30px] active:scale-95",
+                      likedSlugs.has(selected.slug)
+                        ? "text-brand border-brand/40 bg-brand/15"
+                        : "text-muted-foreground border-border hover:text-brand hover:border-brand/40"
+                    )}
+                  >
+                    <Heart
+                      className={cn(
+                        "w-3.5 h-3.5",
+                        likedSlugs.has(selected.slug) && "fill-brand",
+                        burstSlug === selected.slug && "like-burst"
+                      )}
+                    />
+                    {selected.likes.toLocaleString("fa-IR")}
+                  </button>
+                  <button
+                    onClick={() => shareArticle(selected)}
+                    aria-label="هم‌رسانی لینک نوشته"
+                    title="هم‌رسانی لینک"
+                    className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3 py-1.5 hover:bg-brand/20 active:scale-95 transition-all min-h-[30px]"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
+                    هم‌رسانی
+                  </button>
+                </div>
               </div>
 
               <div className="prose-fa max-w-none">
