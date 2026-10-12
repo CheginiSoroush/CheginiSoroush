@@ -310,13 +310,13 @@ body {
   font-size: 1rem;
 }
 .prose-fa h2 {
-  font-size: 1.45rem;
+  font-size: 1.45em;
   font-weight: 800;
   margin: 1.6rem 0 0.9rem;
   color: var(--brand);
 }
 .prose-fa h3 {
-  font-size: 1.15rem;
+  font-size: 1.15em;
   font-weight: 700;
   margin: 1.3rem 0 0.6rem;
 }
@@ -355,7 +355,7 @@ body {
   direction: ltr;
   text-align: left;
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.85em;
   margin: 1rem 0;
 }
 .light .prose-fa pre {
@@ -1242,3 +1242,143 @@ body {
 }
 
 /* r11 css bump */
+
+/* =====================================================================
+   Round 12 — reading history, reader font controls, card progress,
+   hero greeting, contact draft
+   ===================================================================== */
+
+/* ---------- Hero time-aware greeting pill ---------- */
+.greet-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--brand) 7%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--brand) 26%, transparent);
+  box-shadow:
+    0 6px 22px -12px var(--brand-glow),
+    inset 0 1px 0 color-mix(in srgb, var(--brand) 14%, transparent);
+  backdrop-filter: blur(8px);
+}
+.greet-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--brand);
+  box-shadow: 0 0 8px var(--brand-glow);
+  animation: greet-pulse 2.2s ease-in-out infinite;
+}
+@keyframes greet-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.72);
+  }
+}
+
+/* ---------- Article-card reading progress ---------- */
+.card-progress {
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 75%, transparent);
+  overflow: hidden;
+}
+.card-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(270deg, var(--brand), #5eead4);
+  box-shadow: 0 0 8px var(--brand-glow);
+  transition: width 0.5s ease;
+}
+
+/* ---------- Reading-history trigger + dialog ---------- */
+.history-trigger {
+  position: relative;
+}
+.history-trigger::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand) 20%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.history-trigger:hover::after {
+  opacity: 1;
+}
+.history-row {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.history-row:hover {
+  border-color: color-mix(in srgb, var(--brand) 35%, transparent);
+  box-shadow: 0 8px 20px -14px var(--brand-glow);
+  transform: translateX(-3px);
+}
+.history-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 80%, transparent);
+  overflow: hidden;
+}
+.history-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(270deg, var(--brand), #5eead4);
+  box-shadow: 0 0 6px var(--brand-glow);
+}
+.reading-history-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--brand) 40%, transparent) transparent;
+}
+
+/* ---------- Reader font-size controls ---------- */
+.reader-font-group > div {
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--brand) 8%, transparent);
+}
+
+/* ---------- Contact draft pill ---------- */
+.draft-pill {
+  animation: draft-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes draft-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .greet-dot {
+    animation: none;
+  }
+  .card-progress > span {
+    transition: none;
+  }
+  .history-row,
+  .history-trigger::after {
+    transition: none;
+  }
+  .draft-pill {
+    animation: none;
+  }
+}

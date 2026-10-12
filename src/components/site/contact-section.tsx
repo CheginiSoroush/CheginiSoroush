@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Send, MapPin, Mail, Github, CheckCircle2, Loader2 } from "lucide-react";
+import { Send, MapPin, Mail, Github, CheckCircle2, Loader2, FileClock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type FormState = { name: string; email: string; subject: string; message: string };
 type FieldErrors = Partial<Record<keyof FormState, string>>;
+
+const DRAFT_KEY = "imsoroush-contact-draft";
+const EMPTY_FORM: FormState = { name: "", email: "", subject: "", message: "" };
 
 const SOCIALS = [
   {
@@ -37,10 +40,50 @@ const SOCIALS = [
 
 export function ContactSection() {
   const { toast } = useToast();
-  const [form, setForm] = useState<FormState>({ name: "", email: "", subject: "", message: "" });
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
+  const draftLoadedRef = useRef(false);
+
+  // Restore an unsent draft exactly once (client-side only)
+  useEffect(() => {
+    if (draftLoadedRef.current) return;
+    draftLoadedRef.current = true;
+    try {
+      const raw = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "null") as FormState | null;
+      if (raw && typeof raw === "object" && (raw.message?.trim() || raw.subject?.trim())) {
+        setForm({
+          name: typeof raw.name === "string" ? raw.name : "",
+          email: typeof raw.email === "string" ? raw.email : "",
+          subject: typeof raw.subject === "string" ? raw.subject : "",
+          message: typeof raw.message === "string" ? raw.message : "",
+        });
+        setDraftRestored(true);
+        toast({ title: "پیش‌نویس بازیابی شد ✍️", description: "پیام نیمه‌کاره قبلی شما برگشت." });
+      }
+    } catch {
+      // storage unavailable
+    }
+  }, [toast]);
+
+  // Debounced draft persistence
+  useEffect(() => {
+    if (!draftLoadedRef.current) return;
+    const t = window.setTimeout(() => {
+      try {
+        if (form.message.trim() || form.subject.trim()) {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
+        } else {
+          localStorage.removeItem(DRAFT_KEY);
+        }
+      } catch {
+        // storage unavailable
+      }
+    }, 400);
+    return () => window.clearTimeout(t);
+  }, [form]);
 
   const set = (key: keyof FormState) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -77,7 +120,12 @@ export function ContactSection() {
       };
       if (res.ok && data.ok) {
         setDone(true);
-        setForm({ name: "", email: "", subject: "", message: "" });
+        setForm(EMPTY_FORM);
+        try {
+          localStorage.removeItem(DRAFT_KEY);
+        } catch {
+          // storage unavailable
+        }
         toast({ title: "ارسال شد ✅", description: data.message });
       } else {
         if (data.errors) setErrors(data.errors);
@@ -189,9 +237,17 @@ export function ContactSection() {
           ) : (
             <form onSubmit={submit} noValidate className="space-y-5">
               <div>
-                <h2 className="text-lg font-extrabold mb-1">ارسال پیام مستقیم</h2>
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <h2 className="text-lg font-extrabold">ارسال پیام مستقیم</h2>
+                  {draftRestored && (
+                    <span className="draft-pill inline-flex items-center gap-1 text-[10px] font-bold text-brand bg-brand/10 border border-brand/25 rounded-full px-2.5 py-1">
+                      <FileClock className="w-3 h-3" aria-hidden />
+                      پیش‌نویس بازیابی شد
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  پیام شما مستقیماً در صندوق پیام‌های من ذخیره می‌شود.
+                  پیام شما مستقیماً در صندوق پیام‌های من ذخیره می‌شود؛ پیش‌نویس هم به‌صورت خودکار نگه داشته می‌شود.
                 </p>
               </div>
 

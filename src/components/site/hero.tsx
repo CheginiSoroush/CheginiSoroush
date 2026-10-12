@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import type { SiteStats } from "@/lib/types";
@@ -72,8 +72,29 @@ function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
   );
 }
 
+// Time-aware Persian greeting for the visitor (client-only via external store, no hydration mismatch)
+function greetingForHour(h: number): { text: string; emoji: string } {
+  if (h >= 5 && h < 12) return { text: "صبح بخیر", emoji: "🌅" };
+  if (h >= 12 && h < 17) return { text: "بعدازظهر بخیر", emoji: "☀️" };
+  if (h >= 17 && h < 20) return { text: "عصر بخیر", emoji: "🌇" };
+  return { text: "شب بخیر", emoji: "🌙" };
+}
+let greetCache: { key: number; value: { text: string; emoji: string } } | null = null;
+function getGreetSnapshot() {
+  const h = new Date().getHours();
+  if (!greetCache || greetCache.key !== h) {
+    greetCache = { key: h, value: greetingForHour(h) };
+  }
+  return greetCache.value;
+}
+
 export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore: () => void }) {
   const typed = useTypewriter(ROLES);
+  const greet = useSyncExternalStore(
+    () => () => {},
+    getGreetSnapshot,
+    () => null
+  );
 
   const statItems = [
     { value: stats?.projects ?? 0, label: "پروژه", icon: "🚀" },
@@ -117,11 +138,28 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
               alt="لوگوی شخصی سروش"
               width={280}
               height={100}
+              priority
               className="relative dark:hidden w-56 sm:w-72 h-auto select-none drop-shadow-xl"
               draggable={false}
             />
           </div>
         </motion.div>
+
+        {/* Time-aware greeting */}
+        {greet && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="greet-pill mx-auto mb-6 w-fit"
+            role="status"
+          >
+            <span className="greet-dot" aria-hidden />
+            <span aria-hidden>{greet.emoji}</span>
+            <span>{greet.text}</span>
+            <span className="text-muted-foreground/70">— خوش آمدید</span>
+          </motion.div>
+        )}
 
         {/* Name */}
         <motion.h1

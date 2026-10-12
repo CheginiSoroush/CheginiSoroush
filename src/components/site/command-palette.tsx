@@ -15,6 +15,7 @@ import {
   Sparkles,
   CornerDownLeft,
   Star,
+  History,
 } from "lucide-react";
 import {
   CommandDialog,
@@ -129,6 +130,16 @@ export function CommandPalette({
           go("#projects");
           // let the projects view mount, then switch it to favorites mode
           window.setTimeout(() => window.dispatchEvent(new CustomEvent("toggle-projects-favorites")), 350);
+        },
+      },
+      {
+        icon: History,
+        label: "تاریخچه مطالعه",
+        hint: "",
+        run: () => {
+          go("#writing");
+          // let the writing view mount, then open the history panel
+          window.setTimeout(() => window.dispatchEvent(new CustomEvent("imsoroush-open-history")), 350);
         },
       },
       { icon: Keyboard, label: "راهنمای میان‌برها", hint: "؟", run: () => runAction("open-shortcuts") },

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Eye, ArrowLeft, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send } from "lucide-react";
+import { Clock, Eye, ArrowLeft, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send, History, Trash2, Minus, Plus, Type } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -119,6 +119,62 @@ function removeReadingEntry(slug: string) {
   delete map[slug];
   writeReadingMap(map);
 }
+function clearReadingHistory() {
+  writeReadingMap({});
+}
+
+// Persian relative time (same wording as article-comments)
+function relativeTime(ts: number) {
+  try {
+    const mins = Math.floor((Date.now() - ts) / 60000);
+    if (mins < 1) return "همین حالا";
+    if (mins < 60) return `${mins.toLocaleString("fa-IR")} دقیقه پیش`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours.toLocaleString("fa-IR")} ساعت پیش`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days.toLocaleString("fa-IR")} روز پیش`;
+    const weeks = Math.floor(days / 7);
+    if (weeks < 5) return `${weeks.toLocaleString("fa-IR")} هفته پیش`;
+    return new Date(ts).toLocaleDateString("fa-IR");
+  } catch {
+    return "";
+  }
+}
+
+// Reader font-size steps (percent, persisted via external store — SSR-safe)
+const FONT_STEPS = [100, 108, 117, 126];
+const FONT_KEY = "imsoroush-reader-font";
+const FONT_EVENT = "imsoroush-reader-font-change";
+function loadFontStep(): number {
+  try {
+    const raw = Number(localStorage.getItem(FONT_KEY));
+    if (Number.isInteger(raw) && raw >= 0 && raw < FONT_STEPS.length) return raw;
+  } catch {
+    // storage unavailable
+  }
+  return 0;
+}
+let fontStepCache: number | null = null;
+function subscribeFont(onChange: () => void) {
+  window.addEventListener(FONT_EVENT, onChange);
+  return () => window.removeEventListener(FONT_EVENT, onChange);
+}
+function getFontSnapshot(): number {
+  if (fontStepCache === null) fontStepCache = loadFontStep();
+  return fontStepCache;
+}
+function getServerFont(): number {
+  return 0;
+}
+function writeFontStep(step: number) {
+  fontStepCache = step;
+  try {
+    localStorage.setItem(FONT_KEY, String(step));
+  } catch {
+    // storage unavailable — session-only
+  }
+  window.dispatchEvent(new Event(FONT_EVENT));
+}
 
 const ART_FILTERS = [
   { id: "all", label: "همه نوشته‌ها", icon: "📚" },
@@ -210,6 +266,8 @@ export function ArticlesSection({
   const lastWriteRef = useRef(0);
   const [query, setQuery] = useState("");
   const [tocOpen, setTocOpen] = useState(true);
+  const fontStep = useSyncExternalStore(subscribeFont, getFontSnapshot, getServerFont);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const validCat =
     initialCategory && ART_FILTERS.some((f) => f.id === initialCategory) ? initialCategory : "all";
   const [filter, setFilter] = useState(validCat);
@@ -306,6 +364,37 @@ export function ArticlesSection({
     openArticle(a);
   };
 
+  // Resume from an arbitrary history row (even finished ones just re-open)
+  const resumeFromHistory = (slug: string, saved: number) => {
+    const a = articles.find((x) => x.slug === slug);
+    if (!a) {
+      removeReadingEntry(slug);
+      return;
+    }
+    setHistoryOpen(false);
+    pendingResumeRef.current = saved >= 0.97 ? 0 : saved;
+    openArticle(a);
+  };
+
+  // Full reading history (newest first)
+  const historyList = useMemo(
+    () => Object.values(readingMap).sort((a, b) => b.updatedAt - a.updatedAt),
+    [readingMap]
+  );
+
+  // Command palette → open history panel
+  useEffect(() => {
+    const open = () => setHistoryOpen(true);
+    window.addEventListener("imsoroush-open-history", open);
+    return () => window.removeEventListener("imsoroush-open-history", open);
+  }, []);
+
+  // Load persisted reader font size handled by the external store above
+  const changeFontStep = (next: number) => {
+    const clamped = Math.max(0, Math.min(FONT_STEPS.length - 1, next));
+    writeFontStep(clamped);
+  };
+
   // Deep-link: derive reader state from hash during render (prop-change adjustment)
   // Sentinel so a detailSlug present at mount still triggers the first adjustment
   const [prevDetail, setPrevDetail] = useState<string | undefined | symbol>(DETAIL_INIT);
@@ -370,20 +459,21 @@ export function ArticlesSection({
     setProgress(p);
     progressRef.current = p;
 
-    // Persist reading position (throttled) for the continue-reading card
+    // Persist reading position (throttled) for the resume card + history panel
     const now = Date.now();
     if (selected && now - lastWriteRef.current > 700) {
       lastWriteRef.current = now;
-      if (p >= 0.97 || p < 0.005) {
-        // finished or barely started — nothing worth resuming
+      if (p < 0.005) {
+        // barely opened — nothing worth keeping
         removeReadingEntry(selected.slug);
       } else {
+        // finished articles are KEPT (progress 1) so the history shows them as done
         saveReadingEntry({
           slug: selected.slug,
           title: selected.title,
           icon: selected.icon,
           category: selected.category,
-          progress: p,
+          progress: Math.min(p, 1),
           updatedAt: now,
         });
       }
@@ -589,6 +679,20 @@ export function ArticlesSection({
             )}
             {sort === "popular" ? "پربازدیدترین" : "چیدمان پیش‌فرض"}
           </button>
+          {historyList.length > 0 && (
+            <button
+              onClick={() => setHistoryOpen(true)}
+              title="تاریخچه مطالعه شما"
+              aria-label={`تاریخچه مطالعه، ${historyList.length.toLocaleString("fa-IR")} نوشته`}
+              className="history-trigger inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 hover:bg-brand/20 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[30px]"
+            >
+              <History className="w-3.5 h-3.5" aria-hidden />
+              تاریخچه
+              <span className="text-[10px] font-black bg-brand text-primary-foreground rounded-full px-1.5 min-w-[18px] text-center">
+                {historyList.length.toLocaleString("fa-IR")}
+              </span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -609,6 +713,10 @@ export function ArticlesSection({
           <AnimatePresence>
             {visible.map((a, i) => {
               const meta = CATEGORY_META[a.category];
+              const read = readingMap[a.slug];
+              const readPct = read ? Math.round(read.progress * 100) : 0;
+              const isDone = !!read && read.progress >= 0.97 && !read.dismissed;
+              const isInProgress = !!read && !read.dismissed && read.progress >= 0.005 && read.progress < 0.97;
               return (
                 <motion.button
                   key={a.id}
@@ -664,6 +772,12 @@ export function ArticlesSection({
                           {commentCounts[a.slug].toLocaleString("fa-IR")}
                         </span>
                       )}
+                      {isDone && (
+                        <span className="text-[10px] font-black text-emerald-500 inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1">
+                          <Check className="w-3 h-3" aria-hidden />
+                          خوانده شد
+                        </span>
+                      )}
                   </div>
                   <h3 className="font-extrabold text-lg mb-2 leading-8 group-hover:text-brand transition-colors">
                     {a.title}
@@ -671,6 +785,24 @@ export function ArticlesSection({
                   <p className="text-sm text-muted-foreground leading-7 flex-grow line-clamp-3 mb-4">
                     {a.excerpt}
                   </p>
+                  {isInProgress && (
+                    <div className="mb-4">
+                      <div
+                        className="card-progress"
+                        role="progressbar"
+                        aria-valuenow={readPct}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`پیشرفت مطالعه ${a.title}`}
+                      >
+                        <span style={{ width: `${readPct}%` }} />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                        <BookOpen className="w-3 h-3 text-brand" aria-hidden />
+                        {readPct.toLocaleString("fa-IR")}٪ خوانده شده — ادامه دهید
+                      </p>
+                    </div>
+                  )}
                   <div className="pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
                     <span>{formatDate(a.publishedAt)}</span>
                     <span className="font-bold text-brand inline-flex items-center gap-1.5">
@@ -690,15 +822,15 @@ export function ArticlesSection({
         open={!!selected}
         onOpenChange={(open) => {
           if (!open) {
-            // Persist the final position so the resume card stays accurate
+            // Persist the final position so the resume card + history stay accurate
             const now = Date.now();
-            if (selected && progressRef.current > 0.01 && progressRef.current < 0.97) {
+            if (selected && progressRef.current > 0.01) {
               saveReadingEntry({
                 slug: selected.slug,
                 title: selected.title,
                 icon: selected.icon,
                 category: selected.category,
-                progress: progressRef.current,
+                progress: Math.min(progressRef.current, 1),
                 updatedAt: now,
               });
             }
@@ -883,7 +1015,40 @@ export function ArticlesSection({
                 </nav>
               )}
 
-              <div className="prose-fa max-w-none">
+              {/* Reader font-size controls */}
+              <div className="reader-font-group flex items-center gap-2 justify-end -mt-1 mb-3" role="group" aria-label="اندازه قلم نوشته">
+                <span className="text-[10px] font-bold text-muted-foreground inline-flex items-center gap-1.5">
+                  <Type className="w-3.5 h-3.5 text-brand" aria-hidden />
+                  اندازه قلم
+                </span>
+                <div className="flex items-center rounded-full border border-border bg-card p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => changeFontStep(fontStep - 1)}
+                    disabled={fontStep === 0}
+                    aria-label="کوچک‌تر کردن قلم"
+                    title="قلم کوچک‌تر"
+                    className="w-8 h-8 grid place-items-center rounded-full text-muted-foreground hover:text-brand hover:bg-brand/10 disabled:opacity-30 disabled:pointer-events-none transition-all"
+                  >
+                    <Minus className="w-4 h-4" aria-hidden />
+                  </button>
+                  <span className="text-[10px] font-black text-brand min-w-[44px] text-center tabular-nums" aria-live="polite">
+                    {FONT_STEPS[fontStep].toLocaleString("fa-IR")}٪
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => changeFontStep(fontStep + 1)}
+                    disabled={fontStep === FONT_STEPS.length - 1}
+                    aria-label="بزرگ‌تر کردن قلم"
+                    title="قلم بزرگ‌تر"
+                    className="w-8 h-8 grid place-items-center rounded-full text-muted-foreground hover:text-brand hover:bg-brand/10 disabled:opacity-30 disabled:pointer-events-none transition-all"
+                  >
+                    <Plus className="w-4 h-4" aria-hidden />
+                  </button>
+                </div>
+              </div>
+
+              <div className="prose-fa max-w-none" style={{ fontSize: `${FONT_STEPS[fontStep] / 100}rem` }}>
                 <ReactMarkdown components={markdownComponents}>{selected.content}</ReactMarkdown>
               </div>
 
@@ -922,6 +1087,116 @@ export function ArticlesSection({
 
               <ArticleComments slug={selected.slug} onCountChange={handleCommentCount} />
             </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Reading history dialog */}
+      <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
+        <DialogContent
+          aria-describedby={undefined}
+          className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col p-0 rounded-3xl dialog-accent"
+        >
+          <DialogHeader className="px-5 pt-5 pb-3 border-b border-border shrink-0">
+            <DialogTitle className="text-base flex items-center gap-2 text-right">
+              <History className="w-4.5 h-4.5 text-brand" aria-hidden />
+              تاریخچه مطالعه
+              <span className="text-[10px] font-black text-brand bg-brand/10 border border-brand/25 rounded-full px-2 py-0.5">
+                {historyList.length.toLocaleString("fa-IR")} نوشته
+              </span>
+            </DialogTitle>
+            <DialogDescription className="text-right text-xs">
+              پیشرفت مطالعه شما روی همین دستگاه ذخیره می‌شود.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-y-auto px-4 py-3 space-y-2 reading-history-scroll" role="list">
+            {historyList.length === 0 ? (
+              <p className="text-center text-xs text-muted-foreground py-10">
+                هنوز چیزی در تاریخچه نیست؛ یکی از نوشته‌ها را باز کنید ✨
+              </p>
+            ) : (
+              historyList.map((h) => {
+                const pct = Math.round(h.progress * 100);
+                const done = h.progress >= 0.97;
+                const catMeta = CATEGORY_META[h.category];
+                return (
+                  <div
+                    key={h.slug}
+                    role="listitem"
+                    className={cn(
+                      "history-row group rounded-2xl border border-border bg-card px-3.5 py-3 flex items-center gap-3 transition-all",
+                      h.dismissed && "opacity-60"
+                    )}
+                  >
+                    <span className="w-10 h-10 grid place-items-center rounded-xl bg-secondary text-xl shrink-0" aria-hidden>
+                      {h.icon}
+                    </span>
+                    <div className="flex-grow min-w-0">
+                      <p className="text-xs font-bold truncate">{h.title}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        {done ? (
+                          <span className="text-[10px] font-black text-emerald-500 inline-flex items-center gap-1">
+                            <Check className="w-3 h-3" aria-hidden />
+                            کامل خوانده شد
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-brand">{pct.toLocaleString("fa-IR")}٪</span>
+                        )}
+                        {catMeta && (
+                          <span className="text-[9px] font-bold text-muted-foreground">• {catMeta.label}</span>
+                        )}
+                        <span className="text-[9px] text-muted-foreground/70">• {relativeTime(h.updatedAt)}</span>
+                      </div>
+                      {!done && (
+                        <div
+                          className="history-progress mt-1.5"
+                          role="progressbar"
+                          aria-valuenow={pct}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-label={`پیشرفت ${h.title}`}
+                        >
+                          <span style={{ width: `${pct}%` }} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        onClick={() => resumeFromHistory(h.slug, h.progress)}
+                        aria-label={`ادامه ${h.title}`}
+                        title={done ? "مطالعه دوباره" : "ادامه مطالعه"}
+                        className="w-9 h-9 grid place-items-center rounded-xl border border-brand/30 bg-brand/10 text-brand hover:bg-brand/20 active:scale-90 transition-all"
+                      >
+                        <ArrowLeft className="w-4 h-4" aria-hidden />
+                      </button>
+                      <button
+                        onClick={() => removeReadingEntry(h.slug)}
+                        aria-label={`حذف ${h.title} از تاریخچه`}
+                        title="حذف از تاریخچه"
+                        className="history-delete w-9 h-9 grid place-items-center rounded-xl border border-border text-muted-foreground/60 hover:text-destructive hover:border-destructive/40 active:scale-90 transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" aria-hidden />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+          {historyList.length > 0 && (
+            <div className="px-5 py-3 border-t border-border shrink-0 flex items-center justify-between">
+              <button
+                onClick={() => {
+                  clearReadingHistory();
+                  toast({ title: "تاریخچه پاک شد", description: "همه رکوردهای مطالعه حذف شدند." });
+                }}
+                className="inline-flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground hover:text-destructive transition-colors min-h-[34px] px-2 rounded-lg"
+              >
+                <Trash2 className="w-3.5 h-3.5" aria-hidden />
+                پاک کردن همه
+              </button>
+              <span className="text-[10px] text-muted-foreground/70">روی همین دستگاه ذخیره شده</span>
+            </div>
           )}
         </DialogContent>
       </Dialog>
