@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Eye, ArrowLeft, Github, Share2, Check, Heart, MessageCircle } from "lucide-react";
+import { Clock, Eye, ArrowLeft, Github, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import { ArticleComments } from "@/components/site/article-comments";
 import { ProjectCover } from "@/components/site/project-cover";
+import { EmptyState } from "@/components/site/empty-state";
 import { cn } from "@/lib/utils";
 import type { Article } from "@/lib/types";
 
@@ -60,6 +61,16 @@ const CATEGORY_META: Record<string, { label: string; color: string }> = {
   sports: { label: "علوم ورزشی", color: "text-emerald-500 border-emerald-500/30 bg-emerald-500/10" },
 };
 
+const ART_FILTERS = [
+  { id: "all", label: "همه نوشته‌ها", icon: "📚" },
+  { id: "self", label: "توسعه فردی", icon: "🧠" },
+  { id: "sports", label: "علوم ورزشی", icon: "💪" },
+];
+
+// Same normalization as the API (ي→ی ك→ک + ZWNJ → space)
+const norm = (s: string) =>
+  s.replace(/ي/g, "ی").replace(/ك/g, "ک").replace(/‌/g, " ").trim().toLowerCase();
+
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleDateString("fa-IR", {
@@ -75,12 +86,14 @@ function formatDate(iso: string) {
 export function ArticlesSection({
   articles,
   loading,
+  initialCategory,
   detailSlug,
   onOpenDetail,
   onCloseDetail,
 }: {
   articles: Article[];
   loading: boolean;
+  initialCategory?: string;
   detailSlug?: string;
   onOpenDetail: (slug: string) => void;
   onCloseDetail: () => void;
@@ -95,6 +108,29 @@ export function ArticlesSection({
   const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const postedRef = useRef<Set<string>>(new Set());
+  const [query, setQuery] = useState("");
+  const validCat =
+    initialCategory && ART_FILTERS.some((f) => f.id === initialCategory) ? initialCategory : "all";
+  const [filter, setFilter] = useState(validCat);
+  const [sort, setSort] = useState<"default" | "popular">("default");
+
+  // Deep-link: sync filter when the category part of the hash changes (back/forward)
+  const [prevCategory, setPrevCategory] = useState<string | undefined>(undefined);
+  if (prevCategory !== initialCategory) {
+    setPrevCategory(initialCategory);
+    const next =
+      initialCategory && ART_FILTERS.some((f) => f.id === initialCategory) ? initialCategory : "all";
+    if (filter !== next) setFilter(next);
+  }
+
+  // Shareable filter URL: #/writing/cat/<id> (no history spam)
+  const changeFilter = useCallback((id: string) => {
+    setFilter(id);
+    const target = id === "all" ? "#/writing" : `#/writing/cat/${id}`;
+    if (window.location.hash !== target) {
+      history.replaceState(null, "", target);
+    }
+  }, []);
 
   const { toast } = useToast();
   const onSpotlightMove = useSpotlight();
@@ -220,18 +256,114 @@ export function ArticlesSection({
     }
   };
 
+  // Client-side search + filter + sort (list is small; no API round-trip needed)
+  const visible = useMemo(() => {
+    const tokens = query ? norm(query).split(/\s+/) : [];
+    let list = articles.filter((a) => {
+      if (filter !== "all" && a.category !== filter) return false;
+      if (tokens.length === 0) return true;
+      const hay = norm(`${a.title} ${a.excerpt} ${a.content.slice(0, 500)}`);
+      return tokens.every((t) => hay.includes(t));
+    });
+    if (sort === "popular") {
+      list = [...list].sort((x, y) => y.views - x.views);
+    }
+    return list;
+  }, [articles, query, filter, sort]);
+
+  const resetFilters = useCallback(() => {
+    setQuery("");
+    changeFilter("all");
+    setSort("default");
+  }, [changeFilter]);
+
   return (
     <section id="articles" aria-label="نوشته‌ها" className="max-w-6xl mx-auto px-4 sm:px-6">
+      {/* Search + Filters */}
+      <div className="mb-8 space-y-4">
+        <div className="relative max-w-xl mx-auto">
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="جستجو در نوشته‌ها..."
+            aria-label="جستجوی نوشته"
+            className="w-full rounded-2xl border border-border bg-card px-11 py-3.5 text-sm outline-none focus:border-brand/60 focus:ring-2 focus:ring-brand/20 transition-all min-h-[46px]"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              aria-label="پاک کردن جستجو"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-brand"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-2" role="tablist" aria-label="فیلتر دسته‌بندی نوشته‌ها">
+          {ART_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              role="tab"
+              aria-selected={filter === f.id}
+              onClick={() => changeFilter(f.id)}
+              className={cn(
+                "px-4 py-2 rounded-full text-sm font-medium border transition-all min-h-[38px]",
+                filter === f.id
+                  ? "bg-brand text-primary-foreground border-brand chip-active"
+                  : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-brand/40"
+              )}
+            >
+              <span aria-hidden>{f.icon} </span>
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-center gap-3">
+          <p className="text-center text-xs text-muted-foreground" aria-live="polite">
+            {`${visible.length.toLocaleString("fa-IR")} نوشته یافت شد`}
+          </p>
+          <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
+          <button
+            onClick={() => setSort((s) => (s === "popular" ? "default" : "popular"))}
+            aria-pressed={sort === "popular"}
+            title={sort === "popular" ? "بازگشت به چیدمان پیش‌فرض" : "مرتب‌سازی بر اساس پربازدیدترین"}
+            className={cn(
+              "inline-flex items-center gap-1.5 text-xs font-bold rounded-full border px-3.5 py-1.5 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[30px]",
+              sort === "popular"
+                ? "text-primary-foreground bg-brand border-brand chip-active"
+                : "text-brand border-brand/30 bg-brand/10 hover:bg-brand/20"
+            )}
+          >
+            {sort === "popular" ? (
+              <ArrowDownWideNarrow className="w-3.5 h-3.5" />
+            ) : (
+              <LayoutGrid className="w-3.5 h-3.5" />
+            )}
+            {sort === "popular" ? "پربازدیدترین" : "چیدمان پیش‌فرض"}
+          </button>
+        </div>
+      </div>
+
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {Array.from({ length: 2 }).map((_, i) => (
             <Skeleton key={i} className="h-52 rounded-2xl" />
           ))}
         </div>
+      ) : visible.length === 0 ? (
+        <EmptyState
+          title="نوشته‌ای یافت نشد"
+          description="عبارت دیگری را جستجو کنید یا فیلتر دسته‌بندی را تغییر دهید."
+          onReset={query || filter !== "all" || sort !== "default" ? resetFilters : undefined}
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <AnimatePresence>
-            {articles.map((a, i) => {
+            {visible.map((a, i) => {
               const meta = CATEGORY_META[a.category];
               return (
                 <motion.button

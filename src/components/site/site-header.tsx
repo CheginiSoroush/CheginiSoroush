@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import type { ViewName } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -99,6 +99,28 @@ export function SiteHeader({
             </button>
           ))}
         </nav>
+
+        {/* Command palette trigger */}
+        <button
+          onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
+          aria-label="جستجوی سراسری (Ctrl+K)"
+          title="جستجوی سراسری (Ctrl+K)"
+          className="palette-trigger hidden sm:inline-flex items-center gap-2 text-xs text-muted-foreground rounded-xl border border-border bg-card/60 pl-2 pr-3 py-2 hover:text-brand hover:border-brand/50 transition-all min-h-[38px]"
+        >
+          <Search className="w-3.5 h-3.5" />
+          <span>جستجو...</span>
+          <kbd className="kbd text-[10px]" dir="ltr">
+            Ctrl K
+          </kbd>
+        </button>
+        <button
+          onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
+          aria-label="جستجوی سراسری (Ctrl+K)"
+          title="جستجوی سراسری (Ctrl+K)"
+          className="sm:hidden w-10 h-10 rounded-full border border-border grid place-items-center text-muted-foreground hover:text-brand hover:border-brand/50 transition-all shrink-0"
+        >
+          <Search className="w-[18px] h-[18px]" />
+        </button>
 
         {/* Theme toggle — icons swap purely via CSS so SSR and client always match */}
         <button

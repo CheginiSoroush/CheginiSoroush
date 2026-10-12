@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import { ProjectCover } from "./project-cover";
+import { EmptyState } from "./empty-state";
 import type { Project } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -362,13 +363,11 @@ export function ProjectsExplorer({
           ))}
         </div>
       ) : projects.length === 0 ? (
-        <div className="text-center py-20 text-muted-foreground">
-          <div className="text-5xl mb-4" aria-hidden>
-            🔍
-          </div>
-          <p className="font-bold mb-1">پروژه‌ای یافت نشد</p>
-          <p className="text-sm">عبارت دیگری را جستجو کنید یا فیلتر را تغییر دهید.</p>
-        </div>
+        <EmptyState
+          title="پروژه‌ای یافت نشد"
+          description="عبارت دیگری را جستجو کنید یا فیلتر دسته‌بندی را تغییر دهید."
+          onReset={query || filter !== "all" ? () => { setQuery(""); changeFilter("all"); } : undefined}
+        />
       ) : grouped ? (
         <div className="space-y-10">
           {FILTERS.filter((f) => f.id !== "all" && grouped.has(f.id)).map((f) => {

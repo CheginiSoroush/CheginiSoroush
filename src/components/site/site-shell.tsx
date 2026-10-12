@@ -13,6 +13,7 @@ import {
 import { SiteHeader } from "./site-header";
 import { ScrollProgress } from "./scroll-progress";
 import { AdminMessagesDialog } from "./admin-messages-dialog";
+import { CommandPalette } from "./command-palette";
 import { Hero } from "./hero";
 import { HomeContent } from "./home-content";
 import { ProjectsExplorer } from "./projects-explorer";
@@ -40,9 +41,10 @@ function parseHash(): Route {
   const raw = decodeURIComponent(window.location.hash.replace(/^#\/?/, ""));
   const [v, second, third] = raw.split("/");
   if (VIEWS.includes(v as ViewName)) {
-    // Category deep-link: #projects/cat/<id>
-    if (v === "projects" && second === "cat" && third) {
-      return { view: "projects", category: third };
+    // Category deep-link: #projects/cat/<id> or #writing/cat/<id>
+    if (second === "cat" && third) {
+      if (v === "projects") return { view: "projects", category: third };
+      if (v === "writing") return { view: "writing", category: third };
     }
     return { view: v as ViewName, detail: second || undefined };
   }
@@ -69,6 +71,7 @@ function getServerRoute(): Route {
 
 function ShortcutsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const rows: { keys: string[]; desc: string }[] = [
+    { keys: ["Ctrl", "K"], desc: "جستجوی سراسری (پالت فرمان)" },
     { keys: ["1"], desc: "خانه" },
     { keys: ["2"], desc: "پروژه‌ها" },
     { keys: ["3"], desc: "نوشته‌ها" },
@@ -215,6 +218,18 @@ export function SiteShell({
     return () => window.removeEventListener("keydown", onKey);
   }, [navigate, route.view]);
 
+  // Global shortcuts dispatched from CommandPalette / footer
+  useEffect(() => {
+    const onAdmin = () => setAdminOpen(true);
+    const onShortcuts = () => setShortcutsOpen(true);
+    window.addEventListener("open-admin-panel", onAdmin);
+    window.addEventListener("open-shortcuts", onShortcuts);
+    return () => {
+      window.removeEventListener("open-admin-panel", onAdmin);
+      window.removeEventListener("open-shortcuts", onShortcuts);
+    };
+  }, []);
+
   const selfCount = articles.filter((a) => a.category === "self").length;
   const sportsCount = articles.filter((a) => a.category === "sports").length;
 
@@ -272,7 +287,10 @@ export function SiteShell({
                 <ArticlesSection
                   articles={articles}
                   loading={false}
-                  detailSlug={route.view === "writing" ? route.detail : undefined}
+                  initialCategory={route.view === "writing" ? route.category : undefined}
+                  detailSlug={
+                    route.view === "writing" && !route.category ? route.detail : undefined
+                  }
                   onOpenDetail={(slug) => openDetail("writing", slug)}
                   onCloseDetail={() => closeDetail("writing")}
                 />
@@ -346,6 +364,7 @@ export function SiteShell({
       </footer>
 
       <AdminMessagesDialog open={adminOpen} onOpenChange={setAdminOpen} />
+      <CommandPalette projects={projects} articles={articles} />
       <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
     </div>
   );
