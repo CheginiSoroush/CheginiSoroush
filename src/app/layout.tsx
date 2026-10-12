@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://imsoroush.ir"),
   title: "سروش | توسعه‌دهنده نرم‌افزار و نویسنده",
   description:
     "پورتفولیو شخصی سروش چگینی: توسعه‌دهنده نرم‌افزار، سازنده ربات‌های تلگرام، تجربه‌های سه‌بعدی و نویسنده.",
@@ -12,12 +13,19 @@ export const metadata: Metadata = {
   icons: {
     icon: "/photos/logo_dark.png",
   },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     title: "سروش | توسعه‌دهنده نرم‌افزار و نویسنده",
     description: "توسعه‌دهنده نرم‌افزار، نویسنده و علاقه‌مند به یادگیری مستمر.",
     url: "https://imsoroush.ir",
     siteName: "imsoroush.ir",
     type: "website",
+    locale: "fa_IR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "سروش | توسعه‌دهنده نرم‌افزار و نویسنده",
+    description: "توسعه‌دهنده نرم‌افزار، سازنده ربات‌های تلگرام و نویسنده — imsoroush.ir",
   },
 };
 

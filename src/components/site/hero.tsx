@@ -102,6 +102,7 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
               style={{ background: "var(--brand)" }}
               aria-hidden
             />
+            <div className="conic-ring" aria-hidden />
             <Image
               src="/photos/logo_dark.png"
               alt="لوگوی شخصی سروش"

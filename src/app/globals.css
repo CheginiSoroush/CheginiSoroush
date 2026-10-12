@@ -353,3 +353,190 @@ body {
   color: var(--brand);
   font-weight: 700;
 }
+
+/* ---------- Mouse spotlight (cards) ---------- */
+.spotlight {
+  position: relative;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--brand) 13%, transparent),
+    transparent 68%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.spotlight:hover::before {
+  opacity: 1;
+}
+.spotlight > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Card emoji micro-interaction */
+.card-emoji {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: center;
+}
+.group:hover .card-emoji {
+  transform: scale(1.18) rotate(-7deg);
+}
+
+/* ---------- Primary button shine sweep ---------- */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 45%;
+  inset-inline-start: -60%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transform: skewX(-18deg);
+  transition: inset-inline-start 0.65s ease;
+  pointer-events: none;
+}
+.btn-shine:hover::after {
+  inset-inline-start: 120%;
+}
+
+/* ---------- Rotating conic ring (hero logo) ---------- */
+.conic-ring {
+  position: absolute;
+  inset: -22px;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--brand) 40deg,
+    transparent 95deg,
+    transparent 180deg,
+    var(--brand) 225deg,
+    transparent 285deg
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), black calc(100% - 6px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 7px), black calc(100% - 6px));
+  animation: conic-spin 9s linear infinite;
+  opacity: 0.65;
+  pointer-events: none;
+}
+@keyframes conic-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .conic-ring,
+  .marquee-track,
+  .float-y,
+  .bounce-soft {
+    animation: none;
+  }
+}
+
+/* ---------- Dialog top accent ---------- */
+.dialog-accent::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 10%,
+    var(--brand) 50%,
+    transparent 90%
+  );
+  border-radius: 1rem 1rem 0 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---------- Footer gradient hairline ---------- */
+.footer-gradient {
+  position: relative;
+}
+.footer-gradient::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  inset-inline: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 5%,
+    color-mix(in srgb, var(--brand) 55%, transparent) 50%,
+    transparent 95%
+  );
+  pointer-events: none;
+}
+
+/* ---------- Active chip glow ---------- */
+.chip-active {
+  box-shadow:
+    0 8px 22px -8px var(--brand-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* ---------- Selection & focus ---------- */
+::selection {
+  background: color-mix(in srgb, var(--brand) 32%, transparent);
+  color: var(--foreground);
+}
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand) 65%, transparent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- Reading progress (dialog) ---------- */
+.reading-progress {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 3px;
+}
+.reading-progress > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand), #5eead4);
+  border-radius: 999px;
+  box-shadow: 0 0 12px var(--brand-glow);
+  transition: width 0.12s linear;
+}
+
+/* ---------- Keyboard key hint ---------- */
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding-inline: 7px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2.5px;
+  background: var(--secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--foreground);
+}

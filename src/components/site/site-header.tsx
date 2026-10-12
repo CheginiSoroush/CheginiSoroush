@@ -30,6 +30,13 @@ export function SiteHeader({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Keyboard shortcut (T) dispatched from SiteShell
+  useEffect(() => {
+    const onToggle = () => setTheme(resolvedTheme === "light" ? "dark" : "light");
+    window.addEventListener("toggle-site-theme", onToggle);
+    return () => window.removeEventListener("toggle-site-theme", onToggle);
+  }, [resolvedTheme, setTheme]);
+
   const isDark = resolvedTheme !== "light";
 
   return (

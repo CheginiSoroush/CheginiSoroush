@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { RadarChart } from "./radar-chart";
 import { GitHubCard } from "./github-card";
+import { useSpotlight } from "@/hooks/use-spotlight";
 import type { Project, ViewName } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 
@@ -25,6 +26,7 @@ export function HomeContent({
   onNavigate: (v: ViewName) => void;
 }) {
   const featured = projects.filter((p) => p.featured);
+  const onSpotlightMove = useSpotlight();
 
   const radarAxes = [
     { label: "ربات‌ها", icon: "🤖", value: projects.filter((p) => p.category === "bots").length },
@@ -114,9 +116,10 @@ export function HomeContent({
               <button
                 key={c.id}
                 onClick={() => onNavigate("projects")}
-                className="w-full flex items-center gap-3 rounded-2xl border border-border bg-card/70 px-4 py-3 text-right hover:border-brand/40 hover:bg-card transition-all group"
+                onMouseMove={onSpotlightMove}
+                className="spotlight w-full flex items-center gap-3 rounded-2xl border border-border bg-card/70 px-4 py-3 text-right hover:border-brand/40 hover:bg-card transition-all group"
               >
-                <span className="text-2xl" aria-hidden>
+                <span className="text-2xl card-emoji" aria-hidden>
                   {c.icon}
                 </span>
                 <span className="flex-grow min-w-0">
@@ -154,10 +157,11 @@ export function HomeContent({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="glow-card rounded-3xl border border-border bg-card p-6 sm:p-7 flex flex-col"
+              onMouseMove={onSpotlightMove}
+              className="glow-card spotlight rounded-3xl border border-border bg-card p-6 sm:p-7 flex flex-col"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className="text-5xl" aria-hidden>
+                <div className="text-5xl card-emoji" aria-hidden>
                   {p.icon}
                 </div>
                 <span className="text-[10px] font-bold text-brand bg-brand/10 border border-brand/25 rounded-full px-2.5 py-1">
@@ -227,7 +231,8 @@ export function HomeContent({
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               onClick={() => onNavigate("writing")}
-              className="glow-card group rounded-3xl border border-border bg-card p-7 text-right"
+              onMouseMove={onSpotlightMove}
+              className="glow-card spotlight group rounded-3xl border border-border bg-card p-7 text-right"
             >
               <div className="text-5xl mb-5 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300" aria-hidden>
                 {c.icon}

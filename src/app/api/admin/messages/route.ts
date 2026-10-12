@@ -13,12 +13,32 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "دسترسی غیرمجاز" }, { status: 401 });
     }
 
-    const messages = await db.contactMessage.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 100,
-    });
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
+    const pageSize = Math.min(50, Math.max(1, Number(searchParams.get("pageSize") ?? "8") || 8));
+    const filter = searchParams.get("filter") === "unread" ? "unread" : "all";
 
-    return NextResponse.json({ messages });
+    const where = filter === "unread" ? { read: false } : {};
+
+    const [messages, total, unread] = await Promise.all([
+      db.contactMessage.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      db.contactMessage.count({ where }),
+      db.contactMessage.count({ where: { read: false } }),
+    ]);
+
+    return NextResponse.json({
+      messages,
+      total,
+      unread,
+      page,
+      pageSize,
+      totalPages: Math.max(1, Math.ceil(total / pageSize)),
+    });
   } catch (error) {
     console.error("GET /api/admin/messages error:", error);
     return NextResponse.json({ error: "خطا در دریافت پیام‌ها" }, { status: 500 });
@@ -45,5 +65,25 @@ export async function PATCH(request: NextRequest) {
   } catch (error) {
     console.error("PATCH /api/admin/messages error:", error);
     return NextResponse.json({ error: "خطا در به‌روزرسانی پیام" }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    if (!isAdminRequest(request)) {
+      return NextResponse.json({ error: "دسترسی غیرمجاز" }, { status: 401 });
+    }
+
+    const body = (await request.json()) as { id?: string };
+    if (!body.id) {
+      return NextResponse.json({ error: "id الزامی است" }, { status: 400 });
+    }
+
+    await db.contactMessage.delete({ where: { id: body.id } });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("DELETE /api/admin/messages error:", error);
+    return NextResponse.json({ error: "خطا در حذف پیام" }, { status: 500 });
   }
 }

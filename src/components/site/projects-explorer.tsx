@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ExternalLink, X, Eye, Star } from "lucide-react";
+import { Search, ExternalLink, X, Eye, Star, Share2, Dices, Link2, Check } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { useSpotlight } from "@/hooks/use-spotlight";
 import type { Project } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+const DETAIL_INIT = Symbol("detail-init");
 
 const FILTERS = [
   { id: "all", label: "همه", icon: "✨" },
@@ -24,23 +28,126 @@ const FILTERS = [
   { id: "tools", label: "ابزارهای توسعه", icon: "🛠️" },
 ];
 
-export function ProjectsExplorer({ initialProjects }: { initialProjects: Project[] }) {
+export function ProjectsExplorer({
+  initialProjects,
+  detailSlug,
+  onOpenDetail,
+  onCloseDetail,
+}: {
+  initialProjects: Project[];
+  detailSlug?: string;
+  onOpenDetail: (slug: string) => void;
+  onCloseDetail: () => void;
+}) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<Project | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [rolling, setRolling] = useState(false);
+  const [bumpedSlugs, setBumpedSlugs] = useState<Set<string>>(new Set());
+  const searchRef = useRef<HTMLInputElement>(null);
+  const postedRef = useRef<Set<string>>(new Set());
+  const { toast } = useToast();
+  const onSpotlightMove = useSpotlight();
 
-  // Open detail dialog + count the view
-  const openProject = (p: Project) => {
-    setSelected((prev) =>
-      prev?.id === p.id ? prev : { ...p, views: p.views + 1 }
-    );
+  
+
+  const openProject = useCallback(
+    (p: Project) => {
+      if (!bumpedSlugs.has(p.slug)) {
+        setBumpedSlugs((prev) => new Set(prev).add(p.slug));
+        setSelected({ ...p, views: p.views + 1 });
+      } else {
+        setSelected(p);
+      }
+      onOpenDetail(p.slug);
+    },
+    [onOpenDetail, bumpedSlugs]
+  );
+
+  // Deep-link: derive dialog state from hash during render (prop-change adjustment)
+  // Sentinel so a detailSlug present at mount still triggers the first adjustment
+  const [prevDetail, setPrevDetail] = useState<string | symbol>(DETAIL_INIT);
+  if (prevDetail !== detailSlug) {
+    setPrevDetail(detailSlug);
+    if (!detailSlug) {
+      setSelected(null);
+    } else {
+      const p = initialProjects.find((x) => x.slug === detailSlug);
+      if (p && selected?.slug !== p.slug) {
+        if (!bumpedSlugs.has(p.slug)) {
+          setBumpedSlugs((prev) => new Set(prev).add(p.slug));
+          setSelected({ ...p, views: p.views + 1 });
+        } else {
+          setSelected(p);
+        }
+      }
+    }
+  }
+
+  // Count the view once per slug (external side-effect)
+  useEffect(() => {
+    const slug = selected?.slug;
+    if (!slug || !bumpedSlugs.has(slug) || postedRef.current.has(slug)) return;
+    postedRef.current.add(slug);
     fetch("/api/projects", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug: p.slug }),
+      body: JSON.stringify({ slug }),
     }).catch(() => {});
+  }, [selected, bumpedSlugs]);
+
+  // Keyboard "/" focuses the search input
+  useEffect(() => {
+    const onFocus = () => searchRef.current?.focus();
+    window.addEventListener("focus-project-search", onFocus);
+    return () => window.removeEventListener("focus-project-search", onFocus);
+  }, []);
+
+  const closeDialog = (open: boolean) => {
+    if (!open) {
+      setSelected(null);
+      onCloseDetail();
+    }
+  };
+
+  const shareProject = async (p: Project) => {
+    const url = `${window.location.origin}/#/projects/${encodeURIComponent(p.slug)}`;
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: p.title, url });
+        return;
+      } catch {
+        // user cancelled → fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: "لینک کپی شد", description: "لینک پروژه در کلیپ‌بورد ذخیره شد." });
+    } catch {
+      toast({ title: "کپی نشد", description: url, variant: "destructive" });
+    }
+  };
+
+  const randomProject = () => {
+    const pool = initialProjects;
+    if (pool.length === 0 || rolling) return;
+    setRolling(true);
+    let ticks = 0;
+    const iv = setInterval(() => {
+      const p = pool[Math.floor(Math.random() * pool.length)];
+      setSelected(p);
+      ticks += 1;
+      if (ticks >= 9) {
+        clearInterval(iv);
+        setRolling(false);
+        openProject(p);
+      }
+    }, 90);
   };
 
   // Fetch with debounce when query/filter changes
@@ -89,10 +196,11 @@ export function ProjectsExplorer({ initialProjects }: { initialProjects: Project
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.4) }}
       onClick={() => openProject(p)}
-      className="glow-card group text-right rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col h-full w-full"
+      onMouseMove={onSpotlightMove}
+      className="glow-card spotlight group text-right rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col h-full w-full"
     >
       <div className="flex items-start justify-between gap-2 mb-4">
-        <div className="text-4xl" aria-hidden>
+        <div className="text-4xl card-emoji" aria-hidden>
           {p.icon}
         </div>
         <div className="flex items-center gap-1.5">
@@ -132,6 +240,7 @@ export function ProjectsExplorer({ initialProjects }: { initialProjects: Project
         <div className="relative max-w-xl mx-auto">
           <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
           <input
+            ref={searchRef}
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -160,7 +269,7 @@ export function ProjectsExplorer({ initialProjects }: { initialProjects: Project
               className={cn(
                 "px-4 py-2 rounded-full text-sm font-medium border transition-all min-h-[38px]",
                 filter === f.id
-                  ? "bg-brand text-primary-foreground border-brand shadow-[0_8px_20px_-8px_var(--brand-glow)]"
+                  ? "bg-brand text-primary-foreground border-brand chip-active"
                   : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-brand/40"
               )}
             >
@@ -170,11 +279,22 @@ export function ProjectsExplorer({ initialProjects }: { initialProjects: Project
           ))}
         </div>
 
-        <p className="text-center text-xs text-muted-foreground" aria-live="polite">
-          {loading
-            ? "در حال جستجو..."
-            : `${projects.length.toLocaleString("fa-IR")} پروژه یافت شد`}
-        </p>
+        <div className="flex items-center justify-center gap-3">
+          <p className="text-center text-xs text-muted-foreground" aria-live="polite">
+            {loading
+              ? "در حال جستجو..."
+              : `${projects.length.toLocaleString("fa-IR")} پروژه یافت شد`}
+          </p>
+          <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
+          <button
+            onClick={randomProject}
+            disabled={rolling}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 hover:bg-brand/20 hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 min-h-[30px]"
+          >
+            <Dices className={cn("w-3.5 h-3.5", rolling && "animate-spin")} />
+            {rolling ? "در حال چرخش..." : "پروژه تصادفی"}
+          </button>
+        </div>
       </div>
 
       {/* Grid */}
@@ -223,13 +343,13 @@ export function ProjectsExplorer({ initialProjects }: { initialProjects: Project
       )}
 
       {/* Detail dialog */}
-      <Dialog open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto p-6 rounded-3xl">
+      <Dialog open={!!selected} onOpenChange={closeDialog}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto p-6 rounded-3xl dialog-accent">
           {selected && (
             <>
               <DialogHeader>
                 <div className="flex items-center gap-4 mb-1">
-                  <div className="text-5xl shrink-0" aria-hidden>
+                  <div className="text-5xl shrink-0 card-emoji" aria-hidden>
                     {selected.icon}
                   </div>
                   <div className="min-w-0">
@@ -274,21 +394,35 @@ export function ProjectsExplorer({ initialProjects }: { initialProjects: Project
                 ))}
               </div>
 
-              <a
-                href={`https://github.com/${selected.repo}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand text-primary-foreground font-bold px-6 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path
-                    fillRule="evenodd"
-                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                مشاهده در گیت‌هاب
-              </a>
+              <div className="grid grid-cols-[1fr_auto] gap-2.5">
+                <a
+                  href={`https://github.com/${selected.repo}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-shine inline-flex items-center justify-center gap-2 rounded-2xl bg-brand text-primary-foreground font-bold px-6 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path
+                      fillRule="evenodd"
+                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  مشاهده در گیت‌هاب
+                </a>
+                <button
+                  onClick={() => shareProject(selected)}
+                  aria-label="هم‌رسانی لینک پروژه"
+                  title="هم‌رسانی لینک"
+                  className="w-[46px] rounded-2xl border border-border grid place-items-center text-muted-foreground hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 active:scale-95 transition-all"
+                >
+                  {copied ? <Check className="w-5 h-5 text-brand" /> : <Share2 className="w-5 h-5" />}
+                </button>
+              </div>
+              <p className="mt-2.5 text-[11px] text-muted-foreground flex items-center gap-1 justify-center">
+                <Link2 className="w-3 h-3" />
+                لینک این پروژه قابل هم‌رسانی و نشانی‌پذیر است
+              </p>
             </>
           )}
         </DialogContent>
