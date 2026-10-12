@@ -51,3 +51,29 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "خطا در دریافت پروژه‌ها" }, { status: 500 });
   }
 }
+
+// Increment project view counter (also bumps global projectViews stat)
+export async function POST(request: NextRequest) {
+  try {
+    const body = (await request.json()) as { slug?: string };
+    if (!body.slug) {
+      return NextResponse.json({ error: "slug الزامی است" }, { status: 400 });
+    }
+
+    const project = await db.project.update({
+      where: { slug: body.slug },
+      data: { views: { increment: 1 } },
+    });
+
+    await db.siteStat.upsert({
+      where: { key: "projectViews" },
+      update: { value: { increment: 1 } },
+      create: { key: "projectViews", value: 1 },
+    });
+
+    return NextResponse.json({ views: project.views });
+  } catch (error) {
+    console.error("POST /api/projects error:", error);
+    return NextResponse.json({ error: "خطا در ثبت بازدید" }, { status: 500 });
+  }
+}

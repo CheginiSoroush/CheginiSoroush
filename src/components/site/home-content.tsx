@@ -3,8 +3,15 @@
 import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { RadarChart } from "./radar-chart";
+import { GitHubCard } from "./github-card";
 import type { Project, ViewName } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
+
+const TECH_MARQUEE = [
+  "TypeScript", "Next.js 16", "React 19", "Three.js", "Cloudflare Workers",
+  "Telegram Bot API", "Google Gemini", "OpenCV", "Python", "Tailwind CSS",
+  "GSAP", "WebGL", "Prisma", "C++", "Bash", "D1 Database",
+];
 
 type CategoryCount = { id: string; label: string; icon: string; count: number; blurb: string };
 
@@ -64,6 +71,25 @@ export function HomeContent({
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-24">
+      {/* ---- Tech marquee ---- */}
+      <div
+        aria-hidden
+        className="relative overflow-hidden rounded-2xl border border-border bg-card/50 py-4 -mt-2"
+      >
+        <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background to-transparent z-10" />
+        <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background to-transparent z-10" />
+        <div className="marquee-track flex w-max gap-3" dir="ltr">
+          {[...TECH_MARQUEE, ...TECH_MARQUEE].map((t, i) => (
+            <span
+              key={i}
+              dir="ltr"
+              className="whitespace-nowrap rounded-xl border border-border bg-background/70 px-4 py-1.5 text-xs font-mono text-muted-foreground"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
       {/* ---- Radar chart + quick nav ---- */}
       <section aria-label="نقشه محتوای سایت" className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
         <motion.div
@@ -218,6 +244,9 @@ export function HomeContent({
           ))}
         </div>
       </section>
+
+      {/* ---- GitHub live stats ---- */}
+      <GitHubCard />
     </div>
   );
 }

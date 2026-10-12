@@ -31,6 +31,18 @@ export function ProjectsExplorer({ initialProjects }: { initialProjects: Project
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<Project | null>(null);
 
+  // Open detail dialog + count the view
+  const openProject = (p: Project) => {
+    setSelected((prev) =>
+      prev?.id === p.id ? prev : { ...p, views: p.views + 1 }
+    );
+    fetch("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug: p.slug }),
+    }).catch(() => {});
+  };
+
   // Fetch with debounce when query/filter changes
   useEffect(() => {
     const controller = new AbortController();
@@ -76,7 +88,7 @@ export function ProjectsExplorer({ initialProjects }: { initialProjects: Project
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.4) }}
-      onClick={() => setSelected(p)}
+      onClick={() => openProject(p)}
       className="glow-card group text-right rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col h-full w-full"
     >
       <div className="flex items-start justify-between gap-2 mb-4">

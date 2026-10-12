@@ -2,8 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Mail, Heart } from "lucide-react";
+import { Github, Mail, Heart, LockKeyhole } from "lucide-react";
 import { SiteHeader } from "./site-header";
+import { ScrollProgress } from "./scroll-progress";
+import { AdminMessagesDialog } from "./admin-messages-dialog";
 import { Hero } from "./hero";
 import { HomeContent } from "./home-content";
 import { ProjectsExplorer } from "./projects-explorer";
@@ -33,6 +35,7 @@ export function SiteShell({
   const [stats, setStats] = useState<SiteStats | null>(null);
   const [projects] = useState<Project[]>(initialProjects);
   const [articles] = useState<Article[]>(initialArticles);
+  const [adminOpen, setAdminOpen] = useState(false);
   const visitedOnce = useRef(false);
 
   // Register visit once per session
@@ -64,6 +67,7 @@ export function SiteShell({
 
   return (
     <div className="min-h-screen flex flex-col relative">
+      <ScrollProgress />
       <SiteHeader view={view} onNavigate={handleNavigate} />
 
       <main className="flex-grow relative z-10">
@@ -147,6 +151,14 @@ export function SiteShell({
                   👁️ {stats.visits.toLocaleString("fa-IR")} بازدید
                 </span>
               )}
+              <button
+                onClick={() => setAdminOpen(true)}
+                aria-label="پنل مدیریت پیام‌ها"
+                title="پنل مدیریت"
+                className="w-[42px] h-[42px] grid place-items-center rounded-xl border border-border text-muted-foreground/60 hover:text-brand hover:border-brand/50 transition-all"
+              >
+                <LockKeyhole className="w-4 h-4" />
+              </button>
             </nav>
 
             <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5">
@@ -157,6 +169,8 @@ export function SiteShell({
           </div>
         </div>
       </footer>
+
+      <AdminMessagesDialog open={adminOpen} onOpenChange={setAdminOpen} />
     </div>
   );
 }
