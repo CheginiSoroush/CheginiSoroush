@@ -71,3 +71,15 @@ model SiteStat {
   value     Int      @default(0)
   updatedAt DateTime @updatedAt
 }
+
+model RepoSnapshot {
+  id          Int      @id @default(1)
+  payloadJson String
+  updatedAt   DateTime @updatedAt
+}
+
+model GithubSnapshot {
+  id          Int      @id @default(1)
+  payloadJson String
+  updatedAt   DateTime @updatedAt
+}

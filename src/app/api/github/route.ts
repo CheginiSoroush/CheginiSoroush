@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
 
 const GITHUB_USER = "CheginiSoroush";
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
@@ -105,7 +106,7 @@ async function fetchGitHubStats(): Promise<GitHubStats | null> {
 
     if (!userRes.ok || !reposRes.ok) {
       console.error("GitHub API failed:", userRes.status, reposRes.status);
-      return cache.data; // serve stale on failure
+      return null; // fall through to DB snapshot below
     }
 
     const calendarPromise = fetchContributionCalendar(headers);
@@ -159,7 +160,32 @@ async function fetchGitHubStats(): Promise<GitHubStats | null> {
     };
   } catch (error) {
     console.error("fetchGitHubStats error:", error);
-    return cache.data; // serve stale on failure
+    return null; // fall through to DB snapshot below
+  }
+}
+
+async function readDbSnapshot(): Promise<GitHubStats | null> {
+  try {
+    const row = await db.githubSnapshot.findUnique({ where: { id: 1 } });
+    if (!row) return null;
+    const stats = JSON.parse(row.payloadJson) as GitHubStats;
+    if (!stats || !stats.username) return null;
+    return stats;
+  } catch {
+    return null;
+  }
+}
+
+async function writeDbSnapshot(stats: GitHubStats): Promise<void> {
+  try {
+    const json = JSON.stringify(stats);
+    await db.githubSnapshot.upsert({
+      where: { id: 1 },
+      create: { id: 1, payloadJson: json },
+      update: { payloadJson: json },
+    });
+  } catch (error) {
+    console.error("github snapshot write failed:", error);
   }
 }
 
@@ -173,18 +199,31 @@ export async function GET() {
 
   // Deduplicate concurrent requests
   if (!cache.inflight) {
-    cache.inflight = fetchGitHubStats().then((data) => {
-      if (data) {
-        cache.data = data;
-        cache.fetchedAt = Date.now();
+    cache.inflight = (async () => {
+      let data: GitHubStats | null = null;
+      try {
+        data = await fetchGitHubStats();
+        if (data) {
+          await writeDbSnapshot(data);
+          cache.data = data;
+          cache.fetchedAt = Date.now();
+        }
+      } finally {
+        cache.inflight = null;
       }
-      cache.inflight = null;
       return data;
-    });
+    })();
   }
 
   const data = await cache.inflight;
   if (!data) {
+    // Live fetch failed → serve the last good snapshot from the DB, if any
+    const stale = await readDbSnapshot();
+    if (stale) {
+      cache.data = stale;
+      cache.fetchedAt = Date.now() - CACHE_TTL_MS / 2; // retry live in ~5 min
+      return NextResponse.json({ ...stale, cached: true, stale: true });
+    }
     return NextResponse.json({ error: "خطا در دریافت اطلاعات گیت‌هاب" }, { status: 502 });
   }
 

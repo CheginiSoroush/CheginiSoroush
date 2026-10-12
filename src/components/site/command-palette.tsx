@@ -5,6 +5,7 @@ import {
   Home,
   FolderKanban,
   PenLine,
+  FolderDown,
   Mail,
   Moon,
   Dices,
@@ -102,7 +103,8 @@ export function CommandPalette({
       { icon: Home, label: t("misc", "palette.nav.home"), hint: num(1), hash: "#home" },
       { icon: FolderKanban, label: t("misc", "palette.nav.projects"), hint: num(2), hash: "#projects" },
       { icon: PenLine, label: t("misc", "palette.nav.articles"), hint: num(3), hash: "#writing" },
-      { icon: Mail, label: t("misc", "palette.nav.contact"), hint: num(4), hash: "#contact" },
+      { icon: FolderDown, label: t("misc", "palette.nav.repos"), hint: num(4), hash: "#repos" },
+      { icon: Mail, label: t("misc", "palette.nav.contact"), hint: num(5), hash: "#contact" },
     ],
     [t, num]
   );

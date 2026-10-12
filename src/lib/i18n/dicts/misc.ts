@@ -24,6 +24,7 @@ export const miscDict: Dict = {
     "palette.nav.projects": "پروژه‌ها",
     "palette.nav.articles": "نوشته‌ها",
     "palette.nav.contact": "تماس با من",
+    "palette.nav.repos": "ریپازیتوری‌های گیت‌هاب",
 
     // Command palette — quick actions
     "palette.quick.theme": "تغییر تم روشن/تاریک",
@@ -66,6 +67,7 @@ export const miscDict: Dict = {
     "palette.nav.projects": "Projects",
     "palette.nav.articles": "Articles",
     "palette.nav.contact": "Contact me",
+    "palette.nav.repos": "GitHub repositories",
 
     // Command palette — quick actions
     "palette.quick.theme": "Toggle light/dark theme",

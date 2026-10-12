@@ -46,7 +46,22 @@ export type Comment = {
   createdAt: string;
 };
 
-export type ViewName = "home" | "projects" | "writing" | "contact";
+export type ViewName = "home" | "projects" | "writing" | "repos" | "contact";
+
+export type GitHubRepo = {
+  name: string;
+  url: string;
+  description: string | null;
+  language: string | null;
+  stars: number;
+  forks: number;
+  isFork: boolean;
+  archived: boolean;
+  topics: string[];
+  homepage: string | null;
+  pushedAt: string;
+  updatedAt: string;
+};
 
 export const CATEGORY_LABELS: Record<string, { label: string; en: string; icon: string }> = {
   bots: { label: "ربات‌های تلگرام", en: "Telegram Bots", icon: "🤖" },

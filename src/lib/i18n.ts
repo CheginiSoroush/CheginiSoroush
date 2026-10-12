@@ -84,6 +84,7 @@ export function useLang(): Lang {
 
 import { coreDict } from "./i18n/dicts/core";
 import { homeDict } from "./i18n/dicts/home";
+import { reposDict } from "./i18n/dicts/repos";
 import { projectsDict } from "./i18n/dicts/projects";
 import { articlesDict } from "./i18n/dicts/articles";
 import { contactDict } from "./i18n/dicts/contact";
@@ -93,6 +94,7 @@ import { miscDict } from "./i18n/dicts/misc";
 export const DICTS: Record<string, Dict> = {
   core: coreDict,
   home: homeDict,
+  repos: reposDict,
   projects: projectsDict,
   articles: articlesDict,
   contact: contactDict,

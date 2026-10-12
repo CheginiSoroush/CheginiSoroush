@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Moon, Sun, Search, Home, FolderGit2, PenLine, Mail } from "lucide-react";
+import { Moon, Sun, Search, Home, FolderGit2, PenLine, Mail, FolderDown } from "lucide-react";
 import { motion } from "framer-motion";
 import type { ViewName } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ export const NAV_ITEMS: { id: ViewName; labelKey: string; icon: typeof Home }[] 
   { id: "home", labelKey: "nav.home", icon: Home },
   { id: "projects", labelKey: "nav.projects", icon: FolderGit2 },
   { id: "writing", labelKey: "nav.writing", icon: PenLine },
+  { id: "repos", labelKey: "nav.repos", icon: FolderDown },
   { id: "contact", labelKey: "nav.contact", icon: Mail },
 ];
 

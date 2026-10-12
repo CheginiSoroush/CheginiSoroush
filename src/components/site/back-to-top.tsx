@@ -45,7 +45,7 @@ export function BackToTop() {
       aria-label={t("misc", "btt.label")}
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
-      className={cn("back-to-top", visible && "back-to-top-visible")}
+      className={cn("back-to-top modal-hide", visible && "back-to-top-visible")}
     >
       <svg viewBox="0 0 48 48" aria-hidden className="back-to-top-ring">
         <circle className="ring-track" cx="24" cy="24" r={R} />

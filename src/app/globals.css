@@ -5,6 +5,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Never allow horizontal panning — view-switch transitions can transiently
+   overpaint wide children; clip (not hidden) keeps position:sticky working. */
+html,
+body {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -266,6 +274,51 @@ body {
   .aurora-drift-slow {
     animation: none;
   }
+}
+
+/* ---------- Mobile dock entrance (pure CSS — works before hydration) ---------- */
+@keyframes dock-in {
+  from {
+    transform: translateY(calc(100% + 1.5rem));
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.dock-in {
+  animation: dock-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.15s backwards;
+}
+@keyframes dock-item-in {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.dock-item-in {
+  animation: dock-item-in 0.4s ease-out backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dock-in,
+  .dock-item-in {
+    animation: none;
+  }
+}
+
+/* Hide bottom chrome (mobile dock, back-to-top) while any modal dialog is open.
+   Pure CSS via :has() — works for every radix dialog (projects, reader, palette, admin). */
+.modal-hide {
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+body:has([data-slot="dialog-overlay"]) .modal-hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* ---------- Custom scrollbar ---------- */

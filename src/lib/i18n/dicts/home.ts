@@ -86,6 +86,7 @@ export const homeDict: Dict = {
     "github.stat.forks": "فورک",
     "github.stat.followers": "دنبال‌کننده",
     "github.topRepos": "پرستاره‌ترین ریپوها",
+    "github.viewAllRepos": "مشاهده همه ریپازیتوری‌ها ←",
 
     // ---------- contribution heatmap ----------
     "heatmap.title": "نقشه فعالیت یک سال گذشته",
@@ -182,6 +183,7 @@ export const homeDict: Dict = {
     "github.stat.forks": "Forks",
     "github.stat.followers": "Followers",
     "github.topRepos": "Most starred repos",
+    "github.viewAllRepos": "View all repositories →",
 
     // ---------- contribution heatmap ----------
     "heatmap.title": "Activity map — past year",

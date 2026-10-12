@@ -164,7 +164,19 @@ export function GitHubCard() {
           {/* Top repos */}
           {stats.topRepos.length > 0 && (
             <div>
-              <h4 className="text-sm font-extrabold mb-3">{t("home", "github.topRepos")}</h4>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <h4 className="text-sm font-extrabold">{t("home", "github.topRepos")}</h4>
+                <a
+                  href="#repos"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.hash = "#repos";
+                  }}
+                  className="text-xs font-bold text-brand hover:underline shrink-0"
+                >
+                  {t("home", "github.viewAllRepos")}
+                </a>
+              </div>
               <ul className="space-y-2.5">
                 {stats.topRepos.map((r) => (
                   <li key={r.name}>

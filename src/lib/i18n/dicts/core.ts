@@ -8,7 +8,9 @@ export const coreDict: Dict = {
     "nav.projects": "پروژه‌ها",
     "nav.writing": "نوشته‌ها",
     "nav.contact": "تماس",
+    "nav.repos": "ریپوها",
     "aria.mainNav": "ناوبری اصلی",
+    "aria.dockNav": "ناوبری موبایل",
     "aria.backHome": "بازگشت به خانه",
     "aria.search": "جستجوی سراسری (Ctrl+K)",
     "aria.searchShort": "جستجو...",
@@ -43,6 +45,9 @@ export const coreDict: Dict = {
       "روانشناسی رفتار، نوروساینس اراده و علوم ورزشی — هر مقاله همراه با یک پروژه تعاملی واقعی.",
     "heading.contact.title": "ارتباط با من",
     "heading.contact.sub": "خوشحال می‌شم نظرات، پیشنهادات یا ایده‌های همکاری‌تون رو بشنوم.",
+    "heading.repos.title": "ریپازیتوری‌های گیت‌هاب",
+    "heading.repos.sub":
+      "همه ریپازیتوری‌های عمومی من، مستقیم و زنده از گیت‌هاب — کد، ستاره‌ها و آخرین فعالیت‌ها.",
 
     // ---------- footer ----------
     "footer.social": "شبکه‌های اجتماعی",
@@ -64,6 +69,7 @@ export const coreDict: Dict = {
     "sc.home": "خانه",
     "sc.projects": "پروژه‌ها",
     "sc.writing": "نوشته‌ها",
+    "sc.repos": "ریپازیتوری‌ها",
     "sc.contact": "تماس",
     "sc.searchProjects": "جستجوی پروژه‌ها",
     "sc.theme": "تغییر تم روشن/تاریک",
@@ -87,7 +93,9 @@ export const coreDict: Dict = {
     "nav.projects": "Projects",
     "nav.writing": "Writing",
     "nav.contact": "Contact",
+    "nav.repos": "Repos",
     "aria.mainNav": "Main navigation",
+    "aria.dockNav": "Mobile navigation",
     "aria.backHome": "Back to home",
     "aria.search": "Global search (Ctrl+K)",
     "aria.searchShort": "Search...",
@@ -122,6 +130,9 @@ export const coreDict: Dict = {
       "Behavioral psychology, the neuroscience of willpower and sports science — every article paired with a real interactive project.",
     "heading.contact.title": "Get in Touch",
     "heading.contact.sub": "I'd love to hear your feedback, suggestions or collaboration ideas.",
+    "heading.repos.title": "GitHub Repositories",
+    "heading.repos.sub":
+      "All of my public repositories, live from GitHub — code, stars and the latest activity.",
 
     // ---------- footer ----------
     "footer.social": "Social links",
@@ -143,6 +154,7 @@ export const coreDict: Dict = {
     "sc.home": "Home",
     "sc.projects": "Projects",
     "sc.writing": "Writing",
+    "sc.repos": "Repositories",
     "sc.contact": "Contact",
     "sc.searchProjects": "Search projects",
     "sc.theme": "Toggle light/dark theme",

@@ -21,12 +21,13 @@ import { AuroraBackground } from "./aurora-background";
 import { Hero } from "./hero";
 import { HomeContent } from "./home-content";
 import { ProjectsExplorer } from "./projects-explorer";
+import { ReposExplorer } from "./repos-explorer";
 import { ArticlesSection } from "./articles-section";
 import { ContactSection } from "./contact-section";
 import { applyDocumentLang, toggleLang, useT } from "@/lib/i18n";
 import type { Article, Project, SiteStats, ViewName } from "@/lib/types";
 
-const VIEWS: ViewName[] = ["home", "projects", "writing", "contact"];
+const VIEWS: ViewName[] = ["home", "projects", "writing", "repos", "contact"];
 
 function SectionHeading({ title, subtitle }: { title: string; subtitle: string }) {
   return (
@@ -81,7 +82,8 @@ function ShortcutsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
     { keys: ["1"], desc: t("core", "sc.home") },
     { keys: ["2"], desc: t("core", "sc.projects") },
     { keys: ["3"], desc: t("core", "sc.writing") },
-    { keys: ["4"], desc: t("core", "sc.contact") },
+    { keys: ["4"], desc: t("core", "sc.repos") },
+    { keys: ["5"], desc: t("core", "sc.contact") },
     { keys: ["/"], desc: t("core", "sc.searchProjects") },
     { keys: ["T"], desc: t("core", "sc.theme") },
     { keys: ["L"], desc: t("core", "sc.lang") },
@@ -207,6 +209,9 @@ export function SiteShell({
           navigate("writing");
           break;
         case "4":
+          navigate("repos");
+          break;
+        case "5":
           navigate("contact");
           break;
         case "/":
@@ -317,6 +322,16 @@ export function SiteShell({
                   onOpenDetail={(slug) => openDetail("writing", slug)}
                   onCloseDetail={() => closeDetail("writing")}
                 />
+              </div>
+            )}
+
+            {route.view === "repos" && (
+              <div className="pt-28 pb-24">
+                <SectionHeading
+                  title={t("core", "heading.repos.title")}
+                  subtitle={t("core", "heading.repos.sub")}
+                />
+                <ReposExplorer />
               </div>
             )}
 
