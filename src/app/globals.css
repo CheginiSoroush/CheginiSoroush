@@ -184,8 +184,25 @@ body {
   transform: translateX(-50%);
   width: 72px;
   height: 4px;
-  background: var(--brand);
   border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--brand) 30%, #5eead4 50%, var(--brand) 70%, transparent);
+  background-size: 200% 100%;
+  animation: title-shimmer 3.2s ease-in-out infinite;
+  box-shadow: 0 0 14px var(--brand-glow);
+}
+@keyframes title-shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-title::after {
+    animation: none;
+  }
 }
 
 /* ---------- Background grid & aurora ---------- */
@@ -674,4 +691,74 @@ body {
     height: 9px;
     border-radius: 2.5px;
   }
+}
+
+/* ---------- Generative project cover art ---------- */
+.cover-wrap {
+  position: relative;
+  isolation: isolate;
+}
+.cover-art {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
+  filter: saturate(0.92);
+}
+.group:hover .cover-art,
+.glow-card:hover .cover-art {
+  transform: scale(1.06);
+  filter: saturate(1.1);
+}
+.cover-float {
+  position: absolute;
+  bottom: 0;
+  right: 1rem;
+  transform: translateY(35%);
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--card) 82%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, white 14%, transparent);
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.6), 0 0 18px -6px var(--brand-glow);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.group:hover .cover-float {
+  transform: translateY(35%) scale(1.08) rotate(-6deg);
+}
+.dialog-cover {
+  border-radius: 0;
+}
+.dialog-cover .cover-art {
+  filter: saturate(1);
+}
+.dialog-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--card) 92%, transparent) 100%);
+  pointer-events: none;
+}
+.dialog-cover .cover-float {
+  width: 3.5rem;
+  height: 3.5rem;
+  right: 1.25rem;
+}
+
+/* ---------- Category banner thumb (home quick-nav) ---------- */
+.cat-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 0.9rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 6px 14px -8px rgba(0, 0, 0, 0.5);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.group:hover .cat-thumb {
+  transform: scale(1.08) rotate(-2deg);
 }

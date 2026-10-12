@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, MessageCircle, Send } from "lucide-react";
+import { Loader2, MessageCircle, Send, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Comment } from "@/lib/types";
@@ -78,6 +78,9 @@ export function ArticleComments({
   const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [justPostedId, setJustPostedId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
   const loadedSlugRef = useRef<string | null>(null);
 
   const load = useCallback(async (targetSlug: string) => {
@@ -88,9 +91,16 @@ export function ArticleComments({
         cache: "no-store",
       });
       if (!res.ok) throw new Error(String(res.status));
-      const data = (await res.json()) as { comments: Comment[]; total: number };
+      const data = (await res.json()) as {
+        comments: Comment[];
+        total: number;
+        page: number;
+        totalPages: number;
+      };
       setComments(data.comments);
       setTotal(data.total);
+      setPage(1);
+      setTotalPages(data.totalPages);
       onCountChange?.(targetSlug, data.total);
     } catch {
       setFailed(true);
@@ -98,6 +108,31 @@ export function ArticleComments({
       setLoading(false);
     }
   }, [onCountChange]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || page >= totalPages) return;
+    setLoadingMore(true);
+    try {
+      const res = await fetch(
+        `/api/comments?slug=${encodeURIComponent(slug)}&page=${page + 1}`,
+        { cache: "no-store" }
+      );
+      if (!res.ok) throw new Error(String(res.status));
+      const data = (await res.json()) as {
+        comments: Comment[];
+        total: number;
+        page: number;
+        totalPages: number;
+      };
+      setComments((list) => [...list, ...data.comments]);
+      setPage(data.page);
+      setTotalPages(data.totalPages);
+    } catch {
+      toast({ title: "بارگذاری نشد", description: "دیدگاه‌های بیشتر لود نشدند.", variant: "destructive" });
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loadingMore, page, totalPages, slug, toast]);
 
   // Reset per-article state when the reader opens a different article
   useEffect(() => {
@@ -134,6 +169,7 @@ export function ArticleComments({
       setComments((list) => [data.comment as Comment, ...list]);
       if (typeof data.total === "number") {
         setTotal(data.total);
+        setTotalPages(Math.max(1, Math.ceil(data.total / 20)));
         onCountChange?.(slug, data.total);
       }
       setBody("");
@@ -238,40 +274,59 @@ export function ArticleComments({
           <p className="text-sm">اولین دیدگاه را شما بنویسید ✨</p>
         </div>
       ) : (
-        <ul className="mt-4 space-y-3">
-          <AnimatePresence initial={false}>
-            {comments.map((c) => (
-              <motion.li
-                key={c.id}
-                initial={{ opacity: 0, y: -12, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className={cn(
-                  "comment-card rounded-2xl border border-border bg-card/60 p-4 flex gap-3",
-                  justPostedId === c.id && "comment-fresh border-brand/40 shadow-[0_0_20px_-8px_var(--brand-glow)]"
-                )}
-              >
-                <span
-                  aria-hidden
+        <>
+          <ul className="mt-4 space-y-3">
+            <AnimatePresence initial={false}>
+              {comments.map((c) => (
+                <motion.li
+                  key={c.id}
+                  initial={{ opacity: 0, y: -12, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   className={cn(
-                    "w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br grid place-items-center text-primary-foreground text-sm font-black select-none",
-                    avatarClass(c.name)
+                    "comment-card rounded-2xl border border-border bg-card/60 p-4 flex gap-3",
+                    justPostedId === c.id && "comment-fresh border-brand/40 shadow-[0_0_20px_-8px_var(--brand-glow)]"
                   )}
                 >
-                  {initialOf(c.name)}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-sm">{c.name}</span>
-                    <span className="text-[10px] text-muted-foreground">{relativeTime(c.createdAt)}</span>
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br grid place-items-center text-primary-foreground text-sm font-black select-none",
+                      avatarClass(c.name)
+                    )}
+                  >
+                    {initialOf(c.name)}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-bold text-sm">{c.name}</span>
+                      <span className="text-[10px] text-muted-foreground">{relativeTime(c.createdAt)}</span>
+                    </div>
+                    <p className="text-sm leading-7 text-foreground/90 whitespace-pre-wrap break-words">{c.body}</p>
                   </div>
-                  <p className="text-sm leading-7 text-foreground/90 whitespace-pre-wrap break-words">{c.body}</p>
-                </div>
-              </motion.li>
-            ))}
-          </AnimatePresence>
-        </ul>
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </ul>
+          {page < totalPages && (
+            <button
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card/60 text-sm font-bold text-brand px-4 py-3 hover:border-brand/40 hover:bg-brand/10 transition-all disabled:opacity-60 min-h-[44px]"
+            >
+              {loadingMore ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
+              نمایش دیدگاه‌های بیشتر
+              <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
+                ({comments.length.toLocaleString("fa-IR")} از {total.toLocaleString("fa-IR")})
+              </span>
+            </button>
+          )}
+        </>
       )}
     </div>
   );

@@ -75,7 +75,7 @@ function ShortcutsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
     { keys: ["4"], desc: "تماس" },
     { keys: ["/"], desc: "جستجوی پروژه‌ها" },
     { keys: ["T"], desc: "تغییر تم روشن/تاریک" },
-    { keys: ["?"], desc: "نمایش همین راهنما" },
+    { keys: ["؟", "?"], desc: "نمایش همین راهنما" },
   ];
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -206,6 +206,7 @@ export function SiteShell({
           window.dispatchEvent(new CustomEvent("toggle-site-theme"));
           break;
         case "?":
+        case "؟":
           setShortcutsOpen((v) => !v);
           break;
       }

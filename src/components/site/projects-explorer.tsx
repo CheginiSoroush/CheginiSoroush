@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
+import { ProjectCover } from "./project-cover";
 import type { Project } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -234,17 +235,19 @@ export function ProjectsExplorer({
       onMouseMove={onSpotlightMove}
       className="glow-card spotlight group text-right rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col h-full w-full"
     >
-      <div className="flex items-start justify-between gap-2 mb-4">
-        <div className="text-4xl card-emoji" aria-hidden>
-          {p.icon}
+      {/* generative cover art */}
+      <div className="cover-wrap -mx-5 sm:-mx-6 -mt-5 sm:-mt-6 mb-4 rounded-t-2xl overflow-hidden">
+        <ProjectCover slug={p.slug} category={p.category} className="h-24 sm:h-28 w-full" />
+        <div className="cover-float">
+          <span className="text-3xl card-emoji drop-shadow-lg" aria-hidden>
+            {p.icon}
+          </span>
         </div>
-        <div className="flex items-center gap-1.5">
-          {p.featured && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-brand bg-brand/10 border border-brand/25 rounded-full px-2 py-0.5">
-              <Star className="w-3 h-3" /> منتخب
-            </span>
-          )}
-        </div>
+        {p.featured && (
+          <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 text-[10px] font-bold text-[#05261f] bg-brand border border-white/20 rounded-full px-2 py-0.5 shadow-lg">
+            <Star className="w-3 h-3" /> منتخب
+          </span>
+        )}
       </div>
       <h3 className="font-extrabold text-base sm:text-lg mb-1.5 group-hover:text-brand transition-colors leading-7">
         {p.title}
@@ -401,12 +404,21 @@ export function ProjectsExplorer({
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto p-6 rounded-3xl dialog-accent">
           {selected && (
             <>
+              {/* generative hero cover */}
+              <div className="cover-wrap dialog-cover -mx-6 -mt-6 mb-5 overflow-hidden">
+                <ProjectCover
+                  slug={selected.slug}
+                  category={selected.category}
+                  idPrefix="dlg"
+                  className="h-32 sm:h-36 w-full"
+                />
+                <span className="absolute bottom-3 right-5 text-4xl card-emoji drop-shadow-xl" aria-hidden>
+                  {selected.icon}
+                </span>
+              </div>
               <DialogHeader>
                 <div className="flex items-center gap-4 mb-1">
-                  <div className="text-5xl shrink-0 card-emoji" aria-hidden>
-                    {selected.icon}
-                  </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-grow">
                     <DialogTitle className="text-lg sm:text-xl leading-8 text-right">
                       {selected.title}
                     </DialogTitle>

@@ -2,8 +2,10 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles } from "lucide-react";
+import Image from "next/image";
 import { RadarChart } from "./radar-chart";
 import { GitHubCard } from "./github-card";
+import { ProjectCover } from "./project-cover";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import type { Project, ViewName } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
@@ -14,7 +16,7 @@ const TECH_MARQUEE = [
   "GSAP", "WebGL", "Prisma", "C++", "Bash", "D1 Database",
 ];
 
-type CategoryCount = { id: string; label: string; icon: string; count: number; blurb: string };
+type CategoryCount = { id: string; label: string; icon: string; count: number; blurb: string; thumb: string };
 
 export function HomeContent({
   projects,
@@ -47,6 +49,7 @@ export function HomeContent({
       icon: "🤖",
       count: projects.filter((p) => p.category === "bots").length,
       blurb: "ناوگانی از ربات‌های سرورلس روی Cloudflare Workers با هوش مصنوعی، صف‌بندی هوشمند و اتوماسیون کامل کانال‌ها.",
+      thumb: "/photos/cat-bots.png",
     },
     {
       id: "web",
@@ -54,6 +57,7 @@ export function HomeContent({
       icon: "🌐",
       count: projects.filter((p) => p.category === "web").length,
       blurb: "از فروشگاه‌های تعاملی با تم‌های خلاقانه تا لندینگ‌پیج‌های شیشه‌ای و اپلیکیشن‌های روان‌شناسی.",
+      thumb: "/photos/cat-web.png",
     },
     {
       id: "3d",
@@ -61,6 +65,7 @@ export function HomeContent({
       icon: "🪐",
       count: projects.filter((p) => p.category === "3d").length,
       blurb: "شبیه‌سازهای منظومه شمسی با تکسچر ناسا، کره‌های رویه‌ای با شیدرهای سفارشی و پورتفولیوهای فضایی.",
+      thumb: "/photos/cat-3d.png",
     },
     {
       id: "tools",
@@ -68,6 +73,7 @@ export function HomeContent({
       icon: "🛠️",
       count: projects.filter((p) => p.category === "tools").length,
       blurb: "ابزارهای OpenCV، اسکریپت‌های Bash، چیت‌شیت‌های تعاملی و ماشین‌حساب‌های ++C برای کارِ سریع‌تر.",
+      thumb: "/photos/cat-tools.png",
     },
   ];
 
@@ -121,10 +127,20 @@ export function HomeContent({
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 onMouseMove={onSpotlightMove}
-                className="spotlight w-full flex items-center gap-3 rounded-2xl border border-border bg-card/70 px-4 py-3 text-right hover:border-brand/40 hover:bg-card transition-all group"
+                className="spotlight w-full flex items-center gap-3.5 rounded-2xl border border-border bg-card/70 p-3 pl-4 text-right hover:border-brand/40 hover:bg-card transition-all group"
               >
-                <span className="text-2xl card-emoji" aria-hidden>
-                  {c.icon}
+                <span className="relative">
+                  <Image
+                    src={c.thumb}
+                    alt=""
+                    aria-hidden
+                    width={104}
+                    height={104}
+                    className="cat-thumb"
+                  />
+                  <span className="absolute -bottom-1.5 -right-1.5 text-base drop-shadow" aria-hidden>
+                    {c.icon}
+                  </span>
                 </span>
                 <span className="flex-grow min-w-0">
                   <span className="block font-bold text-sm">{c.label}</span>
@@ -164,11 +180,15 @@ export function HomeContent({
               onMouseMove={onSpotlightMove}
               className="glow-card spotlight rounded-3xl border border-border bg-card p-6 sm:p-7 flex flex-col"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="text-5xl card-emoji" aria-hidden>
-                  {p.icon}
+              {/* generative cover art */}
+              <div className="cover-wrap -mx-6 sm:-mx-7 -mt-6 sm:-mt-7 mb-5 rounded-t-3xl overflow-hidden">
+                <ProjectCover slug={p.slug} category={p.category} idPrefix="feat" className="h-28 sm:h-32 w-full" />
+                <div className="cover-float">
+                  <span className="text-3xl card-emoji drop-shadow-lg" aria-hidden>
+                    {p.icon}
+                  </span>
                 </div>
-                <span className="text-[10px] font-bold text-brand bg-brand/10 border border-brand/25 rounded-full px-2.5 py-1">
+                <span className="absolute top-3 left-3 text-[10px] font-bold text-[#05261f] bg-brand border border-white/20 rounded-full px-2.5 py-1 shadow-lg">
                   {CATEGORY_LABELS[p.category]?.label}
                 </span>
               </div>
