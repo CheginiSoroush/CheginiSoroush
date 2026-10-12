@@ -100,22 +100,26 @@ export function SiteHeader({
       )}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-3">
-        {/* Brand — quiet logo swap: appears only once the hero logo is out of view */}
+        {/* Brand — logo only, no text; appears quietly once the hero logo is out of view */}
         <button
           onClick={() => {
             onNavigate("home");
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          className="flex items-center gap-2.5 group min-w-0 shrink"
           aria-label={t("core", "aria.backHome")}
+          aria-hidden={!heroLogoHidden}
+          tabIndex={heroLogoHidden ? 0 : -1}
+          className={cn(
+            "flex items-center transition-all duration-300 ease-out",
+            heroLogoHidden
+              ? "w-10 h-10 opacity-100"
+              : "w-0 h-10 opacity-0 pointer-events-none overflow-hidden"
+          )}
         >
           <span
             id="header-logo-slot"
             aria-hidden
-            className={cn(
-              "relative shrink-0 grid place-items-center overflow-visible transition-all duration-300 ease-out",
-              heroLogoHidden ? "w-10 h-10 opacity-100 scale-100" : "w-0 h-10 opacity-0 scale-50"
-            )}
+            className="relative w-10 h-10 shrink-0 grid place-items-center overflow-visible"
           >
             <span className="absolute inset-0 blur-lg opacity-40 rounded-full bg-brand" />
             <Image
@@ -134,15 +138,6 @@ export function SiteHeader({
               className="relative w-full h-full object-contain dark:hidden select-none drop-shadow-sm"
               draggable={false}
             />
-          </span>
-          <span
-            aria-hidden={!heroLogoHidden}
-            className={cn(
-              "font-extrabold text-lg group-hover:text-brand transition-all duration-300 truncate",
-              heroLogoHidden ? "opacity-0 w-0 min-w-0 overflow-hidden" : "opacity-100"
-            )}
-          >
-            {t("core", "hero.name.first")}
           </span>
         </button>
 
