@@ -16,7 +16,8 @@ import { AdminMessagesDialog } from "./admin-messages-dialog";
 import { CommandPalette } from "./command-palette";
 import { NewsletterForm } from "./newsletter-form";
 import { BackToTop } from "./back-to-top";
-import { MorphingLogo } from "./morphing-logo";
+import { MobileDock } from "./mobile-dock";
+import { AuroraBackground } from "./aurora-background";
 import { Hero } from "./hero";
 import { HomeContent } from "./home-content";
 import { ProjectsExplorer } from "./projects-explorer";
@@ -255,9 +256,10 @@ export function SiteShell({
 
   return (
     <div className="min-h-screen flex flex-col relative">
+      {/* Page-spanning turquoise glows — shared by every view */}
+      <AuroraBackground />
       <ScrollProgress />
       <SiteHeader view={route.view} onNavigate={navigate} />
-      <MorphingLogo />
 
       <main className="flex-grow relative z-10">
         <AnimatePresence mode="wait">
@@ -332,7 +334,7 @@ export function SiteShell({
       </main>
 
       {/* Sticky footer */}
-      <footer className="footer-gradient mt-auto border-t border-border bg-card/60 backdrop-blur relative z-10 pb-[env(safe-area-inset-bottom)]">
+      <footer className="footer-gradient mt-auto border-t border-border bg-card/60 backdrop-blur relative z-10 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:pb-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
           {/* Newsletter strip */}
           <div className="flex justify-center">
@@ -383,7 +385,7 @@ export function SiteShell({
               </button>
             </nav>
 
-            <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5">
+            <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5 pe-14 sm:pe-0">
               {t("core", "footer.madeWith")}
               <Heart className="w-4 h-4 text-brand fill-brand" aria-label={t("core", "footer.love")} />
               {t("core", "footer.andCode")} ©{" "}
@@ -396,6 +398,7 @@ export function SiteShell({
         </div>
       </footer>
 
+      <MobileDock view={route.view} onNavigate={navigate} />
       <BackToTop />
 
       <AdminMessagesDialog open={adminOpen} onOpenChange={setAdminOpen} />

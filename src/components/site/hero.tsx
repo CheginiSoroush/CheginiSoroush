@@ -80,11 +80,9 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
   return (
     <section className="relative overflow-hidden">
       <div className="bg-grid absolute inset-0" aria-hidden />
-      <div className="aurora w-[420px] h-[420px] -top-40 -right-32" aria-hidden />
-      <div className="aurora w-[360px] h-[360px] top-20 -left-32" aria-hidden />
 
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-28 pb-16 sm:pt-36 sm:pb-20 text-center">
-        {/* Logo — the morphing clone (see morphing-logo.tsx) takes over from here on scroll */}
+        {/* Logo — stays in the hero; the header shows its own quiet copy once this scrolls out of view */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}

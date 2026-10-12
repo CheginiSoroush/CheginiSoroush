@@ -46,7 +46,6 @@ export function BackToTop() {
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       className={cn("back-to-top", visible && "back-to-top-visible")}
-      style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
     >
       <svg viewBox="0 0 48 48" aria-hidden className="back-to-top-ring">
         <circle className="ring-track" cx="24" cy="24" r={R} />

@@ -237,6 +237,36 @@ body {
 .light .aurora {
   opacity: 0.12;
 }
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-24px, 18px) scale(1.06);
+  }
+}
+@keyframes aurora-drift-slow {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -16px) scale(0.95);
+  }
+}
+.aurora-drift {
+  animation: aurora-drift 16s ease-in-out infinite;
+}
+.aurora-drift-slow {
+  animation: aurora-drift-slow 22s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aurora-drift,
+  .aurora-drift-slow {
+    animation: none;
+  }
+}
 
 /* ---------- Custom scrollbar ---------- */
 *::-webkit-scrollbar {
@@ -1040,7 +1070,9 @@ body {
 /* ---------- Back to top (progress ring) ---------- */
 .back-to-top {
   position: fixed;
-  left: 1.5rem;
+  /* Sits above the mobile dock; drops to the corner on desktop */
+  bottom: calc(6.25rem + env(safe-area-inset-bottom));
+  inset-inline-end: 1.25rem;
   z-index: 60;
   width: 48px;
   height: 48px;
@@ -1061,7 +1093,14 @@ body {
     transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow 0.3s ease,
     border-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    bottom 0.3s ease;
+}
+@media (min-width: 640px) {
+  .back-to-top {
+    bottom: 1.5rem;
+    inset-inline-end: 1.5rem;
+  }
 }
 .back-to-top-visible {
   opacity: 1;

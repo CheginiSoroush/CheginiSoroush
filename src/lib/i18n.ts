@@ -51,7 +51,7 @@ export function setLang(next: Lang) {
   }
   applyDocumentLang(next);
   langListeners.forEach((fn) => fn());
-  // window-level signal (MorphingLogo etc. re-settle after the dir flip)
+  // window-level signal for non-React listeners after the dir flip
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event("imsoroush-lang-changed"));
   }
