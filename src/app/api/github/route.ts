@@ -13,6 +13,10 @@ type GitHubStats = {
   totalStars: number;
   totalForks: number;
   topRepos: { name: string; description: string; stars: number; url: string; language: string | null }[];
+  calendar: {
+    totalContributions: number;
+    days: { date: string; count: number }[];
+  } | null;
   fetchedAt: number;
 };
 
@@ -31,6 +35,54 @@ const cache: GitHubCache = (globalForGithub.githubCache ??= {
   fetchedAt: 0,
   inflight: null,
 });
+
+async function fetchContributionCalendar(headers: Record<string, string>): Promise<GitHubStats["calendar"]> {
+  try {
+    const query = `query($login: String!) {
+      user(login: $login) {
+        contributionsCollection {
+          contributionCalendar {
+            totalContributions
+            weeks { contributionDays { date contributionCount } }
+          }
+        }
+      }
+    }`;
+    const res = await fetch("https://api.github.com/graphql", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({ query, variables: { login: GITHUB_USER } }),
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      console.error("GitHub GraphQL failed:", res.status);
+      return null;
+    }
+    const json = (await res.json()) as {
+      data?: {
+        user?: {
+          contributionsCollection?: {
+            contributionCalendar?: {
+              totalContributions: number;
+              weeks: { contributionDays: { date: string; contributionCount: number }[] }[];
+            };
+          };
+        };
+      };
+    };
+    const cal = json.data?.user?.contributionsCollection?.contributionCalendar;
+    if (!cal) return null;
+    return {
+      totalContributions: cal.totalContributions,
+      days: cal.weeks.flatMap((w) =>
+        w.contributionDays.map((d) => ({ date: d.date, count: d.contributionCount }))
+      ),
+    };
+  } catch (error) {
+    console.error("fetchContributionCalendar error:", error);
+    return null;
+  }
+}
 
 async function fetchGitHubStats(): Promise<GitHubStats | null> {
   try {
@@ -55,6 +107,8 @@ async function fetchGitHubStats(): Promise<GitHubStats | null> {
       console.error("GitHub API failed:", userRes.status, reposRes.status);
       return cache.data; // serve stale on failure
     }
+
+    const calendarPromise = fetchContributionCalendar(headers);
 
     const user = (await userRes.json()) as {
       login: string;
@@ -100,6 +154,7 @@ async function fetchGitHubStats(): Promise<GitHubStats | null> {
       totalStars,
       totalForks,
       topRepos,
+      calendar: await calendarPromise,
       fetchedAt: Date.now(),
     };
   } catch (error) {

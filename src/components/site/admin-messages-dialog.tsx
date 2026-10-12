@@ -31,6 +31,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { AdminCommentsPanel } from "@/components/site/admin-comments-panel";
 import { cn } from "@/lib/utils";
 
 type Message = {
@@ -78,6 +79,7 @@ type StatsPayload = {
     unread: number;
     messagesLastWeek: number;
     likes: number;
+    comments: number;
   };
   topProjects: TopProject[];
   topArticles: TopArticle[];
@@ -155,6 +157,7 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
     { icon: Eye, label: "بازدید سایت", value: t.visits },
     { icon: FolderGit2, label: "بازدید پروژه‌ها", value: t.projectViews },
     { icon: Heart, label: "مجموع لایک‌ها", value: t.likes },
+    { icon: MessageSquare, label: "دیدگاه‌ها", value: t.comments },
     { icon: MessageSquare, label: "پیام‌ها", value: t.messages, hint: `${fa(t.unread)} خوانده‌نشده` },
     { icon: CalendarClock, label: "پیام این هفته", value: t.messagesLastWeek },
     { icon: FolderGit2, label: "پروژه‌ها", value: t.projects },
@@ -276,7 +279,7 @@ export function AdminMessagesDialog({
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const [panel, setPanel] = useState<"inbox" | "stats">("inbox");
+  const [panel, setPanel] = useState<"inbox" | "stats" | "comments">("inbox");
 
   // Reset state when dialog closes
   useEffect(() => {
@@ -474,7 +477,11 @@ export function AdminMessagesDialog({
                 )}
               </DialogTitle>
               <DialogDescription>
-                {panel === "inbox" ? `مجموع ${fa(total)} پیام از فرم تماس` : "نگاه کلی به عملکرد سایت"}
+                {panel === "inbox"
+                  ? `مجموع ${fa(total)} پیام از فرم تماس`
+                  : panel === "comments"
+                    ? "مدیریت دیدگاه‌های نوشته‌ها"
+                    : "نگاه کلی به عملکرد سایت"}
               </DialogDescription>
             </DialogHeader>
 
@@ -483,6 +490,7 @@ export function AdminMessagesDialog({
               {(
                 [
                   { id: "inbox", label: "صندوق پیام", icon: Inbox },
+                  { id: "comments", label: "دیدگاه‌ها", icon: MessageSquare },
                   { id: "stats", label: "آمار سایت", icon: BarChart3 },
                 ] as const
               ).map((p) => (
@@ -506,6 +514,8 @@ export function AdminMessagesDialog({
 
             {panel === "stats" ? (
               <AdminStatsPanel apiKey={key.trim()} />
+            ) : panel === "comments" ? (
+              <AdminCommentsPanel apiKey={key.trim()} />
             ) : loading ? (
               <div className="py-10 grid place-items-center text-muted-foreground">
                 <Loader2 className="w-6 h-6 animate-spin" />

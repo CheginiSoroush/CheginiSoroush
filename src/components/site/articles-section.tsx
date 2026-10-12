@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Eye, ArrowLeft, Github, Share2, Check, Heart } from "lucide-react";
+import { Clock, Eye, ArrowLeft, Github, Share2, Check, Heart, MessageCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
+import { ArticleComments } from "@/components/site/article-comments";
 import { cn } from "@/lib/utils";
 import type { Article } from "@/lib/types";
 
@@ -90,6 +91,7 @@ export function ArticlesSection({
   const likedSlugs = useSyncExternalStore(subscribeLiked, getLikedSnapshot, getServerLiked);
   const [likesOverrides, setLikesOverrides] = useState<Record<string, number>>({});
   const [burstSlug, setBurstSlug] = useState<string | null>(null);
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const postedRef = useRef<Set<string>>(new Set());
 
@@ -97,6 +99,10 @@ export function ArticlesSection({
   const onSpotlightMove = useSpotlight();
 
   const likesOf = (a: Article) => likesOverrides[a.slug] ?? a.likes;
+
+  const handleCommentCount = useCallback((slug: string, total: number) => {
+    setCommentCounts((prev) => ({ ...prev, [slug]: total }));
+  }, []);
 
   const toggleLike = async (a: Article) => {
     const wasLiked = likedSlugs.has(a.slug);
@@ -270,6 +276,12 @@ export function ArticlesSection({
                         />
                         {likesOf(a).toLocaleString("fa-IR")}
                       </span>
+                      {(commentCounts[a.slug] ?? 0) > 0 && (
+                        <span className="text-[10px] font-bold text-muted-foreground inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1">
+                          <MessageCircle className="w-3 h-3" />
+                          {commentCounts[a.slug].toLocaleString("fa-IR")}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <h3 className="font-extrabold text-lg mb-2 leading-8 group-hover:text-brand transition-colors">
@@ -382,6 +394,8 @@ export function ArticlesSection({
                   مشاهده پروژه تعاملی در گیت‌هاب
                 </a>
               )}
+
+              <ArticleComments slug={selected.slug} onCountChange={handleCommentCount} />
             </>
           )}
         </DialogContent>

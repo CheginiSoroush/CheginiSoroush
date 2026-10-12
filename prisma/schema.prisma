@@ -46,6 +46,16 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+model Comment {
+  id          String   @id @default(cuid())
+  articleSlug String
+  name        String
+  body        String
+  createdAt   DateTime @default(now())
+
+  @@index([articleSlug, createdAt])
+}
+
 model SiteStat {
   key       String   @id
   value     Int      @default(0)

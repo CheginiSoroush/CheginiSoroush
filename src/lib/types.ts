@@ -34,6 +34,14 @@ export type SiteStats = {
   messages: number;
 };
 
+export type Comment = {
+  id: string;
+  articleSlug: string;
+  name: string;
+  body: string;
+  createdAt: string;
+};
+
 export type ViewName = "home" | "projects" | "writing" | "contact";
 
 export const CATEGORY_LABELS: Record<string, { label: string; icon: string }> = {

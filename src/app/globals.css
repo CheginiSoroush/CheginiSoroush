@@ -604,3 +604,74 @@ body {
   box-shadow: 0 0 8px var(--brand-glow);
   transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* ---------- GitHub contribution heatmap ---------- */
+.heatmap-cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: var(--secondary);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease;
+  flex-shrink: 0;
+}
+.heatmap-cell-active:hover {
+  transform: scale(1.35);
+  box-shadow: 0 0 8px var(--brand-glow);
+  position: relative;
+  z-index: 2;
+}
+.heatmap-l0 {
+  background: color-mix(in srgb, var(--secondary) 88%, transparent);
+}
+.heatmap-l1 {
+  background: color-mix(in srgb, var(--brand) 22%, var(--secondary));
+}
+.heatmap-l2 {
+  background: color-mix(in srgb, var(--brand) 45%, var(--secondary));
+}
+.heatmap-l3 {
+  background: color-mix(in srgb, var(--brand) 70%, transparent);
+}
+.heatmap-l4 {
+  background: var(--brand);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, white 25%, transparent);
+}
+.heatmap-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--brand) 40%, transparent) transparent;
+}
+
+/* ---------- Article comments ---------- */
+.comment-card {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.comment-card:hover {
+  border-color: color-mix(in srgb, var(--brand) 35%, transparent);
+  transform: translateY(-1px);
+}
+.comment-fresh {
+  animation: comment-glow 1.2s ease;
+}
+@keyframes comment-glow {
+  0% {
+    transform: scale(0.98);
+    box-shadow: 0 0 0 0 var(--brand-glow);
+  }
+  40% {
+    transform: scale(1.01);
+    box-shadow: 0 0 26px -4px var(--brand-glow);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px -8px var(--brand-glow);
+  }
+}
+
+/* Heatmap: slightly tighter cells on small screens */
+@media (max-width: 480px) {
+  .heatmap-cell {
+    width: 9px;
+    height: 9px;
+    border-radius: 2.5px;
+  }
+}
