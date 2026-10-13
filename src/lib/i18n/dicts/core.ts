@@ -39,7 +39,7 @@ export const coreDict: Dict = {
     // ---------- section headings ----------
     "heading.projects.title": "کارنامه پروژه‌ها",
     "heading.projects.sub":
-      "۳۹ پروژه واقعی و متن‌باز؛ از ربات‌های سرورلس تا شبیه‌سازهای سه‌بعدی. جستجو کنید، فیلتر کنید و جزئیات هر پروژه را ببینید.",
+      "{n} پروژه واقعی؛ از ربات‌های سرورلس و وب‌اپ‌های تعاملی تا شبیه‌سازهای سه‌بعدی. جستجو کنید، فیلتر کنید و جزئیات هر پروژه را ببینید.",
     "heading.writing.title": "نوشته‌ها و کاوش‌ها",
     "heading.writing.sub":
       "روانشناسی رفتار، نوروساینس اراده و علوم ورزشی — هر مقاله همراه با یک پروژه تعاملی واقعی.",
@@ -125,7 +125,7 @@ export const coreDict: Dict = {
     // ---------- section headings ----------
     "heading.projects.title": "Project Portfolio",
     "heading.projects.sub":
-      "39 real, open-source projects — from serverless bots to 3D simulators. Search, filter and inspect every detail.",
+      "{n} real projects — from serverless bots and interactive web apps to 3D simulators. Search, filter and inspect every detail.",
     "heading.writing.title": "Writing & Explorations",
     "heading.writing.sub":
       "Behavioral psychology, the neuroscience of willpower and sports science — every article paired with a real interactive project.",

@@ -292,7 +292,7 @@ export function SiteShell({
               <div className="pt-28 pb-24">
                 <SectionHeading
                   title={t("core", "heading.projects.title")}
-                  subtitle={t("core", "heading.projects.sub")}
+                  subtitle={t("core", "heading.projects.sub", { n: num(projects.length) })}
                 />
                 <ProjectsExplorer
                   initialProjects={projects}
@@ -359,12 +359,17 @@ export function SiteShell({
           </div>
 
           <div className="border-t border-border/70 pt-6 flex flex-col sm:flex-row items-center justify-between gap-5">
-            <nav aria-label={t("core", "footer.social")} className="flex items-center gap-3">
+            {/* Social row wraps on narrow screens instead of overflowing; the
+                quiet utility icons flow to their own centered second row. */}
+            <nav
+              aria-label={t("core", "footer.social")}
+              className="max-w-full flex flex-wrap items-center justify-center gap-2 sm:gap-3"
+            >
               <a
                 href="https://github.com/CheginiSoroush"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-bold rounded-xl border border-border px-4 py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold rounded-xl border border-border px-3 py-2 sm:px-4 sm:py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
               >
                 <Github className="w-4.5 h-4.5" />
                 {t("core", "footer.github")}
@@ -373,14 +378,14 @@ export function SiteShell({
                 href="https://www.linkedin.com/in/imsoroush"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-bold rounded-xl border border-border px-4 py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold rounded-xl border border-border px-3 py-2 sm:px-4 sm:py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
               >
                 <Linkedin className="w-4.5 h-4.5" />
                 {t("core", "footer.linkedin")}
               </a>
               <a
                 href="mailto:imsoroushchegini@gmail.com"
-                className="inline-flex items-center gap-2 text-sm font-bold rounded-xl border border-border px-4 py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold rounded-xl border border-border px-3 py-2 sm:px-4 sm:py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
               >
                 <Mail className="w-4.5 h-4.5" />
                 {t("core", "footer.email")}
@@ -393,33 +398,38 @@ export function SiteShell({
               )}
               {/* Utility icons — admin panel (message moderation) + shortcuts.
                   Deliberately quiet ghost styling so they don't read as primary
-                  social links; the lock opens the owner-only inbox. */}
-              <button
-                onClick={() => setAdminOpen(true)}
-                aria-label={t("core", "aria.admin")}
-                title={t("core", "aria.admin")}
-                className="w-10 h-10 grid place-items-center rounded-xl text-muted-foreground/40 hover:text-brand hover:bg-secondary/70 transition-all"
-              >
-                <LockKeyhole className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setShortcutsOpen(true)}
-                aria-label={t("core", "aria.shortcuts")}
-                title={t("core", "footer.shortcutsTitle")}
-                className="w-10 h-10 grid place-items-center rounded-xl text-muted-foreground/40 hover:text-brand hover:bg-secondary/70 transition-all"
-              >
-                <Keyboard className="w-4 h-4" />
-              </button>
+                  social links; the lock opens the owner-only inbox. The pair is
+                  grouped so they always wrap onto the same centered row. */}
+              <span className="inline-flex items-center gap-1">
+                <button
+                  onClick={() => setAdminOpen(true)}
+                  aria-label={t("core", "aria.admin")}
+                  title={t("core", "aria.admin")}
+                  className="w-9 h-9 sm:w-10 sm:h-10 grid place-items-center rounded-xl text-muted-foreground/40 hover:text-brand hover:bg-secondary/70 transition-all"
+                >
+                  <LockKeyhole className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setShortcutsOpen(true)}
+                  aria-label={t("core", "aria.shortcuts")}
+                  title={t("core", "footer.shortcutsTitle")}
+                  className="w-9 h-9 sm:w-10 sm:h-10 grid place-items-center rounded-xl text-muted-foreground/40 hover:text-brand hover:bg-secondary/70 transition-all"
+                >
+                  <Keyboard className="w-4 h-4" />
+                </button>
+              </span>
             </nav>
 
-            <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5 pe-14 sm:pe-0">
-              {t("core", "footer.madeWith")}
-              <Heart className="w-4 h-4 text-brand fill-brand" aria-label={t("core", "footer.love")} />
-              {t("core", "footer.andCode")} ©{" "}
-              {new Date().toLocaleDateString(lang === "fa" ? "fa-IR" : "en-US", {
-                year: "numeric",
-              })}{" "}
-              {lang === "fa" ? "سروش چگینی" : "Soroush Chegini"}
+            <p className="text-[11px] sm:text-sm text-muted-foreground text-center sm:text-start max-w-[46ch] sm:max-w-none sm:pe-0 mx-auto sm:mx-0">
+              <span className="inline-flex flex-wrap items-center justify-center gap-x-1.5 sm:inline sm:flex-nowrap">
+                {t("core", "footer.madeWith")}
+                <Heart className="w-4 h-4 text-brand fill-brand" aria-label={t("core", "footer.love")} />
+                {t("core", "footer.andCode")} ©{" "}
+                {new Date().toLocaleDateString(lang === "fa" ? "fa-IR" : "en-US", {
+                  year: "numeric",
+                })}{" "}
+                {lang === "fa" ? "سروش چگینی" : "Soroush Chegini"}
+              </span>
             </p>
           </div>
         </div>

@@ -362,7 +362,7 @@ export function ReposExplorer() {
             return (
               <article
                 key={repo.name}
-                className="spotlight group relative rounded-2xl border border-border bg-card/70 backdrop-blur p-5 flex flex-col gap-3 hover:border-brand/40 hover:-translate-y-1 transition-all duration-300"
+                className="spotlight group relative rounded-2xl border border-border bg-card/70 backdrop-blur p-4 sm:p-5 flex flex-col gap-2.5 sm:gap-3 hover:border-brand/40 hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="flex items-start justify-between gap-2">
                   <a
@@ -394,7 +394,7 @@ export function ReposExplorer() {
                     onClick={() => copyClone(repo)}
                     title={t("repos", "copyClone")}
                     aria-label={t("repos", "copyClone")}
-                    className="shrink-0 w-8 h-8 grid place-items-center rounded-lg border border-border text-muted-foreground hover:text-brand hover:border-brand/40 active:scale-90 transition-all"
+                    className="shrink-0 w-9 h-9 -me-1 grid place-items-center rounded-lg border border-border text-muted-foreground hover:text-brand hover:border-brand/40 active:scale-90 transition-all"
                   >
                     <Copy className="w-3.5 h-3.5" aria-hidden />
                   </button>
@@ -425,7 +425,7 @@ export function ReposExplorer() {
                   </div>
                 )}
 
-                <div className="mt-auto pt-1 flex items-center justify-between gap-2 text-xs text-muted-foreground border-t border-border/60">
+                <div className="mt-auto pt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5 text-xs text-muted-foreground border-t border-border/60">
                   <span className="inline-flex items-center gap-1.5 min-w-0">
                     {repo.language ? (
                       <>
@@ -449,13 +449,9 @@ export function ReposExplorer() {
                         {t("repos", "badge.archived")}
                       </span>
                     )}
-                    {repo.isPrivate && (
-                      <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0 inline-flex items-center gap-0.5">
-                        <Lock className="w-2.5 h-2.5" aria-hidden />
-                        {t("repos", "badge.private")}
-                      </span>
-                    )}
                   </span>
+                  {/* visibility is already badged in the title row — the footer
+                      row carries only fork/archive to stay uncluttered on mobile */}
                   <span className="flex items-center gap-2.5 shrink-0 tabular-nums" dir="ltr">
                     <span className="inline-flex items-center gap-1" title={t("repos", "stats.stars")}>
                       <Star className="w-3.5 h-3.5 text-brand" aria-hidden />
