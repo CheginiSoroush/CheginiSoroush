@@ -1,9 +1,12 @@
-# NOTE: This file lives at deploy/github-actions-deploy.yml because the current
-# GitHub token cannot push files under .github/workflows (needs `workflow` scope).
-# To activate automatic deployment, EITHER:
+# Cloudflare Workers deployment (GitHub Actions).
+#
+# This file lives at deploy/github-actions-deploy.yml because pushing to
+# .github/workflows requires the `workflow` token scope. To activate automatic
+# deployment, EITHER:
 #   a) in GitHub web UI: Actions tab → "New workflow" → "set up a workflow yourself"
 #      → paste this file's content as .github/workflows/deploy.yml, OR
-#   b) create a PAT with repo+workflow scopes and ask the assistant to push it.
+#   b) create a PAT with repo+workflow scopes and push the file to
+#      .github/workflows/deploy.yml locally.
 name: Deploy to Cloudflare Workers
 
 # Automatic production deployment:

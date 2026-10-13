@@ -6,8 +6,7 @@ import { coverSpec } from "@/lib/cover-art";
 import { COVER_IMAGES } from "@/lib/cover-images";
 import { cn } from "@/lib/utils";
 
-/** Bump after regenerating any cover art so client HTTP caches revalidate.
- *  v3: 16 newly-curated projects got dedicated AI banners (scripts/gen-covers.ts). */
+/** Bump after regenerating any cover art so client HTTP caches revalidate. */
 const COVER_VERSION = "3";
 
 /** Cache-busted cover URL for a slug — "" when the slug has no dedicated art. */
@@ -19,9 +18,8 @@ export function coverSrc(slug: string): string {
 /**
  * Project cover art.
  *
- * 1. If the slug has a dedicated AI-generated concept banner (lib/cover-images,
- *    produced by scripts/gen-covers.ts) it renders that real image — unique,
- *    story-driven art per project.
+ * 1. If the slug has a dedicated concept banner (lib/cover-images) it renders
+ *    that real image — unique, story-driven art per project.
  * 2. Otherwise it falls back to the deterministic generative SVG (unique per
  *    slug, stable across renders, zero assets). Geometry precomputed in
  *    lib/cover-art (render-pure).

@@ -57,9 +57,8 @@ export interface DataStore {
   setMessageRead(id: string, read: boolean): Promise<ContactMessageRow | null>;
   deleteMessage(id: string): Promise<void>;
 
-  // NOTE: the comments feature was removed from the product by owner decision.
-  // The Comment table remains in the Prisma schema (data preserved) but no
-  // store/API/UI surface exists anymore.
+  // NOTE: the Comment table remains in the Prisma schema (data preserved) but
+  // no store/API/UI surface exists for it in the product.
 
   // ---------- Subscribers ----------
   countSubscribers(): Promise<number>;

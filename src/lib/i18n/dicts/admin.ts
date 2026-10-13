@@ -49,7 +49,7 @@ export const adminDict: Dict = {
     "deleted": "پیام حذف شد",
     "deletedDesc": "پیام «{s}» پاک شد.",
 
-    // (Comments strings removed with the feature — owner decision.)
+    // (Comments feature intentionally not part of the product.)
 
     // ---------- stats ----------
     "statsFailed": "آمار بارگذاری نشد.",
@@ -122,7 +122,7 @@ export const adminDict: Dict = {
     "deleted": "Message deleted",
     "deletedDesc": "Message “{s}” was deleted.",
 
-    // (Comments strings removed with the feature — owner decision.)
+    // (Comments feature intentionally not part of the product.)
 
     // ---------- stats ----------
     "statsFailed": "Couldn't load stats.",

@@ -105,8 +105,6 @@ export const articlesDict: Dict = {
     "toast.copyFailedTitle": "کپی نشد",
     "toast.historyClearedTitle": "تاریخچه پاک شد",
     "toast.historyClearedDesc": "همه رکوردهای مطالعه حذف شدند.",
-
-    // (Comments strings removed with the feature — owner decision.)
   },
   en: {
     // ---------- section ----------
@@ -211,7 +209,5 @@ export const articlesDict: Dict = {
     "toast.copyFailedTitle": "Copy failed",
     "toast.historyClearedTitle": "History cleared",
     "toast.historyClearedDesc": "All reading records have been removed.",
-
-    // (Comments strings removed with the feature — owner decision.)
   },
 };

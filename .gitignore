@@ -30,32 +30,42 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env & secrets
+.env
+.env.*
+*.pem
 
 # vercel
 .vercel
 
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-local-*
-.claude
-.z-ai-config
+
+# logs
 *.log
-dev.log
-dev.out.log
-test
-prompt
-
 server.log
-# Skills directory
-/skills/
-# environment secrets
-.env
-.env.*
 
-# Cloudflare / OpenNext build artifacts
+# local databases (create with `bun run db:push`, seed via prisma scripts)
+db/*.db
+db/*.db-journal
+
+# local dev & operations notes
+worklog.md
+tool-results/
+agent-ctx/
+local-*
+
+# local infrastructure (sandbox gateway / dev helper scripts)
+Caddyfile
+.zscripts/
+tests/
+examples/
+
+# generated assets pipeline (cover art is committed; the generator stays local)
+scripts/gen-covers.ts
+download/
+
+# cloudflare build artifacts
 .open-next/
 .wrangler/
