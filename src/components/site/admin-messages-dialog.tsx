@@ -24,6 +24,7 @@ import {
   RefreshCw,
   Users,
   Download,
+  KeyRound,
 } from "lucide-react";
 import {
   Dialog,
@@ -519,11 +520,30 @@ export function AdminMessagesDialog({
                 <Lock className="w-6 h-6" />
               </div>
               <DialogTitle className="text-center">{t("admin", "login")}</DialogTitle>
-              <DialogDescription className="text-center">
+              <DialogDescription className="text-center leading-relaxed">
                 {t("admin", "loginDesc")}
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={unlock} className="space-y-4 mt-2">
+            {/* What's inside — capability chips so the panel is self-explanatory */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+              {(
+                [
+                  { icon: Inbox, label: t("admin", "loginChipInbox") },
+                  { icon: BarChart3, label: t("admin", "loginChipStats") },
+                ] as const
+              ).map((c) => (
+                <div
+                  key={c.label}
+                  className="rounded-2xl border border-border bg-secondary/50 px-3 py-2.5 flex items-center gap-2.5 min-h-[46px]"
+                >
+                  <span className="w-8 h-8 rounded-xl bg-brand/10 border border-brand/25 grid place-items-center text-brand shrink-0">
+                    <c.icon className="w-4 h-4" aria-hidden />
+                  </span>
+                  <span className="text-[11.5px] font-bold leading-snug">{c.label}</span>
+                </div>
+              ))}
+            </div>
+            <form onSubmit={unlock} className="space-y-4 mt-3">
               <input
                 type="password"
                 dir="ltr"
@@ -551,6 +571,10 @@ export function AdminMessagesDialog({
                 )}
               </button>
             </form>
+            <p className="text-center text-[11px] text-muted-foreground/80 leading-relaxed flex items-center justify-center gap-1.5">
+              <KeyRound className="w-3.5 h-3.5 text-brand/70 shrink-0" aria-hidden />
+              {t("admin", "loginKeyHint")}
+            </p>
           </>
         ) : (
           <>

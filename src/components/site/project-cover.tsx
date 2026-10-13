@@ -10,6 +10,12 @@ import { cn } from "@/lib/utils";
  *  v3: 16 newly-curated projects got dedicated AI banners (scripts/gen-covers.ts). */
 const COVER_VERSION = "3";
 
+/** Cache-busted cover URL for a slug — "" when the slug has no dedicated art. */
+export function coverSrc(slug: string): string {
+  const image = COVER_IMAGES[slug];
+  return image ? `${image}?v=${COVER_VERSION}` : "";
+}
+
 /**
  * Project cover art.
  *

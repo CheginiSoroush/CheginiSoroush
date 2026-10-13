@@ -5,7 +5,10 @@ export const adminDict: Dict = {
   fa: {
     // ---------- login ----------
     "login": "ورود مدیر",
-    "loginDesc": "برای دیدن پیام‌های دریافتی، کلید مدیریتی را وارد کنید.",
+    "loginDesc": "این پنل فقط برای شماست (مالک سایت). با کلید مدیریتی وارد شوید تا پیام‌های فرم تماس و آمار سایت را ببینید — بازدیدکنندگان هیچ‌کدام از این‌ها را نمی‌بینند.",
+    "loginChipInbox": "صندوق پیام‌های فرم تماس",
+    "loginChipStats": "آمار و عملکرد سایت",
+    "loginKeyHint": "کلید، همان مقدار ADMIN_KEY در فایل .env سرور است.",
     "keyAria": "کلید مدیریتی",
     "enter": "ورود به پنل",
     "checking": "در حال بررسی...",
@@ -75,7 +78,10 @@ export const adminDict: Dict = {
   en: {
     // ---------- login ----------
     "login": "Admin sign-in",
-    "loginDesc": "Enter the admin key to view incoming messages.",
+    "loginDesc": "This panel is for you only (the site owner). Sign in with your admin key to read contact-form messages and see site stats — visitors never see any of this.",
+    "loginChipInbox": "Contact-form inbox",
+    "loginChipStats": "Site stats & performance",
+    "loginKeyHint": "The key is the ADMIN_KEY value in the server's .env file.",
     "keyAria": "Admin key",
     "enter": "Sign in",
     "checking": "Verifying...",

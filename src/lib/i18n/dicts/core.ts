@@ -61,7 +61,7 @@ export const coreDict: Dict = {
     "footer.love": "علاقه",
     "footer.andCode": "و کد",
     "footer.copyright": "© {year} سروش چگینی",
-    "aria.admin": "پنل مدیریت پیام‌ها",
+    "aria.admin": "پنل مدیریت — فقط برای مالک سایت",
     "aria.shortcuts": "میان‌برهای صفحه‌کلید",
     "footer.shortcutsTitle": "میان‌برهای صفحه‌کلید (؟)",
 
@@ -149,7 +149,7 @@ export const coreDict: Dict = {
     "footer.love": "love",
     "footer.andCode": "and code",
     "footer.copyright": "© {year} Soroush Chegini",
-    "aria.admin": "Admin messages panel",
+    "aria.admin": "Owner-only admin panel",
     "aria.shortcuts": "Keyboard shortcuts",
     "footer.shortcutsTitle": "Keyboard shortcuts (?)",
 

@@ -39,6 +39,10 @@ export const miscDict: Dict = {
     // Command palette — results & footer
     "palette.badge.article": "نوشته",
     "palette.hint": "انتخاب",
+    "palette.hint.nav": "جابجایی",
+    "palette.esc": "بستن",
+    "palette.empty.title": "چیزی پیدا نشد",
+    "palette.empty.desc": "بخشی از نام پروژه، نوشته یا مخزن را امتحان کنید — مثلاً «تلگرام» یا obsidian.",
     "palette.indexed": "{n} پروژه و {m} نوشته ایندکس شده",
 
     // Small chrome
@@ -82,6 +86,10 @@ export const miscDict: Dict = {
     // Command palette — results & footer
     "palette.badge.article": "Article",
     "palette.hint": "Select",
+    "palette.hint.nav": "Move",
+    "palette.esc": "Close",
+    "palette.empty.title": "Nothing found",
+    "palette.empty.desc": "Try part of a project, article, or repo name — e.g. “telegram” or “obsidian”.",
     "palette.indexed": "{n} projects and {m} articles indexed",
 
     // Small chrome

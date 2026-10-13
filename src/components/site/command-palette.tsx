@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   Home,
   FolderKanban,
@@ -11,7 +12,8 @@ import {
   Dices,
   Keyboard,
   LockKeyhole,
-  Bot,
+  Search,
+  SearchX,
   FileText,
   Sparkles,
   Star,
@@ -27,12 +29,33 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import { coverSrc } from "@/components/site/project-cover";
 import { pickEn, useT } from "@/lib/i18n";
 import type { Article, Project } from "@/lib/types";
 
 // Same Persian normalization as the API (ي→ی ك→ک + ZWNJ → space)
 const norm = (s: string) =>
   s.replace(/ي/g, "ی").replace(/ك/g, "ک").replace(/‌/g, " ").trim().toLowerCase();
+
+/** Rounded gradient tile behind every result icon — the palette's visual unit. */
+function Tile({ children, emoji = false }: { children: React.ReactNode; emoji?: boolean }) {
+  return (
+    <span className={emoji ? "palette-tile palette-tile-emoji" : "palette-tile"} aria-hidden>
+      {children}
+    </span>
+  );
+}
+
+/** Mini banner of the project's AI cover art (falls back to the emoji tile). */
+function ProjectThumb({ project }: { project: Project }) {
+  const src = coverSrc(project.slug);
+  if (!src) return <Tile emoji>{project.icon}</Tile>;
+  return (
+    <span className="palette-thumb" aria-hidden>
+      <Image src={src} alt="" width={116} height={84} className="h-full w-full object-cover" />
+    </span>
+  );
+}
 
 export function CommandPalette({
   projects,
@@ -161,23 +184,54 @@ export function CommandPalette({
       title={t("misc", "palette.title")}
       description={t("misc", "palette.description")}
       shouldFilter={false}
-      className="command-palette max-w-xl rounded-3xl dialog-accent border-0"
+      showCloseButton={false}
+      className="command-palette max-w-2xl rounded-[1.75rem] dialog-accent border-0"
     >
-      <CommandInput
-        value={query}
-        onValueChange={setQuery}
-        placeholder={t("misc", "palette.placeholder")}
-      />
+      {/* Custom search header — gradient icon tile + input + ESC chip */}
+      <div className="palette-search">
+        <span className="palette-search-tile" aria-hidden>
+          <Search className="h-[1.05rem] w-[1.05rem]" />
+        </span>
+        <CommandInput
+          value={query}
+          onValueChange={setQuery}
+          placeholder={t("misc", "palette.placeholder")}
+          className="h-11 text-[1.02rem]"
+        />
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="palette-esc"
+          aria-label={t("misc", "palette.esc")}
+          title={t("misc", "palette.esc")}
+        >
+          ESC
+        </button>
+      </div>
+
       <CommandList dir={dir}>
-        <CommandEmpty>{t("misc", "palette.noResults")}</CommandEmpty>
+        {/* Rich empty state */}
+        <CommandEmpty className="palette-empty">
+          <span className="palette-empty-orb" aria-hidden>
+            <SearchX className="h-6 w-6" />
+          </span>
+          <span className="text-sm font-extrabold">{t("misc", "palette.empty.title")}</span>
+          <span className="max-w-[38ch] text-center text-[11.5px] leading-relaxed text-muted-foreground">
+            {t("misc", "palette.empty.desc")}
+          </span>
+        </CommandEmpty>
 
         {filteredViews.length > 0 && (
           <CommandGroup heading={t("misc", "palette.group.nav")}>
             {filteredViews.map((v) => (
               <CommandItem key={v.hash} value={v.hash} onSelect={() => go(v.hash)}>
-                <v.icon className="text-brand" />
-                <span>{v.label}</span>
-                <CommandShortcut>{v.hint}</CommandShortcut>
+                <Tile>
+                  <v.icon />
+                </Tile>
+                <span className="text-[13.5px] font-semibold">{v.label}</span>
+                <CommandShortcut>
+                  <kbd className="palette-kbd">{v.hint}</kbd>
+                </CommandShortcut>
               </CommandItem>
             ))}
           </CommandGroup>
@@ -189,9 +243,15 @@ export function CommandPalette({
             <CommandGroup heading={t("misc", "palette.group.actions")}>
               {filteredActions.map((a) => (
                 <CommandItem key={a.label} value={a.label} onSelect={a.run}>
-                  <a.icon className="text-brand" />
-                  <span>{a.label}</span>
-                  {a.hint && <CommandShortcut>{a.hint}</CommandShortcut>}
+                  <Tile>
+                    <a.icon />
+                  </Tile>
+                  <span className="text-[13.5px] font-semibold">{a.label}</span>
+                  {a.hint && (
+                    <CommandShortcut>
+                      <kbd className="palette-kbd">{a.hint}</kbd>
+                    </CommandShortcut>
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -209,9 +269,7 @@ export function CommandPalette({
                   onSelect={() => go(`#/projects/${encodeURIComponent(p.slug)}`)}
                   className="items-center gap-3 py-2"
                 >
-                  <span className="palette-item-icon text-lg leading-none" aria-hidden>
-                    {p.icon}
-                  </span>
+                  <ProjectThumb project={p} />
                   <span className="min-w-0 flex-grow">
                     <span className="block truncate text-[13px] font-bold">
                       {pickEn(lang, p.titleEn, p.title)}
@@ -221,7 +279,10 @@ export function CommandPalette({
                       {pickEn(lang, p.descriptionEn, p.description)}
                     </span>
                   </span>
-                  <CommandShortcut dir="ltr" className="font-mono text-[10px] truncate max-w-[32%]">
+                  <CommandShortcut
+                    dir="ltr"
+                    className="palette-repo max-w-[30%] shrink-0 truncate"
+                  >
                     {p.repo.split("/").pop()}
                   </CommandShortcut>
                 </CommandItem>
@@ -241,9 +302,7 @@ export function CommandPalette({
                   onSelect={() => go(`#/writing/${encodeURIComponent(a.slug)}`)}
                   className="items-center gap-3 py-2"
                 >
-                  <span className="palette-item-icon text-lg leading-none" aria-hidden>
-                    {a.icon}
-                  </span>
+                  <Tile emoji>{a.icon}</Tile>
                   <span className="min-w-0 flex-grow">
                     <span className="block truncate text-[13px] font-bold">
                       {pickEn(lang, a.titleEn, a.title)}
@@ -253,10 +312,10 @@ export function CommandPalette({
                     </span>
                   </span>
                   <CommandShortcut>
-                    <span className="inline-flex items-center gap-1 text-[10px]">
-                      <FileText className="w-3 h-3" />
+                    <kbd className="palette-kbd palette-kbd-wide gap-1">
+                      <FileText className="h-3 w-3" />
                       {t("misc", "palette.badge.article")}
-                    </span>
+                    </kbd>
                   </CommandShortcut>
                 </CommandItem>
               ))}
@@ -266,18 +325,27 @@ export function CommandPalette({
 
       </CommandList>
 
-      {/* footer hint — fixed below the scrolling list */}
-      <div className="command-palette-foot px-4 py-2.5 flex items-center justify-between text-[10px] text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5">
-          <Sparkles className="w-3 h-3 text-brand" />
-          {t("misc", "palette.indexed", {
-            n: num(projects.length),
-            m: num(articles.length),
-          })}
+      {/* Footer — indexed counts + navigation keys, fixed below the scrolling list */}
+      <div className="command-palette-foot">
+        <span className="inline-flex min-w-0 items-center gap-1.5 text-[10.5px] font-semibold text-muted-foreground">
+          <Sparkles className="h-3 w-3 shrink-0 text-brand" aria-hidden />
+          <span className="truncate">
+            {t("misc", "palette.indexed", {
+              n: num(projects.length),
+              m: num(articles.length),
+            })}
+          </span>
         </span>
-        <span className="inline-flex items-center gap-1.5" dir="ltr">
-          <kbd className="palette-hint-kbd">↵</kbd>
-          {t("misc", "palette.hint")}
+        <span className="palette-foot-keys" dir="ltr">
+          <span className="inline-flex items-center gap-1">
+            <kbd className="palette-kbd">↑</kbd>
+            <kbd className="palette-kbd">↓</kbd>
+            {t("misc", "palette.hint.nav")}
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <kbd className="palette-kbd">↵</kbd>
+            {t("misc", "palette.hint")}
+          </span>
         </span>
       </div>
     </CommandDialog>
