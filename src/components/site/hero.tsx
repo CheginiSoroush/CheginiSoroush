@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
-import { Rocket, PenLine, Target, Eye } from "lucide-react";
+import { Rocket, PenLine, Target } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { GITHUB_PROFILE_URL } from "@/lib/site-config";
 import type { SiteStats } from "@/lib/types";
@@ -71,11 +71,12 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
   );
   const typed = useTypewriter(roles);
 
+  // Stats strip — visit counters were removed by design: the owner prefers
+  // content-focused tiles over traffic numbers in the public UI.
   const statItems = [
     { value: stats?.projects ?? 0, label: t("core", "hero.stats.projects"), icon: Rocket },
     { value: stats?.articles ?? 0, label: t("core", "hero.stats.articles"), icon: PenLine },
     { value: 4, label: t("core", "hero.stats.domains"), icon: Target },
-    { value: stats?.visits ?? 0, label: t("core", "hero.stats.visits"), icon: Eye },
   ];
 
   return (
@@ -190,7 +191,7 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-3xl mx-auto"
+          className="mt-14 grid grid-cols-3 gap-3 sm:gap-4 max-w-xl mx-auto"
         >
           {statItems.map((s) => (
             <div

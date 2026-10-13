@@ -53,7 +53,6 @@ export const projectsDict: Dict = {
 
     // ---------- detail dialog ----------
     "detail.featuredBadge": "پروژه منتخب",
-    "detail.views": "{n} بازدید",
     "detail.stack": "پشته فناوری",
     "detail.related": "پروژه‌های مرتبط",
     "detail.github": "مشاهده در گیت‌هاب",
@@ -121,7 +120,6 @@ export const projectsDict: Dict = {
 
     // ---------- detail dialog ----------
     "detail.featuredBadge": "Featured project",
-    "detail.views": "{n} views",
     "detail.stack": "Tech Stack",
     "detail.related": "Related Projects",
     "detail.github": "View on GitHub",

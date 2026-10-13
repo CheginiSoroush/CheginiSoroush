@@ -1,7 +1,6 @@
 import type {
   AdminStats,
   ArticleRow,
-  CommentRow,
   ContactMessageRow,
   ListMessagesOpts,
   ListProjectsOpts,
@@ -58,20 +57,9 @@ export interface DataStore {
   setMessageRead(id: string, read: boolean): Promise<ContactMessageRow | null>;
   deleteMessage(id: string): Promise<void>;
 
-  // ---------- Comments ----------
-  listComments(
-    slug: string,
-    page: number,
-    pageSize: number
-  ): Promise<{ comments: CommentRow[]; total: number }>;
-  countComments(slug: string): Promise<number>;
-  articleExists(slug: string): Promise<boolean>;
-  createComment(c: { articleSlug: string; name: string; body: string }): Promise<CommentRow>;
-  listAllComments(
-    page: number,
-    pageSize: number
-  ): Promise<{ comments: CommentRow[]; total: number }>;
-  deleteComment(id: string): Promise<void>;
+  // NOTE: the comments feature was removed from the product by owner decision.
+  // The Comment table remains in the Prisma schema (data preserved) but no
+  // store/API/UI surface exists anymore.
 
   // ---------- Subscribers ----------
   countSubscribers(): Promise<number>;

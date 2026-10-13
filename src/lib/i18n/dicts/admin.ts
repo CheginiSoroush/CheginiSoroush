@@ -29,11 +29,9 @@ export const adminDict: Dict = {
     // ---------- shell / tabs ----------
     "panel": "پنل مدیریت",
     "inboxDesc": "مجموع {n} پیام از فرم تماس",
-    "commentsDesc": "مدیریت دیدگاه‌های نوشته‌ها",
     "statsDesc": "نگاه کلی به عملکرد سایت",
     "tabsAria": "بخش‌های پنل",
     "tabInbox": "صندوق پیام",
-    "tabComments": "دیدگاه‌ها",
     "tabStats": "آمار سایت",
 
     // ---------- inbox ----------
@@ -48,21 +46,13 @@ export const adminDict: Dict = {
     "deleted": "پیام حذف شد",
     "deletedDesc": "پیام «{s}» پاک شد.",
 
-    // ---------- comments ----------
-    "commentsFailed": "دیدگاه‌ها بارگذاری نشد.",
-    "noComments": "هنوز دیدگاهی ثبت نشده.",
-    "totalLabel": "مجموع",
-    "commentsUnit": "دیدگاه",
-    "deleteComment": "حذف دیدگاه",
-    "commentDeleted": "دیدگاه حذف شد",
-    "commentDeletedDesc": "دیدگاه «{s}» پاک شد.",
+    // (Comments strings removed with the feature — owner decision.)
 
     // ---------- stats ----------
     "statsFailed": "آمار بارگذاری نشد.",
     "tileVisits": "بازدید سایت",
     "tileProjectViews": "بازدید پروژه‌ها",
     "tileLikes": "مجموع لایک‌ها",
-    "tileComments": "دیدگاه‌ها",
     "tileMessages": "پیام‌ها",
     "tileMessagesWeek": "پیام این هفته",
     "tileProjects": "پروژه‌ها",
@@ -109,11 +99,9 @@ export const adminDict: Dict = {
     // ---------- shell / tabs ----------
     "panel": "Admin panel",
     "inboxDesc": "{n} total messages from the contact form",
-    "commentsDesc": "Manage article comments",
     "statsDesc": "Site performance at a glance",
     "tabsAria": "Panel sections",
     "tabInbox": "Inbox",
-    "tabComments": "Comments",
     "tabStats": "Site stats",
 
     // ---------- inbox ----------
@@ -128,21 +116,13 @@ export const adminDict: Dict = {
     "deleted": "Message deleted",
     "deletedDesc": "Message “{s}” was deleted.",
 
-    // ---------- comments ----------
-    "commentsFailed": "Couldn't load comments.",
-    "noComments": "No comments yet.",
-    "totalLabel": "Total",
-    "commentsUnit": "comments",
-    "deleteComment": "Delete comment",
-    "commentDeleted": "Comment deleted",
-    "commentDeletedDesc": "Comment by “{s}” was deleted.",
+    // (Comments strings removed with the feature — owner decision.)
 
     // ---------- stats ----------
     "statsFailed": "Couldn't load stats.",
     "tileVisits": "Site visits",
     "tileProjectViews": "Project views",
     "tileLikes": "Total likes",
-    "tileComments": "Comments",
     "tileMessages": "Messages",
     "tileMessagesWeek": "Messages this week",
     "tileProjects": "Projects",

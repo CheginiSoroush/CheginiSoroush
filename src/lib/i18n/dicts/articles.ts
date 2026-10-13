@@ -41,7 +41,7 @@ export const articlesDict: Dict = {
 
     // ---------- reader meta badges ----------
     "meta.readTime": "{n} دقیقه مطالعه",
-    "meta.views": "{n} بازدید",
+    // (meta.views removed — no traffic numbers in the public UI)
 
     // ---------- like ----------
     "like.add": "لایک کردن این نوشته",
@@ -106,32 +106,7 @@ export const articlesDict: Dict = {
     "toast.historyClearedTitle": "تاریخچه پاک شد",
     "toast.historyClearedDesc": "همه رکوردهای مطالعه حذف شدند.",
 
-    // ---------- comments ----------
-    "comments.aria": "دیدگاه‌ها",
-    "comments.title": "دیدگاه‌ها",
-    "comments.namePlaceholder": "نام شما",
-    "comments.nameAria": "نام شما",
-    "comments.avatarFallback": "؟",
-    "comments.bodyPlaceholder": "نظرت راجع به این نوشته چیه؟",
-    "comments.bodyAria": "متن دیدگاه",
-    "comments.submit": "ثبت دیدگاه",
-    "comments.loadFailed": "دیدگاه‌ها بارگذاری نشد.",
-    "comments.retry": "تلاش دوباره",
-    "comments.empty": "اولین دیدگاه را شما بنویسید ✨",
-    "comments.more": "نمایش دیدگاه‌های بیشتر",
-    "comments.moreCount": "({shown} از {total})",
-    "comments.toast.loadMoreFailedTitle": "بارگذاری نشد",
-    "comments.toast.loadMoreFailedDesc": "دیدگاه‌های بیشتر لود نشدند.",
-    "comments.toast.nameShortTitle": "نام کوتاه است",
-    "comments.toast.nameShortDesc": "نام باید حداقل ۲ حرف باشد.",
-    "comments.toast.bodyShortTitle": "متن کوتاه است",
-    "comments.toast.bodyShortDesc": "دیدگاه باید حداقل ۳ حرف باشد.",
-    "comments.toast.postFailedTitle": "ارسال نشد",
-    "comments.toast.postFailedDesc": "خطایی رخ داد.",
-    "comments.toast.postedTitle": "دیدگاه ثبت شد 🎉",
-    "comments.toast.postedDesc": "ممنون از همراهی‌ات!",
-    "comments.toast.networkTitle": "خطای شبکه",
-    "comments.toast.networkDesc": "اتصال برقرار نشد.",
+    // (Comments strings removed with the feature — owner decision.)
   },
   en: {
     // ---------- section ----------
@@ -172,7 +147,7 @@ export const articlesDict: Dict = {
 
     // ---------- reader meta badges ----------
     "meta.readTime": "{n} min read",
-    "meta.views": "{n} views",
+    // (meta.views removed — no traffic numbers in the public UI)
 
     // ---------- like ----------
     "like.add": "Like this article",
@@ -237,31 +212,6 @@ export const articlesDict: Dict = {
     "toast.historyClearedTitle": "History cleared",
     "toast.historyClearedDesc": "All reading records have been removed.",
 
-    // ---------- comments ----------
-    "comments.aria": "Comments",
-    "comments.title": "Comments",
-    "comments.namePlaceholder": "Your name",
-    "comments.nameAria": "Your name",
-    "comments.avatarFallback": "?",
-    "comments.bodyPlaceholder": "What did you think of this article?",
-    "comments.bodyAria": "Comment",
-    "comments.submit": "Post comment",
-    "comments.loadFailed": "Comments failed to load.",
-    "comments.retry": "Try again",
-    "comments.empty": "Be the first to comment ✨",
-    "comments.more": "Show more comments",
-    "comments.moreCount": "({shown} of {total})",
-    "comments.toast.loadMoreFailedTitle": "Couldn't load",
-    "comments.toast.loadMoreFailedDesc": "More comments could not be loaded.",
-    "comments.toast.nameShortTitle": "Name is too short",
-    "comments.toast.nameShortDesc": "Your name must be at least 2 characters.",
-    "comments.toast.bodyShortTitle": "Comment is too short",
-    "comments.toast.bodyShortDesc": "Your comment must be at least 3 characters.",
-    "comments.toast.postFailedTitle": "Couldn't post",
-    "comments.toast.postFailedDesc": "Something went wrong.",
-    "comments.toast.postedTitle": "Comment posted 🎉",
-    "comments.toast.postedDesc": "Thanks for joining the conversation!",
-    "comments.toast.networkTitle": "Network error",
-    "comments.toast.networkDesc": "Could not connect.",
+    // (Comments strings removed with the feature — owner decision.)
   },
 };

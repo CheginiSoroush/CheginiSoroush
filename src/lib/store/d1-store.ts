@@ -3,7 +3,6 @@ import type { DataStore } from "./store-contract";
 import type {
   AdminStats,
   ArticleRow,
-  CommentRow,
   ContactMessageRow,
   ListMessagesOpts,
   ListProjectsOpts,
@@ -100,15 +99,7 @@ function mapMessage(r: Record<string, unknown>): ContactMessageRow {
   };
 }
 
-function mapComment(r: Record<string, unknown>): CommentRow {
-  return {
-    id: String(r.id),
-    articleSlug: String(r.articleSlug),
-    name: String(r.name),
-    body: String(r.body),
-    createdAt: String(r.createdAt ?? nowIso()),
-  };
-}
+// (Comments mapper removed with the feature — see store-contract note.)
 
 /* --------------------------- the driver ---------------------------- */
 
@@ -288,71 +279,7 @@ export const d1Store: DataStore = {
     await d1().prepare(`DELETE FROM "ContactMessage" WHERE "id" = ?`).bind(id).run();
   },
 
-  // ---------- Comments ----------
-  async listComments(slug: string, page: number, pageSize: number) {
-    const database = d1();
-    const [rows, totalRow] = await Promise.all([
-      database
-        .prepare(
-          `SELECT * FROM "Comment" WHERE "articleSlug" = ? ORDER BY "createdAt" DESC LIMIT ? OFFSET ?`
-        )
-        .bind(slug, pageSize, (page - 1) * pageSize)
-        .all<Record<string, unknown>>(),
-      database
-        .prepare(`SELECT COUNT(*) AS c FROM "Comment" WHERE "articleSlug" = ?`)
-        .bind(slug)
-        .first<{ c: number }>(),
-    ]);
-    return { comments: rows.results.map(mapComment), total: Number(totalRow?.c ?? 0) };
-  },
-
-  async countComments(slug: string): Promise<number> {
-    const row = await d1()
-      .prepare(`SELECT COUNT(*) AS c FROM "Comment" WHERE "articleSlug" = ?`)
-      .bind(slug)
-      .first<{ c: number }>();
-    return Number(row?.c ?? 0);
-  },
-
-  async articleExists(slug: string): Promise<boolean> {
-    const row = await d1()
-      .prepare(`SELECT 1 AS ok FROM "Article" WHERE "slug" = ?`)
-      .bind(slug)
-      .first<{ ok: number }>();
-    return !!row;
-  },
-
-  async createComment(c: {
-    articleSlug: string;
-    name: string;
-    body: string;
-  }): Promise<CommentRow> {
-    const id = newId();
-    const createdAt = nowIso();
-    await d1()
-      .prepare(
-        `INSERT INTO "Comment" ("id", "articleSlug", "name", "body", "createdAt") VALUES (?, ?, ?, ?, ?)`
-      )
-      .bind(id, c.articleSlug, c.name, c.body, createdAt)
-      .run();
-    return { id, articleSlug: c.articleSlug, name: c.name, body: c.body, createdAt };
-  },
-
-  async listAllComments(page: number, pageSize: number) {
-    const database = d1();
-    const [rows, totalRow] = await Promise.all([
-      database
-        .prepare(`SELECT * FROM "Comment" ORDER BY "createdAt" DESC LIMIT ? OFFSET ?`)
-        .bind(pageSize, (page - 1) * pageSize)
-        .all<Record<string, unknown>>(),
-      database.prepare(`SELECT COUNT(*) AS c FROM "Comment"`).first<{ c: number }>(),
-    ]);
-    return { comments: rows.results.map(mapComment), total: Number(totalRow?.c ?? 0) };
-  },
-
-  async deleteComment(id: string): Promise<void> {
-    await d1().prepare(`DELETE FROM "Comment" WHERE "id" = ?`).bind(id).run();
-  },
+  // (Comments methods removed with the feature — see store-contract note.)
 
   // ---------- Subscribers ----------
   async countSubscribers(): Promise<number> {

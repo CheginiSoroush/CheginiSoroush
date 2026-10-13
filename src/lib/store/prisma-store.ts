@@ -4,7 +4,6 @@ import type { DataStore } from "./store-contract";
 import type {
   AdminStats,
   ArticleRow,
-  CommentRow,
   ContactMessageRow,
   ListMessagesOpts,
   ListProjectsOpts,
@@ -195,55 +194,7 @@ export function createPrismaStore(client: Prisma = db): DataStore {
       await pdb.contactMessage.delete({ where: { id } });
     },
 
-    // ---------- Comments ----------
-    async listComments(slug: string, page: number, pageSize: number) {
-      const [comments, total] = await Promise.all([
-        pdb.comment.findMany({
-          where: { articleSlug: slug },
-          orderBy: { createdAt: "desc" },
-          skip: (page - 1) * pageSize,
-          take: pageSize,
-        }),
-        pdb.comment.count({ where: { articleSlug: slug } }),
-      ]);
-      return {
-        comments: comments.map((c) => ({ ...c, createdAt: iso(c.createdAt) })),
-        total,
-      };
-    },
-
-    async countComments(slug: string): Promise<number> {
-      return pdb.comment.count({ where: { articleSlug: slug } });
-    },
-
-    async articleExists(slug: string): Promise<boolean> {
-      const row = await pdb.article.findUnique({ where: { slug }, select: { slug: true } });
-      return !!row;
-    },
-
-    async createComment(c: { articleSlug: string; name: string; body: string }): Promise<CommentRow> {
-      const created = await pdb.comment.create({ data: c });
-      return { ...created, createdAt: iso(created.createdAt) };
-    },
-
-    async listAllComments(page: number, pageSize: number) {
-      const [comments, total] = await Promise.all([
-        pdb.comment.findMany({
-          orderBy: { createdAt: "desc" },
-          skip: (page - 1) * pageSize,
-          take: pageSize,
-        }),
-        pdb.comment.count(),
-      ]);
-      return {
-        comments: comments.map((c) => ({ ...c, createdAt: iso(c.createdAt) })),
-        total,
-      };
-    },
-
-    async deleteComment(id: string): Promise<void> {
-      await pdb.comment.delete({ where: { id } });
-    },
+    // (Comments methods removed with the feature — see store-contract note.)
 
     // ---------- Subscribers ----------
     async countSubscribers(): Promise<number> {
@@ -358,4 +309,4 @@ export function createPrismaStore(client: Prisma = db): DataStore {
 export const prismaStore: DataStore = createPrismaStore();
 
 // Re-exported so route modules can keep a single import site.
-export type { CommentRow, ContactMessageRow, ProjectRow, SubscriberRow };
+export type { ContactMessageRow, ProjectRow, SubscriberRow };

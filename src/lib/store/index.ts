@@ -5,7 +5,6 @@ import { d1Store } from "./d1-store";
 export type {
   AdminStats,
   ArticleRow,
-  CommentRow,
   ContactMessageRow,
   ListMessagesOpts,
   ListProjectsOpts,

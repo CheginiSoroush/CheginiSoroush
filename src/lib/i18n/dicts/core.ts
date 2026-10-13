@@ -32,7 +32,7 @@ export const coreDict: Dict = {
     "hero.stats.projects": "پروژه",
     "hero.stats.articles": "نوشته",
     "hero.stats.domains": "حوزه تخصصی",
-    "hero.stats.visits": "بازدید سایت",
+    // (hero.stats.visits removed — no traffic numbers in the public UI)
     "hero.scroll": "اسکرول کنید",
     "hero.logoAlt": "لوگوی شخصی سروش",
 
@@ -56,7 +56,7 @@ export const coreDict: Dict = {
     // Shown as the disabled button's tooltip until a real profile exists (LINKEDIN_URL in site-config.ts)
     "footer.linkedinSoon": "پروفایل لینکدین به‌زودی فعال می‌شود",
     "footer.email": "ایمیل",
-    "footer.visits": "{n} بازدید",
+    // (footer.visits removed — no traffic numbers in the public UI)
     "footer.madeWith": "ساخته شده با",
     "footer.love": "علاقه",
     "footer.andCode": "و کد",
@@ -120,7 +120,7 @@ export const coreDict: Dict = {
     "hero.stats.projects": "Projects",
     "hero.stats.articles": "Articles",
     "hero.stats.domains": "Domains",
-    "hero.stats.visits": "Site Visits",
+    // (hero.stats.visits removed — no traffic numbers in the public UI)
     "hero.scroll": "Scroll",
     "hero.logoAlt": "Soroush's personal logo",
 
@@ -144,7 +144,7 @@ export const coreDict: Dict = {
     // Tooltip of the disabled LinkedIn button until a real profile exists (LINKEDIN_URL in site-config.ts)
     "footer.linkedinSoon": "LinkedIn profile coming soon",
     "footer.email": "Email",
-    "footer.visits": "{n} visits",
+    // (footer.visits removed — no traffic numbers in the public UI)
     "footer.madeWith": "Built with",
     "footer.love": "love",
     "footer.andCode": "and code",

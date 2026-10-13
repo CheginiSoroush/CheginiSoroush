@@ -33,7 +33,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { AdminCommentsPanel } from "@/components/site/admin-comments-panel";
 import { cn } from "@/lib/utils";
 import { useT, pickEn } from "@/lib/i18n";
 
@@ -84,7 +83,6 @@ type StatsPayload = {
     unread: number;
     messagesLastWeek: number;
     likes: number;
-    comments: number;
     subscribers: number;
   };
   topProjects: TopProject[];
@@ -154,11 +152,11 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
   }
 
   const totals = stats.totals;
+  // Comments feature was removed from the site — no comments tile here.
   const tiles = [
     { icon: Eye, label: t("admin", "tileVisits"), value: totals.visits },
     { icon: FolderGit2, label: t("admin", "tileProjectViews"), value: totals.projectViews },
     { icon: Heart, label: t("admin", "tileLikes"), value: totals.likes },
-    { icon: MessageSquare, label: t("admin", "tileComments"), value: totals.comments },
     {
       icon: MessageSquare,
       label: t("admin", "tileMessages"),
@@ -354,7 +352,7 @@ export function AdminMessagesDialog({
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const [panel, setPanel] = useState<"inbox" | "stats" | "comments">("inbox");
+  const [panel, setPanel] = useState<"inbox" | "stats">("inbox");
 
   // Reset state when dialog closes
   useEffect(() => {
@@ -569,9 +567,7 @@ export function AdminMessagesDialog({
               <DialogDescription>
                 {panel === "inbox"
                   ? t("admin", "inboxDesc", { n: num(total) })
-                  : panel === "comments"
-                    ? t("admin", "commentsDesc")
-                    : t("admin", "statsDesc")}
+                  : t("admin", "statsDesc")}
               </DialogDescription>
             </DialogHeader>
 
@@ -584,7 +580,6 @@ export function AdminMessagesDialog({
               {(
                 [
                   { id: "inbox", label: t("admin", "tabInbox"), icon: Inbox },
-                  { id: "comments", label: t("admin", "tabComments"), icon: MessageSquare },
                   { id: "stats", label: t("admin", "tabStats"), icon: BarChart3 },
                 ] as const
               ).map((p) => (
@@ -608,8 +603,6 @@ export function AdminMessagesDialog({
 
             {panel === "stats" ? (
               <AdminStatsPanel apiKey={key.trim()} />
-            ) : panel === "comments" ? (
-              <AdminCommentsPanel apiKey={key.trim()} />
             ) : loading ? (
               <div className="py-10 grid place-items-center text-muted-foreground">
                 <Loader2 className="w-6 h-6 animate-spin" />

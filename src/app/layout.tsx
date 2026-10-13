@@ -5,9 +5,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { GITHUB_PROFILE_URL } from "@/lib/site-config";
 
 const SITE_URL = "https://imsoroush.ir";
-const TITLE = "سروش | توسعه‌دهنده نرم‌افزار و نویسنده";
+// Site default language is English (see src/lib/i18n.ts) — SEO metadata follows.
+const TITLE = "Soroush | Software Developer & Writer";
 const DESCRIPTION =
-  "پورتفولیو شخصی سروش چگینی: توسعه‌دهنده نرم‌افزار، سازنده ربات‌های تلگرام، تجربه‌های سه‌بعدی و نویسنده.";
+  "Soroush Chegini's personal portfolio: software developer, Telegram bot maker, 3D experience builder and writer.";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -37,7 +38,7 @@ const jsonLd = {
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
       name: TITLE,
-      inLanguage: "fa-IR",
+      inLanguage: ["en", "fa-IR"],
       publisher: { "@id": `${SITE_URL}/#person` },
     },
   ],
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: "%s | سروش",
+    template: "%s | Soroush",
   },
   description: DESCRIPTION,
   keywords: [
@@ -97,7 +98,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description:
-      "توسعه‌دهنده نرم‌افزار، سازنده ربات‌های تلگرام و نویسنده — imsoroush.ir",
+      "Software developer, Telegram bot maker and writer — imsoroush.ir",
     // no twitter.images → crawlers fall back to og:image (dynamic card)
   },
   category: "technology",
@@ -119,7 +120,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fa" dir="rtl" suppressHydrationWarning>
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -129,7 +130,7 @@ export default function RootLayout({
         />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme')||'dark';document.documentElement.classList.toggle('dark',t!=='light');document.documentElement.classList.toggle('light',t==='light');var l=localStorage.getItem('imsoroush-lang');if(l==='en'){document.documentElement.lang='en';document.documentElement.dir='ltr';}}catch(e){document.documentElement.classList.add('dark');}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('theme')||'dark';document.documentElement.classList.toggle('dark',t!=='light');document.documentElement.classList.toggle('light',t==='light');var l=localStorage.getItem('imsoroush-lang');if(l==='fa'){document.documentElement.lang='fa';document.documentElement.dir='rtl';}else{document.documentElement.lang='en';document.documentElement.dir='ltr';}}catch(e){document.documentElement.classList.add('dark');}})();`,
           }}
         />
       </head>

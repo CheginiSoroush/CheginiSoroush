@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Mail, Heart, LockKeyhole, Keyboard, Eye, Linkedin } from "lucide-react";
+import { Github, Mail, Heart, LockKeyhole, Keyboard, Linkedin } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -406,12 +406,9 @@ export function SiteShell({
                 <Mail className="w-4.5 h-4.5" />
                 {t("core", "footer.email")}
               </a>
-              {stats && (
-                <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground rounded-xl border border-border px-4 py-2.5" title={t("core", "footer.visits", { n: num(stats.visits) })}>
-                  <Eye className="w-3.5 h-3.5" aria-hidden />
-                  {t("core", "footer.visits", { n: num(stats.visits) })}
-                </span>
-              )}
+              {/* Visit counters were removed by design — the owner wants no
+                  traffic numbers in the public footer (analytics stay in the
+                  owner-only admin panel). */}
               {/* Utility icons — admin panel (message moderation) + shortcuts.
                   Deliberately quiet ghost styling so they don't read as primary
                   social links; the lock opens the owner-only inbox. The pair is

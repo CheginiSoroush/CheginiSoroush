@@ -33,6 +33,13 @@ export function HomeContent({
   const featured = projects.filter((p) => p.featured);
   const onSpotlightMove = useSpotlight();
 
+  /** Open a project's detail dialog via its shareable deep-link (#/projects/<slug>). */
+  const openProject = (slug: string) => {
+    // location.assign (not .hash=) keeps the react-hooks/immutability rule happy
+    window.location.assign(`#/projects/${slug}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const radarAxes = [
     { label: t("home", "radar.bots"), icon: "🤖", value: projects.filter((p) => p.category === "bots").length },
     { label: t("home", "radar.web"), icon: "🌐", value: projects.filter((p) => p.category === "web").length },
@@ -182,7 +189,17 @@ export function HomeContent({
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
               onMouseMove={onSpotlightMove}
-              className="glow-card spotlight rounded-3xl border border-border bg-card p-6 sm:p-7 flex flex-col"
+              onClick={() => openProject(p.slug)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openProject(p.slug);
+                }
+              }}
+              role="link"
+              tabIndex={0}
+              aria-label={`${pickEn(lang, p.titleEn, p.title)} — ${t("projects", "card.details")}`}
+              className="glow-card spotlight rounded-3xl border border-border bg-card p-6 sm:p-7 flex flex-col cursor-pointer hover:border-brand/40 transition-colors focus-visible:outline-2 focus-visible:outline-brand outline-offset-4"
             >
               {/* generative cover art — clipping lives on an INNER wrapper
                   so the sticker can overhang the edge instead of sinking */}
@@ -217,6 +234,8 @@ export function HomeContent({
                 target="_blank"
                 rel="noopener noreferrer"
                 dir="ltr"
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
                 className="mt-auto text-xs font-mono text-left text-muted-foreground hover:text-brand transition-colors truncate"
               >
                 github.com/{p.repo}

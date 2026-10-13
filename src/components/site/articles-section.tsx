@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Eye, Share2, Check, Heart, MessageCircle, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send, History, Trash2, Minus, Plus, Type } from "lucide-react";
+import { Clock, Share2, Check, Heart, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send, History, Trash2, Minus, Plus, Type } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
-import { ArticleComments } from "@/components/site/article-comments";
 import { ProjectCover } from "@/components/site/project-cover";
 import { EmptyState } from "@/components/site/empty-state";
 import { cn } from "@/lib/utils";
@@ -231,7 +230,6 @@ export function ArticlesSection({
   const likedSlugs = useSyncExternalStore(subscribeLiked, getLikedSnapshot, getServerLiked);
   const [likesOverrides, setLikesOverrides] = useState<Record<string, number>>({});
   const [burstSlug, setBurstSlug] = useState<string | null>(null);
-  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const postedRef = useRef<Set<string>>(new Set());
   const readingMap = useSyncExternalStore(subscribeReading, getReadingSnapshot, getServerReading);
@@ -287,10 +285,6 @@ export function ArticlesSection({
     return list.reduce((a, b) => (b.updatedAt > a.updatedAt ? b : a));
   }, [readingMap]);
 
-  const handleCommentCount = useCallback((slug: string, total: number) => {
-    setCommentCounts((prev) => ({ ...prev, [slug]: total }));
-  }, []);
-
   const toggleLike = async (a: Article) => {
     const wasLiked = likedSlugs.has(a.slug);
     const action = wasLiked ? "unlike" : "like";
@@ -326,12 +320,12 @@ export function ArticlesSection({
   };
 
   const openArticle = (a: Article) => {
+    // bumpedSlugs gates the once-per-session analytics POST; counts are no
+    // longer displayed or optimistically inflated in the UI.
     if (!bumpedSlugs.has(a.slug)) {
       setBumpedSlugs((prev) => new Set(prev).add(a.slug));
-      setSelected({ ...a, views: a.views + 1 });
-    } else {
-      setSelected(a);
     }
+    setSelected(a);
     onOpenDetail(a.slug);
   };
 
@@ -389,10 +383,8 @@ export function ArticlesSection({
       if (a && selected?.slug !== a.slug) {
         if (!bumpedSlugs.has(a.slug)) {
           setBumpedSlugs((prev) => new Set(prev).add(a.slug));
-          setSelected({ ...a, views: a.views + 1 });
-        } else {
-          setSelected(a);
         }
+        setSelected(a);
       }
     }
   }
@@ -751,12 +743,6 @@ export function ArticlesSection({
                         />
                         {num(likesOf(a))}
                       </span>
-                      {(commentCounts[a.slug] ?? 0) > 0 && (
-                        <span className="text-[10px] font-bold text-muted-foreground inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1">
-                          <MessageCircle className="w-3 h-3" />
-                          {num(commentCounts[a.slug])}
-                        </span>
-                      )}
                       {isDone && (
                         <span className="text-[10px] font-black text-emerald-500 inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1">
                           <Check className="w-3 h-3" aria-hidden />
@@ -767,7 +753,8 @@ export function ArticlesSection({
                   <h3 className="font-extrabold text-lg mb-2 leading-8 group-hover:text-brand transition-colors">
                     {pickEn(lang, a.titleEn, a.title)}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-7 flex-grow line-clamp-3 mb-4">
+                  {/* Full excerpt — comprehensive by design, no clamping */}
+                  <p className="text-sm text-muted-foreground leading-7 flex-grow mb-4">
                     {pickEn(lang, a.excerptEn, a.excerpt)}
                   </p>
                   {isInProgress && (
@@ -871,10 +858,8 @@ export function ArticlesSection({
                   <Clock className="w-3 h-3" />
                   {t("articles", "meta.readTime", { n: num(selected.readTime) })}
                 </Badge>
-                <Badge variant="outline" className="gap-1">
-                  <Eye className="w-3 h-3" />
-                  {t("articles", "meta.views", { n: num(selected.views) })}
-                </Badge>
+                {/* View-count badge removed by design — no traffic numbers in
+                    the public UI (tracking still feeds the owner-only stats). */}
                 <div className="ms-auto flex items-center gap-1.5">
                   <button
                     onClick={() => toggleLike(selected)}
@@ -1073,8 +1058,6 @@ export function ArticlesSection({
                   </div>
                 </div>
               )}
-
-              <ArticleComments slug={selected.slug} onCountChange={handleCommentCount} />
             </>
           )}
         </DialogContent>

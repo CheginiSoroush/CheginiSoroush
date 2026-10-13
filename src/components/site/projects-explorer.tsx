@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ExternalLink, X, Eye, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole } from "lucide-react";
+import { Search, ExternalLink, X, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -159,12 +159,12 @@ export function ProjectsExplorer({
 
   const openProject = useCallback(
     (p: Project) => {
+      // bumpedSlugs still gates the (invisible) analytics POST — one ping per
+      // slug per session — but the UI no longer displays or inflates counts.
       if (!bumpedSlugs.has(p.slug)) {
         setBumpedSlugs((prev) => new Set(prev).add(p.slug));
-        setSelected({ ...p, views: p.views + 1 });
-      } else {
-        setSelected(p);
       }
+      setSelected(p);
       onOpenDetail(p.slug);
     },
     [onOpenDetail, bumpedSlugs]
@@ -182,13 +182,16 @@ export function ProjectsExplorer({
       if (p && selected?.slug !== p.slug) {
         if (!bumpedSlugs.has(p.slug)) {
           setBumpedSlugs((prev) => new Set(prev).add(p.slug));
-          setSelected({ ...p, views: p.views + 1 });
+          setSelected(p);
         } else {
           setSelected(p);
         }
       }
     }
   }
+
+  // (View-count display was removed by design — bumpedSlugs now only gates
+  // the once-per-session analytics POST below.)
 
   // Count the view once per slug (external side-effect)
   useEffect(() => {
@@ -410,13 +413,15 @@ export function ProjectsExplorer({
       <p dir="ltr" className="text-[11px] font-mono text-muted-foreground/70 truncate mb-3 text-left">
         {p.repo}
       </p>
-      <p className="text-sm text-muted-foreground leading-7 flex-grow line-clamp-3">
+      {/* Full, comprehensive description — intentionally NOT clamped so every
+          card tells the complete story of its project */}
+      <p className="text-sm text-muted-foreground leading-7 flex-grow">
         {pickEn(lang, p.descriptionEn, p.description)}
       </p>
       <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
-        <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
-          <Eye className="w-3.5 h-3.5" />
-          {num(p.views)}
+        <span className="text-xs font-bold text-muted-foreground inline-flex items-center gap-1.5">
+          <span aria-hidden>{FILTERS.find((f) => f.id === p.category)?.icon ?? "✨"}</span>
+          {t("core", `cat.${p.category}`)}
         </span>
         <span className="text-xs font-bold text-brand inline-flex items-center gap-1">
           {t("projects", "card.details")}
@@ -639,16 +644,14 @@ export function ProjectsExplorer({
                     <Star className="w-3 h-3" /> {t("projects", "detail.featuredBadge")}
                   </Badge>
                 )}
-                <Badge variant="outline" className="gap-1">
-                  <Eye className="w-3 h-3" />
-                  {t("projects", "detail.views", { n: num(selected.views) })}
-                </Badge>
                 {selectedIsPrivate && (
                   <Badge variant="outline" className="gap-1 text-muted-foreground">
                     <LockKeyhole className="w-3 h-3" aria-hidden />
                     {t("projects", "detail.privateBadge")}
                   </Badge>
                 )}
+                {/* View-count badge removed by design — no traffic numbers in
+                    the public UI (tracking still feeds the owner-only stats). */}
               </div>
 
               <p className="text-sm leading-8 text-foreground/90 mb-5">
@@ -687,10 +690,6 @@ export function ProjectsExplorer({
                         </span>
                         <span className="flex-grow min-w-0 text-xs font-bold truncate">
                           {pickEn(lang, r.titleEn, r.title)}
-                        </span>
-                        <span className="shrink-0 text-[10px] text-muted-foreground inline-flex items-center gap-1">
-                          <Eye className="w-3 h-3" aria-hidden />
-                          {num(r.views)}
                         </span>
                       </button>
                     ))}

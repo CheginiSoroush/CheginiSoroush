@@ -5,8 +5,10 @@ import type { Dict } from "./i18n/dict-type";
 
 /**
  * Bilingual (fa/en) infrastructure for the whole site.
- * - Language is persisted in localStorage ("imsoroush-lang"), default fa (RTL).
- * - Server snapshot is always "fa" so SSR/hydration never mismatch; after
+ * - Language is persisted in localStorage ("imsoroush-lang"). Default is
+ *   **English** (LTR) per the owner's decision; returning visitors who once
+ *   picked Persian keep it via the saved value.
+ * - Server snapshot is always "en" so SSR/hydration never mismatch; after
  *   mount React re-renders with the stored choice (documented
  *   useSyncExternalStore pattern — same as the codebase's other stores).
  * - document.documentElement lang/dir is kept in sync (pre-hydration flash
@@ -27,11 +29,12 @@ function detectLang(): Lang {
   } catch {
     // private mode etc.
   }
-  return "fa";
+  // Site default: English (visitor's saved preference always wins)
+  return "en";
 }
 
 export function getLang(): Lang {
-  if (typeof window === "undefined") return "fa";
+  if (typeof window === "undefined") return SERVER_LANG;
   if (clientLang === null) clientLang = detectLang();
   return clientLang;
 }
@@ -68,7 +71,7 @@ function subscribeLang(onChange: () => void) {
   };
 }
 
-const SERVER_LANG: Lang = "fa";
+const SERVER_LANG: Lang = "en";
 function getServerLang(): Lang {
   return SERVER_LANG;
 }

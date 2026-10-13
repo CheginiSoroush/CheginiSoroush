@@ -401,10 +401,8 @@ export function ReposExplorer() {
                   </button>
                 </div>
 
-                <p
-                  dir="auto"
-                  className="text-start text-[13px] leading-6 text-muted-foreground line-clamp-2 min-h-[3rem]"
-                >
+                {/* Full description — comprehensive by design, no clamping */}
+                <p dir="auto" className="text-start text-[13px] leading-6 text-muted-foreground">
                   {desc ?? t("repos", "noDesc")}
                 </p>
 

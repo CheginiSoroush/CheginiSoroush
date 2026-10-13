@@ -14,7 +14,6 @@ import {
   Bot,
   FileText,
   Sparkles,
-  CornerDownLeft,
   Star,
   History,
 } from "lucide-react";
@@ -208,13 +207,22 @@ export function CommandPalette({
                   key={p.slug}
                   value={`p-${p.slug}`}
                   onSelect={() => go(`#/projects/${encodeURIComponent(p.slug)}`)}
+                  className="items-center gap-3 py-2"
                 >
-                  <span className="text-lg leading-none" aria-hidden>
+                  <span className="palette-item-icon text-lg leading-none" aria-hidden>
                     {p.icon}
                   </span>
-                  <span className="truncate">{pickEn(lang, p.titleEn, p.title)}</span>
-                  <CommandShortcut dir="ltr" className="font-mono text-[10px] truncate max-w-[38%]">
-                    {p.repo}
+                  <span className="min-w-0 flex-grow">
+                    <span className="block truncate text-[13px] font-bold">
+                      {pickEn(lang, p.titleEn, p.title)}
+                    </span>
+                    {/* one-line teaser so results are self-explanatory */}
+                    <span dir="auto" className="block truncate text-[10.5px] text-muted-foreground">
+                      {pickEn(lang, p.descriptionEn, p.description)}
+                    </span>
+                  </span>
+                  <CommandShortcut dir="ltr" className="font-mono text-[10px] truncate max-w-[32%]">
+                    {p.repo.split("/").pop()}
                   </CommandShortcut>
                 </CommandItem>
               ))}
@@ -231,11 +239,19 @@ export function CommandPalette({
                   key={a.slug}
                   value={`a-${a.slug}`}
                   onSelect={() => go(`#/writing/${encodeURIComponent(a.slug)}`)}
+                  className="items-center gap-3 py-2"
                 >
-                  <span className="text-lg leading-none" aria-hidden>
+                  <span className="palette-item-icon text-lg leading-none" aria-hidden>
                     {a.icon}
                   </span>
-                  <span className="truncate">{pickEn(lang, a.titleEn, a.title)}</span>
+                  <span className="min-w-0 flex-grow">
+                    <span className="block truncate text-[13px] font-bold">
+                      {pickEn(lang, a.titleEn, a.title)}
+                    </span>
+                    <span dir="auto" className="block truncate text-[10.5px] text-muted-foreground">
+                      {pickEn(lang, a.excerptEn, a.excerpt)}
+                    </span>
+                  </span>
                   <CommandShortcut>
                     <span className="inline-flex items-center gap-1 text-[10px]">
                       <FileText className="w-3 h-3" />
@@ -251,7 +267,7 @@ export function CommandPalette({
       </CommandList>
 
       {/* footer hint — fixed below the scrolling list */}
-      <div className="command-palette-foot border-t border-border px-4 py-2.5 flex items-center justify-between text-[10px] text-muted-foreground">
+      <div className="command-palette-foot px-4 py-2.5 flex items-center justify-between text-[10px] text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <Sparkles className="w-3 h-3 text-brand" />
           {t("misc", "palette.indexed", {
@@ -259,8 +275,8 @@ export function CommandPalette({
             m: num(articles.length),
           })}
         </span>
-        <span className="inline-flex items-center gap-1" dir="ltr">
-          <CornerDownLeft className="w-3 h-3" />
+        <span className="inline-flex items-center gap-1.5" dir="ltr">
+          <kbd className="palette-hint-kbd">↵</kbd>
           {t("misc", "palette.hint")}
         </span>
       </div>

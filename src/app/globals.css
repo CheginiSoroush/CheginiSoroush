@@ -942,47 +942,102 @@ body:has([data-slot="dialog-overlay"]) .modal-hide {
   }
 }
 
-/* ---------- Command palette ---------- */
+/* ---------- Command palette (spotlight search) ---------- */
+/* Premium glass panel: layered translucency, brand-tinted rim, soft entrance. */
 .command-palette {
-  background: color-mix(in srgb, var(--popover) 94%, transparent) !important;
-  backdrop-filter: blur(18px);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--popover) 88%, transparent), color-mix(in srgb, var(--popover) 96%, transparent)) !important;
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  box-shadow:
+    0 24px 70px -18px rgb(0 0 0 / 0.55),
+    0 0 0 1px color-mix(in srgb, var(--brand) 14%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--brand) 18%, transparent);
+  animation: palette-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  overflow: hidden;
+}
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+/* Search row — taller, calmer, brand-tinted caret/icon */
+.command-palette [cmdk-input-wrapper] {
+  height: 3.25rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand) 22%, transparent);
+  padding-inline: 1rem;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand) 6%, transparent), transparent);
+}
+.command-palette [cmdk-input-wrapper] svg {
+  color: var(--brand);
+  opacity: 0.9;
+  width: 1.1rem;
+  height: 1.1rem;
 }
 .command-palette [cmdk-input] {
-  font-size: 0.95rem;
-  padding-right: 0.25rem;
+  font-size: 1rem;
+  padding-right: 0.35rem;
+  caret-color: var(--brand);
 }
-.command-palette [cmdk-input-wrapper] {
-  border-bottom-color: color-mix(in srgb, var(--brand) 25%, transparent);
+.command-palette [cmdk-input]::placeholder {
+  opacity: 0.55;
 }
+/* Group headings — quiet uppercase labels */
 .command-palette [cmdk-group-heading] {
-  color: color-mix(in srgb, var(--brand) 80%, var(--foreground));
+  color: color-mix(in srgb, var(--brand) 75%, var(--muted-foreground));
   font-weight: 800;
   font-size: 10px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding-inline: 0.65rem;
 }
+/* Items — pill rows with a glowing brand selection state */
 .command-palette [cmdk-item] {
-  border-radius: 0.75rem;
+  border-radius: 0.9rem;
   border: 1px solid transparent;
-  margin-block: 2px;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  margin-block: 3px;
+  padding: 0.55rem 0.65rem;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.command-palette [cmdk-item]:hover {
+  background: color-mix(in srgb, var(--brand) 7%, transparent);
 }
 .command-palette [cmdk-item][data-selected="true"] {
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--brand) 16%, transparent),
+    color-mix(in srgb, var(--brand) 18%, transparent),
     color-mix(in srgb, var(--brand) 5%, transparent)
   );
-  border-color: color-mix(in srgb, var(--brand) 35%, transparent);
-  box-shadow: 0 0 18px -6px var(--brand-glow);
+  border-color: color-mix(in srgb, var(--brand) 38%, transparent);
+  box-shadow: 0 0 20px -6px var(--brand-glow);
+  transform: translateX(0) scale(1.01);
 }
-.command-palette [cmdk-item][data-selected="true"] svg {
+.command-palette [cmdk-item][data-selected="true"] svg,
+.command-palette [cmdk-item][data-selected="true"] .palette-item-icon {
   color: var(--brand);
 }
 .command-palette [cmdk-list] {
-  max-height: 340px;
+  max-height: min(46vh, 380px);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--brand) 35%, transparent) transparent;
+  padding: 0.35rem;
 }
 .command-palette-foot {
-  background: color-mix(in srgb, var(--secondary) 55%, transparent);
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--brand) 8%, transparent));
+  border-top: 1px solid color-mix(in srgb, var(--brand) 16%, transparent);
+}
+.command-palette .palette-hint-kbd {
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  border-radius: 0.4rem;
+  padding: 0.05rem 0.35rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
 }
 .palette-trigger:hover .kbd {
   border-color: color-mix(in srgb, var(--brand) 45%, transparent);
