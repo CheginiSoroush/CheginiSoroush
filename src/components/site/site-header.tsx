@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Moon, Sun, Search, Home, FolderGit2, PenLine, Mail, FolderDown } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 import type { ViewName } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { setLang, useLang, useT } from "@/lib/i18n";
@@ -87,6 +87,14 @@ export function SiteHeader({
   }, [resolvedTheme, setTheme]);
 
   const isDark = resolvedTheme !== "light";
+
+  // Reading progress — springs keep it butter-smooth even on janky scrolls
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 24,
+    restDelta: 0.001,
+  });
 
   return (
     <motion.header
@@ -229,6 +237,14 @@ export function SiteHeader({
           </button>
         </div>
       </div>
+
+      {/* Reading progress line — sits on the header's bottom edge, symmetric
+          gradient so it needs no RTL flipping. scaleX 0 → invisible at top. */}
+      <motion.div
+        aria-hidden
+        style={{ scaleX: progress }}
+        className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-brand to-transparent opacity-90"
+      />
     </motion.header>
   );
 }

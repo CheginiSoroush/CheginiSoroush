@@ -432,7 +432,11 @@ export function ProjectsExplorer({
           <p className="text-center text-xs text-muted-foreground" aria-live="polite">
             {loading
               ? t("projects", "controls.searching")
-              : t("projects", "controls.found", { n: num(displayList.length) })}
+              : t(
+                  "projects",
+                  displayList.length === 1 ? "controls.foundOne" : "controls.found",
+                  { n: num(displayList.length) }
+                )}
           </p>
           <span className="w-1 h-1 rounded-full bg-border" aria-hidden />
           <button

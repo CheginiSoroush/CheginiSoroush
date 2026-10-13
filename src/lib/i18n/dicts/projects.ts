@@ -20,6 +20,7 @@ export const projectsDict: Dict = {
     "controls.filterAria": "فیلتر دسته‌بندی",
     "controls.searching": "در حال جستجو...",
     "controls.found": "{n} پروژه یافت شد",
+    "controls.foundOne": "{n} پروژه یافت شد",
     "controls.rolling": "در حال چرخش...",
     "controls.random": "پروژه تصادفی",
 
@@ -82,6 +83,7 @@ export const projectsDict: Dict = {
     "controls.filterAria": "Filter by category",
     "controls.searching": "Searching...",
     "controls.found": "{n} projects found",
+    "controls.foundOne": "{n} project found",
     "controls.rolling": "Rolling...",
     "controls.random": "Random project",
 
