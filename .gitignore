@@ -66,6 +66,13 @@ examples/
 scripts/gen-covers.ts
 download/
 
+# local tooling & scratch directories
+/skills/
+/test
+/prompt
+.z-ai-config
+.claude
+
 # cloudflare build artifacts
 .open-next/
 .wrangler/
