@@ -311,9 +311,12 @@ export function ProjectsExplorer({
       onMouseMove={onSpotlightMove}
       className="glow-card spotlight group text-start rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col h-full w-full"
     >
-      {/* generative cover art */}
-      <div className="cover-wrap -mx-5 sm:-mx-6 -mt-5 sm:-mt-6 mb-4 rounded-t-2xl overflow-hidden">
-        <ProjectCover slug={p.slug} category={p.category} className="h-24 sm:h-28 w-full" />
+      {/* generative cover art — clipping lives on an INNER wrapper so the
+          floating sticker can overhang the cover edge instead of being cut off */}
+      <div className="cover-wrap relative -mx-5 sm:-mx-6 -mt-5 sm:-mt-6 mb-5">
+        <div className="overflow-hidden rounded-t-2xl">
+          <ProjectCover slug={p.slug} category={p.category} className="h-24 sm:h-28 w-full" />
+        </div>
         <div className="cover-float">
           <span className="text-3xl card-emoji drop-shadow-lg" aria-hidden>
             {p.icon}
@@ -549,28 +552,34 @@ export function ProjectsExplorer({
 
       {/* Detail dialog */}
       <Dialog open={!!selected} onOpenChange={closeDialog}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto p-6 rounded-3xl dialog-accent">
+        <DialogContent className="max-h-[85dvh] overflow-hidden p-0 gap-0 rounded-3xl dialog-accent">
           {selected && (
-            <>
-              {/* generative hero cover */}
-              <div className="cover-wrap dialog-cover -mx-6 -mt-6 mb-5 overflow-hidden">
-                <ProjectCover
-                  slug={selected.slug}
-                  category={selected.category}
-                  idPrefix="dlg"
-                  className="h-32 sm:h-36 w-full"
-                />
-                <span className="absolute bottom-3 start-5 text-4xl card-emoji drop-shadow-xl" aria-hidden>
-                  {selected.icon}
-                </span>
+            <div className="max-h-[85dvh] overflow-y-auto overscroll-contain rounded-3xl">
+              {/* Full-bleed hero cover — the sticker floats ABOVE the fade
+                  overlay (z-index) and is never clipped by the scroll area */}
+              <div className="cover-wrap dialog-cover relative">
+                <div className="overflow-hidden rounded-t-3xl">
+                  <ProjectCover
+                    slug={selected.slug}
+                    category={selected.category}
+                    idPrefix="dlg"
+                    className="h-32 sm:h-36 w-full"
+                  />
+                </div>
+                <div className="cover-float">
+                  <span className="text-2xl card-emoji drop-shadow-xl" aria-hidden>
+                    {selected.icon}
+                  </span>
+                </div>
               </div>
+              <div className="p-5 sm:p-6">
               <DialogHeader>
                 <div className="flex items-center gap-4 mb-1">
                   <div className="min-w-0 flex-grow">
                     <DialogTitle className="text-lg sm:text-xl leading-8 text-start">
                       {pickEn(lang, selected.titleEn, selected.title)}
                     </DialogTitle>
-                    <DialogDescription dir="ltr" className="text-left text-xs font-mono mt-1">
+                    <DialogDescription dir="ltr" className="text-left text-xs font-mono mt-1 truncate">
                       {selected.repo}
                     </DialogDescription>
                   </div>
@@ -717,7 +726,8 @@ export function ProjectsExplorer({
                 <Link2 className="w-3 h-3" />
                 {t("projects", "detail.deeplinkNote")}
               </p>
-            </>
+              </div>
+            </div>
           )}
         </DialogContent>
       </Dialog>

@@ -1,13 +1,20 @@
 "use client";
 
 import { useMemo } from "react";
+import Image from "next/image";
 import { coverSpec } from "@/lib/cover-art";
+import { COVER_IMAGES } from "@/lib/cover-images";
 import { cn } from "@/lib/utils";
 
 /**
- * Deterministic generative cover art for a project.
- * Pure SVG — unique per slug, stable across renders, zero assets.
- * All geometry is precomputed in lib/cover-art (render-pure).
+ * Project cover art.
+ *
+ * 1. If the slug has a dedicated AI-generated concept banner (lib/cover-images,
+ *    produced by scripts/gen-covers.ts) it renders that real image — unique,
+ *    story-driven art per project.
+ * 2. Otherwise it falls back to the deterministic generative SVG (unique per
+ *    slug, stable across renders, zero assets). Geometry precomputed in
+ *    lib/cover-art (render-pure).
  */
 export function ProjectCover({
   slug,
@@ -20,9 +27,25 @@ export function ProjectCover({
   className?: string;
   idPrefix?: string;
 }) {
+  const image = COVER_IMAGES[slug];
   const spec = useMemo(() => coverSpec(slug, category), [slug, category]);
   const { palette, pattern, dots, traces, windows, orbit, lines, mind, pulse } = spec;
   const gid = `${idPrefix}-${slug.replace(/[^a-zA-Z0-9-]/g, "")}`;
+
+  if (image) {
+    return (
+      <Image
+        src={image}
+        alt=""
+        aria-hidden
+        width={1120}
+        height={640}
+        sizes="(max-width: 640px) 100vw, 420px"
+        className={cn("cover-art", className)}
+        priority={false}
+      />
+    );
+  }
 
   return (
     <svg

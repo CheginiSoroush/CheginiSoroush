@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Mail, Heart, LockKeyhole, Keyboard, Eye } from "lucide-react";
+import { Github, Mail, Heart, LockKeyhole, Keyboard, Eye, Linkedin } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -370,6 +370,15 @@ export function SiteShell({
                 {t("core", "footer.github")}
               </a>
               <a
+                href="https://www.linkedin.com/in/imsoroush"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-bold rounded-xl border border-border px-4 py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
+              >
+                <Linkedin className="w-4.5 h-4.5" />
+                {t("core", "footer.linkedin")}
+              </a>
+              <a
                 href="mailto:imsoroushchegini@gmail.com"
                 className="inline-flex items-center gap-2 text-sm font-bold rounded-xl border border-border px-4 py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
               >
@@ -382,11 +391,14 @@ export function SiteShell({
                   {t("core", "footer.visits", { n: num(stats.visits) })}
                 </span>
               )}
+              {/* Utility icons — admin panel (message moderation) + shortcuts.
+                  Deliberately quiet ghost styling so they don't read as primary
+                  social links; the lock opens the owner-only inbox. */}
               <button
                 onClick={() => setAdminOpen(true)}
                 aria-label={t("core", "aria.admin")}
                 title={t("core", "aria.admin")}
-                className="w-[42px] h-[42px] grid place-items-center rounded-xl border border-border text-muted-foreground/60 hover:text-brand hover:border-brand/50 transition-all"
+                className="w-10 h-10 grid place-items-center rounded-xl text-muted-foreground/40 hover:text-brand hover:bg-secondary/70 transition-all"
               >
                 <LockKeyhole className="w-4 h-4" />
               </button>
@@ -394,7 +406,7 @@ export function SiteShell({
                 onClick={() => setShortcutsOpen(true)}
                 aria-label={t("core", "aria.shortcuts")}
                 title={t("core", "footer.shortcutsTitle")}
-                className="w-[42px] h-[42px] grid place-items-center rounded-xl border border-border text-muted-foreground/60 hover:text-brand hover:border-brand/50 transition-all"
+                className="w-10 h-10 grid place-items-center rounded-xl text-muted-foreground/40 hover:text-brand hover:bg-secondary/70 transition-all"
               >
                 <Keyboard className="w-4 h-4" />
               </button>

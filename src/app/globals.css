@@ -351,7 +351,11 @@ body:has([data-slot="dialog-overlay"]) .modal-hide {
   }
 }
 
-/* ---------- Marquee ---------- */
+/* ---------- Marquee ----------
+   Direction-aware: in RTL pages the doubled track starts at the RIGHT edge
+   and overflows LEFT, so it must slide +50% (rightwards) to stay seamless.
+   In LTR pages (EN) it overflows RIGHT and must slide -50% — otherwise the
+   box empties out instantly (the "marquee is blank in English" bug). */
 @keyframes marquee-rtl {
   from {
     transform: translateX(0);
@@ -360,8 +364,19 @@ body:has([data-slot="dialog-overlay"]) .modal-hide {
     transform: translateX(50%);
   }
 }
+@keyframes marquee-ltr {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
 .marquee-track {
-  animation: marquee-rtl 30s linear infinite;
+  animation: marquee-ltr 30s linear infinite;
+}
+[dir="rtl"] .marquee-track {
+  animation-name: marquee-rtl;
 }
 .marquee-track:hover {
   animation-play-state: paused;
@@ -806,7 +821,7 @@ body:has([data-slot="dialog-overlay"]) .modal-hide {
 .cover-float {
   position: absolute;
   bottom: 0;
-  right: 1rem;
+  inset-inline-end: 1rem;
   transform: translateY(35%);
   width: 3.25rem;
   height: 3.25rem;
@@ -818,6 +833,9 @@ body:has([data-slot="dialog-overlay"]) .modal-hide {
   border: 1px solid color-mix(in srgb, white 14%, transparent);
   box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.6), 0 0 18px -6px var(--brand-glow);
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Sticker must always float ON TOP of the cover, its fade overlay and the
+     clipped art — never sink behind them. */
+  z-index: 2;
 }
 .group:hover .cover-float {
   transform: translateY(35%) scale(1.08) rotate(-6deg);
@@ -834,11 +852,12 @@ body:has([data-slot="dialog-overlay"]) .modal-hide {
   inset: 0;
   background: linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--card) 92%, transparent) 100%);
   pointer-events: none;
+  z-index: 1;
 }
 .dialog-cover .cover-float {
   width: 3.5rem;
   height: 3.5rem;
-  right: 1.25rem;
+  inset-inline-end: 1.25rem;
 }
 
 /* ---------- Category banner thumb (home quick-nav) ---------- */

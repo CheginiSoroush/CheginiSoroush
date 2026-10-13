@@ -52,6 +52,7 @@ export const coreDict: Dict = {
     // ---------- footer ----------
     "footer.social": "شبکه‌های اجتماعی",
     "footer.github": "گیت‌هاب",
+    "footer.linkedin": "لینکدین",
     "footer.email": "ایمیل",
     "footer.visits": "{n} بازدید",
     "footer.madeWith": "ساخته شده با",
@@ -137,6 +138,7 @@ export const coreDict: Dict = {
     // ---------- footer ----------
     "footer.social": "Social links",
     "footer.github": "GitHub",
+    "footer.linkedin": "LinkedIn",
     "footer.email": "Email",
     "footer.visits": "{n} visits",
     "footer.madeWith": "Built with",
