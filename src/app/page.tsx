@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 import { SiteShell } from "@/components/site/site-shell";
 import type { Article, Project } from "@/lib/types";
 
@@ -10,12 +10,40 @@ export default async function Page() {
 
   try {
     const [rawProjects, rawArticles] = await Promise.all([
-      db.project.findMany({ orderBy: [{ featured: "desc" }, { order: "asc" }] }),
-      db.article.findMany({ orderBy: { publishedAt: "asc" } }),
+      store.listProjects({ category: "all", q: "", featured: false, sort: "default" }),
+      store.listArticles("all"),
     ]);
 
-    projects = rawProjects.map((p) => ({ ...p, tags: JSON.parse(p.tags) as string[] }));
-    articles = rawArticles.map((a) => ({ ...a, publishedAt: a.publishedAt.toISOString() }));
+    projects = rawProjects.map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      titleEn: p.titleEn,
+      repo: p.repo,
+      description: p.description,
+      descriptionEn: p.descriptionEn,
+      category: p.category,
+      tags: JSON.parse(p.tags) as string[],
+      icon: p.icon,
+      featured: p.featured,
+      views: p.views,
+      order: p.order,
+    }));
+    articles = rawArticles.map((a) => ({
+      id: a.id,
+      slug: a.slug,
+      title: a.title,
+      titleEn: a.titleEn,
+      excerpt: a.excerpt,
+      excerptEn: a.excerptEn,
+      content: a.content,
+      category: a.category,
+      icon: a.icon,
+      readTime: a.readTime,
+      views: a.views,
+      likes: a.likes,
+      publishedAt: a.publishedAt,
+    }));
   } catch (error) {
     console.error("Failed to load initial data:", error);
   }

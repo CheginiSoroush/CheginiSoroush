@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,20 +8,14 @@ export async function GET(request: NextRequest) {
     const slug = searchParams.get("slug");
 
     if (slug) {
-      const article = await db.article.findUnique({ where: { slug } });
+      const article = await store.getArticle(slug);
       if (!article) {
         return NextResponse.json({ error: "مقاله یافت نشد" }, { status: 404 });
       }
       return NextResponse.json({ article });
     }
 
-    const where: { category?: string } = {};
-    if (category && category !== "all") where.category = category;
-
-    const articles = await db.article.findMany({
-      where,
-      orderBy: { publishedAt: "desc" },
-    });
+    const articles = await store.listArticles(category);
 
     return NextResponse.json({ articles });
   } catch (error) {
@@ -39,26 +33,20 @@ export async function POST(request: NextRequest) {
     }
 
     if (body.action === "like" || body.action === "unlike") {
-      const current = await db.article.findUnique({
-        where: { slug: body.slug },
-        select: { likes: true },
-      });
-      if (!current) {
+      const current = await store.getArticleLikes(body.slug);
+      if (current === null) {
         return NextResponse.json({ error: "مقاله یافت نشد" }, { status: 404 });
       }
-      const likes =
-        body.action === "like"
-          ? current.likes + 1
-          : Math.max(0, current.likes - 1);
-      await db.article.update({ where: { slug: body.slug }, data: { likes } });
+      const likes = body.action === "like" ? current + 1 : Math.max(0, current - 1);
+      await store.setArticleLikes(body.slug, likes);
       return NextResponse.json({ likes });
     }
 
-    const article = await db.article.update({
-      where: { slug: body.slug },
-      data: { views: { increment: 1 } },
-    });
-    return NextResponse.json({ views: article.views });
+    const views = await store.incrArticleViews(body.slug);
+    if (views === null) {
+      return NextResponse.json({ error: "مقاله یافت نشد" }, { status: 404 });
+    }
+    return NextResponse.json({ views });
   } catch (error) {
     console.error("POST /api/articles error:", error);
     return NextResponse.json({ error: "خطا در ثبت بازدید" }, { status: 500 });

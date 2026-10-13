@@ -1,0 +1,107 @@
+# NOTE: This file lives at deploy/github-actions-deploy.yml because the current
+# GitHub token cannot push files under .github/workflows (needs `workflow` scope).
+# To activate automatic deployment, EITHER:
+#   a) in GitHub web UI: Actions tab → "New workflow" → "set up a workflow yourself"
+#      → paste this file's content as .github/workflows/deploy.yml, OR
+#   b) create a PAT with repo+workflow scopes and ask the assistant to push it.
+name: Deploy to Cloudflare Workers
+
+# Automatic production deployment:
+#   push to main  →  D1 migration + seed  →  OpenNext build  →  wrangler deploy
+#
+# One-time setup (repository Settings → Secrets and variables → Actions):
+#   Required:  CLOUDFLARE_API_TOKEN  (template "Edit Cloudflare Workers" — includes D1)
+#              CLOUDFLARE_ACCOUNT_ID
+#   Optional:  ADMIN_KEY  (admin panel key; falls back to default)
+#              GH_PAT     (GitHub PAT used by /api/github + /api/repos at runtime)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check Cloudflare credentials
+        id: creds
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Deploy skipped — add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets to enable automatic deployment."
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ensure D1 database exists (and patch wrangler.jsonc)
+        if: steps.creds.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          DB_ID=$(bunx wrangler d1 list --json | jq -r '.[] | select(.name == "imsoroush-db") | .uuid' | head -n1)
+          if [ -z "$DB_ID" ] || [ "$DB_ID" = "null" ]; then
+            echo "Creating D1 database imsoroush-db..."
+            bunx wrangler d1 create imsoroush-db || true
+            DB_ID=$(bunx wrangler d1 list --json | jq -r '.[] | select(.name == "imsoroush-db") | .uuid' | head -n1)
+          fi
+          if [ -z "$DB_ID" ] || [ "$DB_ID" = "null" ]; then
+            echo "::error::Could not resolve D1 database id"; exit 1
+          fi
+          echo "D1 database id: $DB_ID"
+          jq --arg id "$DB_ID" '.d1_databases[0].database_id = $id' wrangler.jsonc > /tmp/wrangler.tmp.jsonc
+          mv /tmp/wrangler.tmp.jsonc wrangler.jsonc
+
+      - name: Apply D1 schema + content seed (idempotent)
+        if: steps.creds.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          bunx wrangler d1 execute imsoroush-db --remote --file=./prisma/d1-schema.sql
+          bunx wrangler d1 execute imsoroush-db --remote --file=./prisma/d1-seed.sql
+
+      - name: Build with OpenNext
+        if: steps.creds.outputs.ready == 'true'
+        run: bunx opennextjs-cloudflare build
+
+      - name: Deploy Worker
+        if: steps.creds.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bunx wrangler deploy
+
+      - name: Sync runtime secrets (optional, skipped when unset)
+        if: steps.creds.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ADMIN_KEY_VALUE: ${{ secrets.ADMIN_KEY }}
+          GH_PAT_VALUE: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -n "$ADMIN_KEY_VALUE" ]; then
+            printf '%s' "$ADMIN_KEY_VALUE" | bunx wrangler secret put ADMIN_KEY
+          fi
+          if [ -n "$GH_PAT_VALUE" ]; then
+            printf '%s' "$GH_PAT_VALUE" | bunx wrangler secret put GITHUB_TOKEN
+          fi

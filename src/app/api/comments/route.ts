@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
@@ -42,15 +42,7 @@ export async function GET(req: NextRequest) {
   if (!slug) return badRequest("slug الزامی است.");
 
   try {
-    const [comments, total] = await Promise.all([
-      db.comment.findMany({
-        where: { articleSlug: slug },
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * PAGE_SIZE,
-        take: PAGE_SIZE,
-      }),
-      db.comment.count({ where: { articleSlug: slug } }),
-    ]);
+    const { comments, total } = await store.listComments(slug, page, PAGE_SIZE);
 
     return NextResponse.json({
       comments,
@@ -95,14 +87,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const article = await db.article.findUnique({ where: { slug }, select: { slug: true } });
-    if (!article) return badRequest("نوشته پیدا نشد.");
+    const exists = await store.articleExists(slug);
+    if (!exists) return badRequest("نوشته پیدا نشد.");
 
-    const created = await db.comment.create({
-      data: { articleSlug: slug, name, body },
-    });
+    const created = await store.createComment({ articleSlug: slug, name, body });
+    const total = await store.countComments(slug);
 
-    const total = await db.comment.count({ where: { articleSlug: slug } });
     return NextResponse.json({ comment: created, total }, { status: 201 });
   } catch (error) {
     console.error("POST /api/comments error:", error);

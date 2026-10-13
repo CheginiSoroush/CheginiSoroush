@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 const GITHUB_USER = "CheginiSoroush";
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
@@ -166,7 +166,7 @@ async function fetchGitHubStats(): Promise<GitHubStats | null> {
 
 async function readDbSnapshot(): Promise<GitHubStats | null> {
   try {
-    const row = await db.githubSnapshot.findUnique({ where: { id: 1 } });
+    const row = await store.getSnapshot("GithubSnapshot");
     if (!row) return null;
     const stats = JSON.parse(row.payloadJson) as GitHubStats;
     if (!stats || !stats.username) return null;
@@ -178,12 +178,7 @@ async function readDbSnapshot(): Promise<GitHubStats | null> {
 
 async function writeDbSnapshot(stats: GitHubStats): Promise<void> {
   try {
-    const json = JSON.stringify(stats);
-    await db.githubSnapshot.upsert({
-      where: { id: 1 },
-      create: { id: 1, payloadJson: json },
-      update: { payloadJson: json },
-    });
+    await store.putSnapshot("GithubSnapshot", JSON.stringify(stats));
   } catch (error) {
     console.error("github snapshot write failed:", error);
   }

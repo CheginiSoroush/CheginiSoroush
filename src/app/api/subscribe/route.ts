@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 // Public: how many people are subscribed (used for the subtle counter)
 export async function GET() {
   try {
-    const count = await db.subscriber.count();
+    const count = await store.countSubscribers();
     return NextResponse.json({ count });
   } catch {
     return NextResponse.json({ count: 0 });
@@ -26,17 +26,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const existing = await db.subscriber.findUnique({ where: { email } });
-    if (existing) {
+    const exists = await store.subscriberExists(email);
+    if (exists) {
       return NextResponse.json({ ok: true, duplicate: true });
     }
 
-    await db.subscriber.create({ data: { email } });
+    await store.addSubscriber(email);
     return NextResponse.json({ ok: true, duplicate: false });
   } catch (error) {
     console.error("POST /api/subscribe error:", error);
     return NextResponse.json({ ok: false, error: "server" }, { status: 500 });
   }
 }
-
-// r10: force rebuild after prisma client regeneration

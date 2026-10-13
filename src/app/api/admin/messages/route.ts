@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-
-function isAdminRequest(request: NextRequest): boolean {
-  const expected = process.env.ADMIN_KEY || "imsoroush-admin";
-  const provided = request.headers.get("x-admin-key") ?? "";
-  return provided.length > 0 && provided === expected;
-}
+import { isAdminRequest, store } from "@/lib/store";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,18 +12,11 @@ export async function GET(request: NextRequest) {
     const pageSize = Math.min(50, Math.max(1, Number(searchParams.get("pageSize") ?? "8") || 8));
     const filter = searchParams.get("filter") === "unread" ? "unread" : "all";
 
-    const where = filter === "unread" ? { read: false } : {};
-
-    const [messages, total, unread] = await Promise.all([
-      db.contactMessage.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-      db.contactMessage.count({ where }),
-      db.contactMessage.count({ where: { read: false } }),
-    ]);
+    const { messages, total, unread } = await store.listMessages({
+      page,
+      pageSize,
+      unreadOnly: filter === "unread",
+    });
 
     return NextResponse.json({
       messages,
@@ -56,10 +43,10 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "id و read الزامی هستند" }, { status: 400 });
     }
 
-    const updated = await db.contactMessage.update({
-      where: { id: body.id },
-      data: { read: body.read },
-    });
+    const updated = await store.setMessageRead(body.id, body.read);
+    if (!updated) {
+      return NextResponse.json({ error: "پیام یافت نشد" }, { status: 404 });
+    }
 
     return NextResponse.json({ ok: true, message: updated });
   } catch (error) {
@@ -79,7 +66,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "id الزامی است" }, { status: 400 });
     }
 
-    await db.contactMessage.delete({ where: { id: body.id } });
+    await store.deleteMessage(body.id);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

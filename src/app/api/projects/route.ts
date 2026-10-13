@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 // Normalize Persian/Arabic chars so "گیمینی" style queries match consistently
 function normalize(s: string) {
@@ -14,34 +14,11 @@ export async function GET(request: NextRequest) {
     const featured = searchParams.get("featured");
     const sort = searchParams.get("sort") === "views" ? "views" : "default";
 
-    const where: {
-      category?: string;
-      featured?: boolean;
-      OR?: Array<
-        | { title: { contains: string } }
-        | { description: { contains: string } }
-        | { repo: { contains: string } }
-        | { tags: { contains: string } }
-      >;
-    } = {};
-
-    if (category && category !== "all") where.category = category;
-    if (featured === "true") where.featured = true;
-    if (q) {
-      where.OR = [
-        { title: { contains: q } },
-        { description: { contains: q } },
-        { repo: { contains: q } },
-        { tags: { contains: q } },
-      ];
-    }
-
-    const projects = await db.project.findMany({
-      where,
-      orderBy:
-        sort === "views"
-          ? [{ views: "desc" }, { featured: "desc" }, { order: "asc" }]
-          : [{ featured: "desc" }, { order: "asc" }],
+    const projects = await store.listProjects({
+      category,
+      q,
+      featured: featured === "true",
+      sort,
     });
 
     const parsed = projects.map((p) => ({
@@ -64,18 +41,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "slug الزامی است" }, { status: 400 });
     }
 
-    const project = await db.project.update({
-      where: { slug: body.slug },
-      data: { views: { increment: 1 } },
-    });
+    const views = await store.incrProjectViews(body.slug);
+    if (views === null) {
+      return NextResponse.json({ error: "پروژه یافت نشد" }, { status: 404 });
+    }
 
-    await db.siteStat.upsert({
-      where: { key: "projectViews" },
-      update: { value: { increment: 1 } },
-      create: { key: "projectViews", value: 1 },
-    });
+    await store.bumpProjectViewsStat();
 
-    return NextResponse.json({ views: project.views });
+    return NextResponse.json({ views });
   } catch (error) {
     console.error("POST /api/projects error:", error);
     return NextResponse.json({ error: "خطا در ثبت بازدید" }, { status: 500 });

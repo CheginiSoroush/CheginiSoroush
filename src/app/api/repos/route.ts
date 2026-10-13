@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 import type { GitHubRepo } from "@/lib/types";
 
 /**
@@ -167,7 +167,7 @@ async function fetchFromGitHub(): Promise<GitHubRepo[] | null> {
 
 async function readDbSnapshot(): Promise<ReposPayload | null> {
   try {
-    const row = await db.repoSnapshot.findUnique({ where: { id: 1 } });
+    const row = await store.getSnapshot("RepoSnapshot");
     if (!row) return null;
     const repos = JSON.parse(row.payloadJson) as GitHubRepo[];
     if (!Array.isArray(repos) || repos.length === 0) return null;
@@ -184,11 +184,7 @@ async function readDbSnapshot(): Promise<ReposPayload | null> {
 
 async function writeDbSnapshot(repos: GitHubRepo[]): Promise<void> {
   try {
-    await db.repoSnapshot.upsert({
-      where: { id: 1 },
-      create: { id: 1, payloadJson: JSON.stringify(repos) },
-      update: { payloadJson: JSON.stringify(repos) },
-    });
+    await store.putSnapshot("RepoSnapshot", JSON.stringify(repos));
   } catch (error) {
     console.error("/api/repos snapshot write failed:", error);
   }

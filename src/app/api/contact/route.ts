@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -31,13 +31,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const saved = await db.contactMessage.create({
-      data: { name, email, subject, message },
-    });
+    const id = await store.createMessage({ name, email, subject, message });
 
     return NextResponse.json({
       ok: true,
-      id: saved.id,
+      id,
       message: "پیام شما با موفقیت ثبت شد. به‌زودی پاسخ می‌دهم!",
     });
   } catch (error) {

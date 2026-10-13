@@ -55,3 +55,7 @@ server.log
 # environment secrets
 .env
 .env.*
+
+# Cloudflare / OpenNext build artifacts
+.open-next/
+.wrangler/

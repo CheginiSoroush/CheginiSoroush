@@ -1,32 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { isAdminRequest, store } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-function unauthorized() {
-  return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-}
-
-function isAuthed(req: NextRequest) {
-  const key = req.headers.get("x-admin-key");
-  return !!key && key === process.env.ADMIN_KEY;
-}
-
 export async function GET(req: NextRequest) {
-  if (!isAuthed(req)) return unauthorized();
+  if (!isAdminRequest(req)) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
 
   const page = Math.max(1, Number(req.nextUrl.searchParams.get("page") ?? "1") || 1);
   const pageSize = Math.min(50, Math.max(1, Number(req.nextUrl.searchParams.get("pageSize") ?? "10") || 10));
 
   try {
-    const [comments, total] = await Promise.all([
-      db.comment.findMany({
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-      db.comment.count(),
-    ]);
+    const { comments, total } = await store.listAllComments(page, pageSize);
 
     return NextResponse.json({
       comments,
@@ -42,13 +28,15 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  if (!isAuthed(req)) return unauthorized();
+  if (!isAdminRequest(req)) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
 
   try {
     const { id } = (await req.json()) as { id?: string };
     if (!id) return NextResponse.json({ error: "id الزامی است" }, { status: 400 });
 
-    await db.comment.delete({ where: { id } });
+    await store.deleteComment(id);
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("DELETE /api/admin/comments error:", error);
