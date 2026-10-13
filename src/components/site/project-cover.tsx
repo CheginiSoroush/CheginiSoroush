@@ -6,6 +6,9 @@ import { coverSpec } from "@/lib/cover-art";
 import { COVER_IMAGES } from "@/lib/cover-images";
 import { cn } from "@/lib/utils";
 
+/** Bump after regenerating any cover art so client HTTP caches revalidate. */
+const COVER_VERSION = "2";
+
 /**
  * Project cover art.
  *
@@ -35,7 +38,7 @@ export function ProjectCover({
   if (image) {
     return (
       <Image
-        src={image}
+        src={`${image}?v=${COVER_VERSION}`}
         alt=""
         aria-hidden
         width={1120}

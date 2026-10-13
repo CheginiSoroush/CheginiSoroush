@@ -710,9 +710,12 @@ export function ArticlesSection({
                   onMouseMove={onSpotlightMove}
                   className="glow-card spotlight group text-start rounded-2xl border border-border bg-card p-6 flex flex-col h-full"
                 >
-                  {/* generative cover art */}
-                  <div className="cover-wrap -mx-6 -mt-6 mb-4 rounded-t-2xl overflow-hidden">
-                    <ProjectCover slug={a.slug} category={a.category} idPrefix="art" className="h-24 sm:h-28 w-full" />
+                  {/* generative cover art — clipping lives on an INNER wrapper
+                      so the sticker can overhang the edge instead of sinking */}
+                  <div className="cover-wrap relative -mx-6 -mt-6 mb-4">
+                    <div className="overflow-hidden rounded-t-2xl">
+                      <ProjectCover slug={a.slug} category={a.category} idPrefix="art" className="h-24 sm:h-28 w-full" />
+                    </div>
                     <div className="cover-float">
                       <span className="text-3xl card-emoji drop-shadow-lg" aria-hidden>
                         {a.icon}
@@ -833,16 +836,20 @@ export function ArticlesSection({
               </div>
 
               {/* generative hero cover */}
-              <div className="cover-wrap dialog-cover -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-5 overflow-hidden">
-                <ProjectCover
-                  slug={selected.slug}
-                  category={selected.category}
-                  idPrefix="artdlg"
-                  className="h-28 sm:h-32 w-full"
-                />
-                <span className="absolute bottom-3 start-5 text-4xl card-emoji drop-shadow-xl" aria-hidden>
-                  {selected.icon}
-                </span>
+              <div className="cover-wrap dialog-cover relative -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-5">
+                <div className="overflow-hidden rounded-t-3xl">
+                  <ProjectCover
+                    slug={selected.slug}
+                    category={selected.category}
+                    idPrefix="artdlg"
+                    className="h-28 sm:h-32 w-full"
+                  />
+                </div>
+                <div className="cover-float">
+                  <span className="text-3xl card-emoji drop-shadow-xl" aria-hidden>
+                    {selected.icon}
+                  </span>
+                </div>
               </div>
 
               <DialogHeader>
