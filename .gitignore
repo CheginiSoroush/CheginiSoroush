@@ -70,7 +70,6 @@ download/
 /skills/
 /test
 /prompt
-.z-ai-config
 .claude
 
 # cloudflare build artifacts
