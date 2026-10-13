@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { store } from "@/lib/store";
+import { GITHUB_HANDLE } from "@/lib/site-config";
 
-const GITHUB_USER = "CheginiSoroush";
+const GITHUB_USER = GITHUB_HANDLE;
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 type GitHubStats = {

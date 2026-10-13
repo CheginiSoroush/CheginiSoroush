@@ -57,6 +57,11 @@ export const projectsDict: Dict = {
     "detail.stack": "پشته فناوری",
     "detail.related": "پروژه‌های مرتبط",
     "detail.github": "مشاهده در گیت‌هاب",
+    // Private repos (isPrivate from /api/repos): no dead GitHub/clone links until public
+    "detail.privateBadge": "خصوصی",
+    "detail.privateCta": "مخزن خصوصی است",
+    "detail.privateNote": "این مخزن فعلاً خصوصی است و پس از تکمیل مستندات عمومی خواهد شد.",
+    "detail.privateCloneNote": "دستور کلون پس از عمومی‌شدن مخزن نمایش داده می‌شود.",
     "detail.shareAria": "هم‌رسانی لینک پروژه",
     "detail.shareTitle": "هم‌رسانی لینک",
     "detail.copyClone": "کپی دستور کلون",
@@ -120,6 +125,11 @@ export const projectsDict: Dict = {
     "detail.stack": "Tech Stack",
     "detail.related": "Related Projects",
     "detail.github": "View on GitHub",
+    // Private repos (isPrivate from /api/repos): no dead GitHub/clone links until public
+    "detail.privateBadge": "Private",
+    "detail.privateCta": "Private repository",
+    "detail.privateNote": "This repository is private for now — it will become public once documentation is complete.",
+    "detail.privateCloneNote": "The clone command will appear once the repository goes public.",
     "detail.shareAria": "Share project link",
     "detail.shareTitle": "Share link",
     "detail.copyClone": "Copy clone command",

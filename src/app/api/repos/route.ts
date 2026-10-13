@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { store } from "@/lib/store";
+import { GITHUB_HANDLE } from "@/lib/site-config";
 import type { GitHubRepo } from "@/lib/types";
 
 /**
@@ -17,7 +18,7 @@ import type { GitHubRepo } from "@/lib/types";
  *   3. DB snapshot (stale, flagged) → 4. built-in seed of all 55 repos.
  */
 
-const GITHUB_USER = "CheginiSoroush";
+const GITHUB_USER = GITHUB_HANDLE;
 const MEMORY_TTL_MS = 10 * 60 * 1000;
 
 type ReposPayload = {

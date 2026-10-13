@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Github, Mail, MapPin, PenLine } from "lucide-react";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import { useT } from "@/lib/i18n";
+import { CONTACT_EMAIL_URL, GITHUB_PROFILE_URL } from "@/lib/site-config";
 
 const TIMELINE = [
   { icon: "🔤", key: "t1" },
@@ -129,7 +130,7 @@ export function AboutSection() {
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-3">
             <a
-              href="https://github.com/CheginiSoroush"
+              href={GITHUB_PROFILE_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-shine inline-flex items-center gap-2 rounded-2xl bg-brand text-primary-foreground font-bold px-6 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
@@ -138,7 +139,7 @@ export function AboutSection() {
               {t("home", "about.cta.github")}
             </a>
             <a
-              href="mailto:imsoroushchegini@gmail.com"
+              href={CONTACT_EMAIL_URL}
               className="inline-flex items-center gap-2 rounded-2xl border border-border font-bold px-6 py-3 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[46px]"
             >
               <Mail className="w-5 h-5" />

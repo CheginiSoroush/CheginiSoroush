@@ -6,8 +6,9 @@ import { coverSpec } from "@/lib/cover-art";
 import { COVER_IMAGES } from "@/lib/cover-images";
 import { cn } from "@/lib/utils";
 
-/** Bump after regenerating any cover art so client HTTP caches revalidate. */
-const COVER_VERSION = "2";
+/** Bump after regenerating any cover art so client HTTP caches revalidate.
+ *  v3: 16 newly-curated projects got dedicated AI banners (scripts/gen-covers.ts). */
+const COVER_VERSION = "3";
 
 /**
  * Project cover art.

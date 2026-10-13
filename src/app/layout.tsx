@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GITHUB_PROFILE_URL } from "@/lib/site-config";
 
 const SITE_URL = "https://imsoroush.ir";
 const TITLE = "سروش | توسعه‌دهنده نرم‌افزار و نویسنده";
@@ -21,7 +22,7 @@ const jsonLd = {
       jobTitle: "Software Developer & Writer",
       description:
         "Software developer, Telegram bot maker, 3D enthusiast and writer.",
-      sameAs: ["https://github.com/CheginiSoroush"],
+      sameAs: [GITHUB_PROFILE_URL],
       knowsAbout: [
         "Software Development",
         "Telegram Bots",

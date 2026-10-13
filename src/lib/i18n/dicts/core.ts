@@ -53,6 +53,8 @@ export const coreDict: Dict = {
     "footer.social": "شبکه‌های اجتماعی",
     "footer.github": "گیت‌هاب",
     "footer.linkedin": "لینکدین",
+    // Shown as the disabled button's tooltip until a real profile exists (LINKEDIN_URL in site-config.ts)
+    "footer.linkedinSoon": "پروفایل لینکدین به‌زودی فعال می‌شود",
     "footer.email": "ایمیل",
     "footer.visits": "{n} بازدید",
     "footer.madeWith": "ساخته شده با",
@@ -139,6 +141,8 @@ export const coreDict: Dict = {
     "footer.social": "Social links",
     "footer.github": "GitHub",
     "footer.linkedin": "LinkedIn",
+    // Tooltip of the disabled LinkedIn button until a real profile exists (LINKEDIN_URL in site-config.ts)
+    "footer.linkedinSoon": "LinkedIn profile coming soon",
     "footer.email": "Email",
     "footer.visits": "{n} visits",
     "footer.madeWith": "Built with",

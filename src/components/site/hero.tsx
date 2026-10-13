@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { Rocket, PenLine, Target, Eye } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import { GITHUB_PROFILE_URL } from "@/lib/site-config";
 import type { SiteStats } from "@/lib/types";
 
 function useTypewriter(words: string[]) {
@@ -168,7 +169,7 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
             {t("core", "hero.cta.projects")}
           </a>
           <a
-            href="https://github.com/CheginiSoroush"
+            href={GITHUB_PROFILE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="px-7 py-3 rounded-2xl border border-border bg-card/60 font-bold text-sm sm:text-base hover:border-brand/50 hover:text-brand hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px] inline-flex items-center gap-2"

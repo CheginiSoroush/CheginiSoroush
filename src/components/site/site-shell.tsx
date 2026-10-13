@@ -25,6 +25,7 @@ import { ReposExplorer } from "./repos-explorer";
 import { ArticlesSection } from "./articles-section";
 import { ContactSection } from "./contact-section";
 import { applyDocumentLang, toggleLang, useT } from "@/lib/i18n";
+import { CONTACT_EMAIL_URL, GITHUB_PROFILE_URL, LINKEDIN_URL } from "@/lib/site-config";
 import type { Article, Project, SiteStats, ViewName } from "@/lib/types";
 
 const VIEWS: ViewName[] = ["home", "projects", "writing", "repos", "contact"];
@@ -366,7 +367,7 @@ export function SiteShell({
               className="max-w-full flex flex-wrap items-center justify-center gap-2 sm:gap-3"
             >
               <a
-                href="https://github.com/CheginiSoroush"
+                href={GITHUB_PROFILE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold rounded-xl border border-border px-3 py-2 sm:px-4 sm:py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
@@ -374,17 +375,32 @@ export function SiteShell({
                 <Github className="w-4.5 h-4.5" />
                 {t("core", "footer.github")}
               </a>
+              {LINKEDIN_URL ? (
+                /* Live profile — normal external link */
+                <a
+                  href={LINKEDIN_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold rounded-xl border border-border px-3 py-2 sm:px-4 sm:py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
+                >
+                  <Linkedin className="w-4.5 h-4.5" />
+                  {t("core", "footer.linkedin")}
+                </a>
+              ) : (
+                /* No profile yet — disabled placeholder so we never ship a
+                   dead link. Activates automatically once LINKEDIN_URL is set
+                   in src/lib/site-config.ts. */
+                <span
+                  aria-disabled="true"
+                  title={t("core", "footer.linkedinSoon")}
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold rounded-xl border border-border/60 px-3 py-2 sm:px-4 sm:py-2.5 text-muted-foreground/60 cursor-not-allowed select-none opacity-70 min-h-[42px]"
+                >
+                  <Linkedin className="w-4.5 h-4.5" />
+                  {t("core", "footer.linkedin")}
+                </span>
+              )}
               <a
-                href="https://www.linkedin.com/in/imsoroush"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold rounded-xl border border-border px-3 py-2 sm:px-4 sm:py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
-              >
-                <Linkedin className="w-4.5 h-4.5" />
-                {t("core", "footer.linkedin")}
-              </a>
-              <a
-                href="mailto:imsoroushchegini@gmail.com"
+                href={CONTACT_EMAIL_URL}
                 className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold rounded-xl border border-border px-3 py-2 sm:px-4 sm:py-2.5 hover:text-brand hover:border-brand/50 hover:-translate-y-0.5 transition-all min-h-[42px]"
               >
                 <Mail className="w-4.5 h-4.5" />

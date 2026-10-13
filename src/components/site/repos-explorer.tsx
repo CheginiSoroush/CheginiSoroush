@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 import type { GitHubRepo } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { relativeTime, useT } from "@/lib/i18n";
+import { GITHUB_PROFILE_URL } from "@/lib/site-config";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyState } from "./empty-state";
 
@@ -490,7 +491,7 @@ export function ReposExplorer() {
           {" \u00b7 "}{num(totalStars)} {t("repos", "summary.stars")} · {num(langCount)}{" "}
           {t("repos", "summary.langs")} ·{" "}
           <a
-            href="https://github.com/CheginiSoroush"
+            href={GITHUB_PROFILE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="text-brand font-bold hover:underline"

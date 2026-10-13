@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ExternalLink, X, Eye, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy } from "lucide-react";
+import { Search, ExternalLink, X, Eye, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,7 @@ import { ProjectCover } from "./project-cover";
 import { EmptyState } from "./empty-state";
 import type { Project } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
+import { repoUrl } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 import { useT, pickEn } from "@/lib/i18n";
 
@@ -55,6 +56,41 @@ function writeFav(next: Set<string>) {
   }
   window.dispatchEvent(new Event(FAV_EVENT));
 }
+
+// Repo visibility map from the live GitHub pipeline (/api/repos):
+// lowercase repo name -> private?. Fetched once per session and cached at
+// module level so every dialog open is synchronous and free.
+// 47 of the 55 repos are private today — showing their GitHub/clone links
+// would 404 for visitors, so private projects get a lock state instead.
+let privateReposCache: ReadonlySet<string> | null = null;
+function usePrivateRepos() {
+  const [set, setSet] = useState<ReadonlySet<string> | null>(privateReposCache);
+  useEffect(() => {
+    if (privateReposCache) return;
+    let alive = true;
+    fetch("/api/repos")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const repos: Array<{ name?: string; isPrivate?: boolean }> = Array.isArray(d?.repos)
+          ? d.repos
+          : [];
+        privateReposCache = new Set(
+          repos.filter((x) => x.isPrivate && x.name).map((x) => x.name!.toLowerCase())
+        );
+        if (alive) setSet(privateReposCache);
+      })
+      .catch(() => {
+        // visibility map is optional decoration — silently keep links live
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return set;
+}
+
+/** "CheginiSoroush/Some-Repo" -> "some-repo" (the key used in the visibility map). */
+const repoKey = (repo: string) => repo.slice(repo.lastIndexOf("/") + 1).toLowerCase();
 
 // Category chips (labels via i18n: projects "filter.all" + core "cat.*")
 const FILTERS = [
@@ -97,6 +133,8 @@ export function ProjectsExplorer({
   const { toast } = useToast();
   const onSpotlightMove = useSpotlight();
   const { t, num, lang, isRtl } = useT();
+  // Live repo visibility — private repos render a lock state instead of 404 links
+  const privateRepos = usePrivateRepos();
   // Chip/heading labels: "all" lives in the projects dict, categories in core
   const filterLabel = (id: string) =>
     id === "all" ? t("projects", "filter.all") : t("core", `cat.${id}`);
@@ -192,6 +230,9 @@ export function ProjectsExplorer({
     }
   };
 
+  // Undefined map (still loading) is treated as "public" so links never flicker
+  const selectedIsPrivate = selected ? (privateRepos?.has(repoKey(selected.repo)) ?? false) : false;
+
   const shareProject = async (p: Project) => {
     const url = `${window.location.origin}/#/projects/${encodeURIComponent(p.slug)}`;
     setCopied(true);
@@ -216,7 +257,7 @@ export function ProjectsExplorer({
   };
 
   const copyCloneCommand = async (repo: string) => {
-    const cmd = `git clone https://github.com/${repo}.git`;
+    const cmd = `git clone ${repoUrl(repo)}.git`;
     try {
       await navigator.clipboard.writeText(cmd);
       setCloneCopied(true);
@@ -602,6 +643,12 @@ export function ProjectsExplorer({
                   <Eye className="w-3 h-3" />
                   {t("projects", "detail.views", { n: num(selected.views) })}
                 </Badge>
+                {selectedIsPrivate && (
+                  <Badge variant="outline" className="gap-1 text-muted-foreground">
+                    <LockKeyhole className="w-3 h-3" aria-hidden />
+                    {t("projects", "detail.privateBadge")}
+                  </Badge>
+                )}
               </div>
 
               <p className="text-sm leading-8 text-foreground/90 mb-5">
@@ -652,12 +699,25 @@ export function ProjectsExplorer({
               )}
 
               <div className="grid grid-cols-[1fr_auto_auto] gap-2.5">
-                <a
-                  href={`https://github.com/${selected.repo}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-shine inline-flex items-center justify-center gap-2 rounded-2xl bg-brand text-primary-foreground font-bold px-6 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
-                >
+                {selectedIsPrivate ? (
+                  /* Private today → no dead GitHub link; a quiet lock CTA instead.
+                     Swap happens automatically once the repo goes public. */
+                  <button
+                    type="button"
+                    disabled
+                    title={t("projects", "detail.privateNote")}
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-secondary/60 text-muted-foreground font-bold px-6 py-3 cursor-not-allowed min-h-[46px]"
+                  >
+                    <LockKeyhole className="w-5 h-5" aria-hidden />
+                    {t("projects", "detail.privateCta")}
+                  </button>
+                ) : (
+                  <a
+                    href={repoUrl(selected.repo)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-shine inline-flex items-center justify-center gap-2 rounded-2xl bg-brand text-primary-foreground font-bold px-6 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
+                  >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path
                       fillRule="evenodd"
@@ -667,6 +727,7 @@ export function ProjectsExplorer({
                   </svg>
                   {t("projects", "detail.github")}
                 </a>
+                )}
                 <button
                   onClick={() => toggleFav(selected.slug)}
                   aria-pressed={favSlugs.has(selected.slug)}
@@ -702,11 +763,23 @@ export function ProjectsExplorer({
                 </button>
               </div>
 
-              {/* Terminal-style clone command */}
+              {/* Terminal-style clone command — hidden for private repos
+                  (cloning would require owner auth and 404 for visitors) */}
+              {selectedIsPrivate ? (
+                <div
+                  className="mt-3 flex items-center gap-2 rounded-xl border border-border/60 bg-secondary/40 px-3 py-2"
+                  dir="auto"
+                >
+                  <LockKeyhole className="w-3.5 h-3.5 text-muted-foreground shrink-0" aria-hidden />
+                  <span className="text-[11px] text-muted-foreground">
+                    {t("projects", "detail.privateCloneNote")}
+                  </span>
+                </div>
+              ) : (
               <div className="mt-3 flex items-center gap-2 rounded-xl border border-border bg-secondary/60 px-3 py-2" dir="ltr">
                 <Terminal className="w-3.5 h-3.5 text-brand shrink-0" aria-hidden />
                 <code className="flex-grow min-w-0 truncate text-[11px] font-mono text-muted-foreground">
-                  git clone https://github.com/{selected.repo}.git
+                  {`git clone ${repoUrl(selected.repo)}.git`}
                 </code>
                 <button
                   onClick={() => copyCloneCommand(selected.repo)}
@@ -721,6 +794,7 @@ export function ProjectsExplorer({
                   )}
                 </button>
               </div>
+              )}
 
               <p className="mt-2.5 text-[11px] text-muted-foreground flex items-center gap-1 justify-center">
                 <Link2 className="w-3 h-3" />
