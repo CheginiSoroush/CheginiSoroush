@@ -12,6 +12,13 @@ import { NAV_ITEMS } from "./site-header";
  * is rendered in its final position from the first paint (SSR HTML), with a
  * pure-CSS entrance animation (animation-fill-mode: backwards). On slow real
  * devices it never depends on hydration timing.
+ *
+ * Items are REAL anchors (`href="#view"`): taps navigate natively even BEFORE
+ * React hydrates (dev-mode bundles can take a while on phones — buttons with
+ * onClick used to stay dead until then, which read as "the menu doesn't open").
+ * SiteShell's hash-route store picks the tapped view up the moment JS is
+ * ready, and the onClick below keeps the smooth same-view behavior when JS is
+ * live. Modifier-clicks fall through to native anchor behavior.
  */
 export function MobileDock({
   view,
@@ -33,9 +40,14 @@ export function MobileDock({
           {NAV_ITEMS.map((item, i) => {
             const active = view === item.id;
             return (
-              <button
+              <a
                 key={item.id}
-                onClick={() => onNavigate(item.id)}
+                href={`#${item.id}`}
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                  e.preventDefault();
+                  onNavigate(item.id);
+                }}
                 aria-current={active ? "page" : undefined}
                 style={{ animationDelay: `${0.25 + i * 0.06}s` }}
                 className={cn(
@@ -49,7 +61,7 @@ export function MobileDock({
                 <span className="relative z-10 text-[10px] font-bold leading-none">
                   {t("core", item.labelKey)}
                 </span>
-              </button>
+              </a>
             );
           })}
         </div>

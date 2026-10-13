@@ -155,12 +155,18 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
           transition={{ duration: 0.6, delay: 0.55 }}
           className="mt-8 flex flex-wrap items-center justify-center gap-3"
         >
-          <button
-            onClick={onExplore}
-            className="px-7 py-3 rounded-2xl bg-brand text-primary-foreground font-bold text-sm sm:text-base shadow-[0_10px_30px_-10px_var(--brand-glow)] hover:shadow-[0_14px_38px_-10px_var(--brand-glow)] hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
+          {/* Real anchor — smooth-scrolls natively even before hydration */}
+          <a
+            href="#home-content"
+            onClick={(e) => {
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+              e.preventDefault();
+              onExplore();
+            }}
+            className="px-7 py-3 rounded-2xl bg-brand text-primary-foreground font-bold text-sm sm:text-base shadow-[0_10px_30px_-10px_var(--brand-glow)] hover:shadow-[0_14px_38px_-10px_var(--brand-glow)] hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px] inline-flex items-center"
           >
             {t("core", "hero.cta.projects")}
-          </button>
+          </a>
           <a
             href="https://github.com/CheginiSoroush"
             target="_blank"
@@ -199,12 +205,17 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
           ))}
         </motion.div>
 
-        {/* Scroll hint */}
-        <motion.button
+        {/* Scroll hint — anchor-based, works pre-hydration */}
+        <motion.a
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
-          onClick={onExplore}
+          href="#home-content"
+          onClick={(e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+            e.preventDefault();
+            onExplore();
+          }}
           aria-label={t("core", "aria.scrollToExplore")}
           className="mt-14 mx-auto flex flex-col items-center gap-1 text-muted-foreground bounce-soft"
         >
@@ -212,7 +223,7 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
-        </motion.button>
+        </motion.a>
       </div>
     </section>
   );

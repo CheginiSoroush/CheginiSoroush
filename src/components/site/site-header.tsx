@@ -101,9 +101,13 @@ export function SiteHeader({
       )}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-3">
-        {/* Brand — logo only, no text; appears quietly once the hero logo is out of view */}
-        <button
-          onClick={() => {
+        {/* Brand — logo only, no text; appears quietly once the hero logo is out of view.
+            Rendered as a real anchor so it works even before React hydrates. */}
+        <a
+          href="#home"
+          onClick={(e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+            e.preventDefault();
             onNavigate("home");
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
@@ -140,17 +144,22 @@ export function SiteHeader({
               draggable={false}
             />
           </span>
-        </button>
+        </a>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — real anchors: navigation survives even without JS */}
         <nav
           aria-label={t("core", "aria.mainNav")}
           className="hidden sm:flex items-center gap-1.5"
         >
           {NAV_ITEMS.map((item) => (
-            <button
+            <a
               key={item.id}
-              onClick={() => onNavigate(item.id)}
+              href={`#${item.id}`}
+              onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                e.preventDefault();
+                onNavigate(item.id);
+              }}
               aria-current={view === item.id ? "page" : undefined}
               className={cn(
                 "relative px-4 py-2 rounded-xl text-sm font-medium transition-colors min-h-[36px] inline-flex",
@@ -170,7 +179,7 @@ export function SiteHeader({
                 <item.icon className="w-4 h-4" aria-hidden />
                 <span>{t("core", item.labelKey)}</span>
               </span>
-            </button>
+            </a>
           ))}
         </nav>
 
