@@ -1,6 +1,8 @@
 # استقرار خودکار روی Cloudflare Workers — راهنما
 
-> **وضعیت فعلی:** استقرار **کاملاً خودکار** شده است. زیرساخت (OpenNext + D1 + CI) از قبل در ریپو تنظیم شده و فقط یک بار دو Secret باید در گیت‌هاب اضافه شود. بعد از آن، **هر push به `main` یعنی دیپلوی خودکار**.
+> **وضعیت فعلی:** استقرار **کاملاً خودکار** شده است. زیرساخت (OpenNext + D1 + CI) از قبل در ریپو تنظیم و بازبینی شده — سازگاری OpenNext با Next.js 16 به‌صورت رسمی تأیید شده است. فقط یک بار دو Secret باید در گیت‌هاب اضافه شود. بعد از آن، **هر push به `main` یعنی دیپلوی خودکار**.
+>
+> اجزای آماده: `wrangler.jsonc` (Worker با binding دیتابیس D1) · `open-next.config.ts` · دو-درایور `src/lib/store/` (لوکال Prisma / پروداکشن D1) · `prisma/d1-schema.sql` + `prisma/d1-seed.sql` (مایگریشن و محتوا، هر دو idempotent) · `deploy/github-actions-deploy.yml` (workflow دیپلوی).
 
 ---
 
@@ -22,6 +24,8 @@ Workers نمی‌تواند فایل SQLite محلی (`db/custom.db`) را بخ�
    [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens) → **Create Token** → قالب **"Edit Cloudflare Workers"** (شامل دسترسی D1 هم هست) → Create.
 
 ۲. Account ID را از داشبورد Cloudflare (سمت راست صفحهٔ اصلی) کپی کنید.
+
+   > دامنهٔ `imsoroush.ir` را می‌توانید همین‌جا به اکانت اضافه کنید (Add a Site) تا مرحلهٔ اتصال دامنه در پایین بدون دردسر پیش برود.
 
 ۳. در گیت‌هاب: `CheginiSoroush/CheginiSoroush` → **Settings → Secrets and variables → Actions → New repository secret** و این دو را اضافه کنید:
 
@@ -56,15 +60,15 @@ Workers نمی‌تواند فایل SQLite محلی (`db/custom.db`) را بخ�
 ## چک‌لیست پس از اولین دیپلوی
 
 - [ ] اکشن گیت‌هاب سبز است (تب Actions → Deploy to Cloudflare Workers)
-- [ ] `https://imsoroush.pages.dev` یا دامنهٔ Worker بالا می‌آید
-- [ ] بعد از اتصال دامنه: منوی شناور پایین در موبایل دیده می‌شود (همان باگ اصلی!)
-- [ ] `POST /api/stats` شمارندهٔ بازدید را بالا می‌برد
-- [ ] فرم تماس و دیدگاه‌ها در D1 ذخیره می‌شوند
+- [ ] آدرس `https://imsoroush.<subdomain>.workers.dev` بالا می‌آید (از خروجی اکشن یا داشبورد Workers قابل مشاهده است)
+- [ ] Activity map و کارت آمار گیت‌هاب زنده‌اند (نیاز به `GH_PAT`)
 - [ ] ریپوها (عمومی + خصوصی) در نمای Repos می‌آیند (نیاز به `GH_PAT`)
-- [ ] پنل مدیریت (قفل فوتر) با `ADMIN_KEY` باز می‌شود
+- [ ] فرم تماس و خبرنامه در D1 ذخیره می‌شوند و در Inbox پنل ادمین دیده می‌شوند
+- [ ] پنل مدیریت (قفل فوتر) با Secret `ADMIN_KEY` باز می‌شود — اگر این Secret ست نشود، کلید پیش‌فرض کد (`imsoroush-admin`) فعال است؛ حتماً ست کنید
+- [ ] جستجوی سایت (Ctrl/⌘+K) و سوئیچ زبان (پیش‌فرض انگلیسی) کار می‌کنند
 
 ## نکات
 
-1. **Seed محتوا:** `prisma/d1-seed.sql` با اسکریپت `bun prisma/gen-d1-seed.ts` از `db/custom.db` تولید می‌شود؛ هر بار محتوای لوکال عوض شد، همین اسکریپت را اجرا و commit کنید (یا push کنید تا دیپلوی بعدی خودش اعمال کند — اسکریپت در CI اجرا نمی‌شود، فایل SQL کامیت‌شده منبعِ حقیقت است).
+1. **Seed محتوا:** `prisma/d1-seed.sql` با اسکریپت `bun prisma/gen-d1-seed.ts` از `db/custom.db` تولید می‌شود؛ هر بار محتوای لوکال عوض شد، همین اسکریپت را اجرا و commit کنید تا دیپلوی بعدی خودش اعمالش کند (مایگریشن/Seed در CI اجرا می‌شوند، فایل SQL کامیت‌شده منبعِ حقیقت است).
 2. **کش:** کارت گیت‌هاب کش ۱۰ دقیقه‌ای در حافظهٔ Worker دارد.
 3. **اسکیمای D1:** `prisma/d1-schema.sql` با `prisma/schema.prisma` همگام است؛ هر تغییر اسکیما باید به هر دو اعمال شود.
