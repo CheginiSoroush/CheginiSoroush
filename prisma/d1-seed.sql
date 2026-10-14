@@ -18,7 +18,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv872uy20002u6n3jwpw7efv', 'aiflash', 'ربات هوش مصنوعی AiFlash', 'AiFlash AI Bot', 'CheginiSoroush/AiFlash', NULL, 'دستیار تلگرامی چندوجهی متصل به Google Gemini، توسعه یافته بر بستر Cloudflare Workers بدون سرور.', 'Multimodal Telegram assistant powered by Google Gemini, built serverless on Cloudflare Workers.', 'bots', '["Cloudflare Workers","Google Gemini","Serverless","AI"]', '⚡', 0, 0, 2, 1791987482666)
+VALUES ('cmv872uy20002u6n3jwpw7efv', 'aiflash', 'ربات هوش مصنوعی AiFlash', 'AiFlash AI Bot', 'CheginiSoroush/AiFlash', 'https://aiflash-showcase.imsoroush.ir/', 'دستیار تلگرامی چندوجهی متصل به Google Gemini، توسعه یافته بر بستر Cloudflare Workers بدون سرور.', 'Multimodal Telegram assistant powered by Google Gemini, built serverless on Cloudflare Workers.', 'bots', '["Cloudflare Workers","Google Gemini","Serverless","AI"]', '⚡', 0, 0, 2, 1791987482666)
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -138,7 +138,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv872uyi000hu6n3bjyd424o', 'style-plus', 'فروشگاه استایل پلاس', 'StylePlus Store', 'CheginiSoroush/StylePlus-Ecommerce', NULL, 'رابط کاربری پیشرفته و واکنش‌گرای فروشگاهی با امکاناتی نظیر استوری، گردونه شانس و سبد خرید پویا.', 'Advanced, responsive e-commerce UI with features such as stories, a spin-the-wheel game, and a dynamic cart.', 'web', '["E-Commerce UI","Stories","Spin Wheel","Dynamic Cart"]', '🛍️', 0, 0, 17, 1791987482682)
+VALUES ('cmv872uyi000hu6n3bjyd424o', 'style-plus', 'فروشگاه استایل پلاس', 'StylePlus Store', 'CheginiSoroush/StylePlus-Ecommerce', 'https://style-plus-ecommerce.imsoroush.ir/', 'رابط کاربری پیشرفته و واکنش‌گرای فروشگاهی با امکاناتی نظیر استوری، گردونه شانس و سبد خرید پویا.', 'Advanced, responsive e-commerce UI with features such as stories, a spin-the-wheel game, and a dynamic cart.', 'web', '["E-Commerce UI","Stories","Spin Wheel","Dynamic Cart"]', '🛍️', 0, 0, 17, 1791987482682)
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -202,7 +202,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv872uz3000pu6n32pm4miyn', 'cinematic-solar-system', 'شبیه‌ساز سینمایی منظومه', 'Cinematic Solar System', 'CheginiSoroush/Cinematic-Solar-System-3D', 'https://cinematic-solar-system.imsoroush.ir/', 'شبیه‌سازی کاملاً سه‌بعدی و واقع‌گرایانه با موتور قدرتمند Three.js، تکسچرهای ناسا و افکت‌های Post-Processing.', 'Fully 3D, realistic simulation powered by Three.js, with NASA textures and post-processing effects.', '3d', '["Three.js","NASA Textures","Post-Processing","WebGL"]', '🪐', 1, 0, 25, 1791987482704)
+VALUES ('cmv872uz3000pu6n32pm4miyn', 'cinematic-solar-system', 'شبیه‌ساز سینمایی منظومه', 'Cinematic Solar System', 'CheginiSoroush/Cinematic-Solar-System-3D', 'https://cinematic-solar-system.imsoroush.ir/', 'شبیه‌سازی کاملاً سه‌بعدی و واقع‌گرایانه با موتور قدرتمند Three.js، تکسچرهای ناسا و افکت‌های Post-Processing.', 'Fully 3D, realistic simulation powered by Three.js, with NASA textures and post-processing effects.', '3d', '["Three.js","NASA Textures","Post-Processing","WebGL"]', '🪐', 1, 1, 25, 1791987482704)
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -472,7 +472,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "excerpt" = excluded."excerpt",
   "excerptEn" = excluded."excerptEn", "content" = excluded."content", "category" = excluded."category",
   "icon" = excluded."icon", "readTime" = excluded."readTime";
-INSERT INTO "SiteStat" ("key", "value", "updatedAt") VALUES ('visits', 44, 1792001233550)
+INSERT INTO "SiteStat" ("key", "value", "updatedAt") VALUES ('visits', 48, 1792003548669)
 ON CONFLICT("key") DO NOTHING;
-INSERT INTO "SiteStat" ("key", "value", "updatedAt") VALUES ('projectViews', 0, 1791987482728)
+INSERT INTO "SiteStat" ("key", "value", "updatedAt") VALUES ('projectViews', 1, 1792002309382)
 ON CONFLICT("key") DO NOTHING;
