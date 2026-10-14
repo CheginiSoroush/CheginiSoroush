@@ -159,9 +159,12 @@ export function ReposExplorer() {
   const langCount = languages.length;
 
   return (
-    <div aria-label={t("repos", "aria.section")}>
-      {/* Toolbar */}
-      <div className="max-w-3xl mx-auto mb-8 space-y-2.5">
+    <div
+      aria-label={t("repos", "aria.section")}
+      className="max-w-6xl mx-auto px-4 sm:px-6"
+    >
+      {/* Toolbar — same rhythm/padding as Projects & Articles */}
+      <div className="mb-8 space-y-4">
         <SearchInput
           value={query}
           onChange={setQuery}
