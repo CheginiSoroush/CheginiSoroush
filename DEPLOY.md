@@ -79,6 +79,7 @@ Workers نمی‌تواند فایل SQLite محلی (`db/custom.db`) را بخ�
 **بررسی سوییچ:** `https://imsoroush.ir/api/projects` باید JSON برگرداند (قبل از سوییچ 404 است) و حجم صفحهٔ اصلی باید حدود ۱۲۰KB باشد (نسخهٔ قدیمی ~۱۶KB است). اگر مرورگر هنوز صفحهٔ قدیمی را نشان می‌دهد، hard-refresh کنید.
 
 > **اگر Add خطای «already in use / conflict» داد:** یعنی هنوز یک مالک قدیمی روی دامنه هست — معمولاً یک **Route** از ورکر قدیمی (زون `imsoroush.ir` → Workers Routes → الگوی `imsoroush.ir/*`) یا Custom Domain یک پروژهٔ قدیمی (ورکر دیگر یا Pages). اول آن را حذف کنید، بعد دوباره Add کنید.
+> **مالک قدیمیِ واقعی این اکانت:** ورکر `cheginisoroush` (سایت قدیمی پورتفولیو) — در Overview زون، بخش **Connected Workers** دیده می‌شود که `imsoroush.ir` به آن وصله. راه‌حل: Workers & Pages → `cheginisoroush` → Settings → Domains & Routes → حذف `imsoroush.ir` → بعد اضافه‌کردن دامنه به ورکر `imsoroush`. بعد از تأیید سوییچ، خود ورکر قدیمی هم می‌تواند Delete شود (زیردامنه‌های بقیهٔ پروژه‌ها دست‌نخورده می‌مانند).
 > **بعد از سوییچ حتماً:** زون → **Caching → Configuration → Purge Everything** — کش لبهٔ کلاودفلر حتی با query تصادفی ممکن است نسخهٔ قدیمی را از کش بدهد و شما فکر کنید سوییچ نشده.
 
 ---
