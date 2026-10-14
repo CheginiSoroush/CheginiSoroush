@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { seedProjects, seedArticles } from "../src/lib/seed-data";
+import { PROJECT_DEMO_URLS } from "../src/lib/demo-urls";
 
 const prisma = new PrismaClient();
 
@@ -15,6 +16,7 @@ async function main() {
         title: p.title,
         titleEn: p.titleEn ?? null,
         repo: p.repo,
+        demoUrl: PROJECT_DEMO_URLS[p.slug] ?? null,
         description: p.description,
         descriptionEn: p.descriptionEn ?? null,
         category: p.category,
@@ -28,6 +30,7 @@ async function main() {
         title: p.title,
         titleEn: p.titleEn ?? null,
         repo: p.repo,
+        demoUrl: PROJECT_DEMO_URLS[p.slug] ?? null,
         description: p.description,
         descriptionEn: p.descriptionEn ?? null,
         category: p.category,

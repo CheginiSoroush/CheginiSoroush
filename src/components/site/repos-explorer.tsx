@@ -16,6 +16,7 @@ import type { GitHubRepo } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { relativeTime, useT } from "@/lib/i18n";
 import { GITHUB_PROFILE_URL } from "@/lib/site-config";
+import { demoHost } from "@/lib/demo-urls";
 import { useToast } from "@/hooks/use-toast";
 import { SearchInput } from "./search-input";
 import { EmptyState } from "./empty-state";
@@ -397,7 +398,7 @@ export function ReposExplorer() {
                   {desc ?? t("repos", "noDesc")}
                 </p>
 
-                {/* GitHub Pages / live-site pill */}
+                {/* GitHub Pages / live-site pill — shows the actual demo address */}
                 {repo.homepage && (
                   <a
                     href={repo.homepage}
@@ -405,11 +406,11 @@ export function ReposExplorer() {
                     rel="noopener noreferrer"
                     aria-label={t("repos", "liveAria", { name: repo.name })}
                     title={t("repos", "liveAria", { name: repo.name })}
-                    className="w-fit inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all"
+                    className="w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all"
                   >
-                    <Globe className="w-3 h-3" aria-hidden />
-                    {t("repos", "live.title")}
-                    <ExternalLink className="w-2.5 h-2.5 opacity-60" aria-hidden />
+                    <Globe className="w-3 h-3 shrink-0" aria-hidden />
+                    <span dir="ltr" className="truncate">{demoHost(repo.homepage) ?? t("repos", "live.title")}</span>
+                    <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
                   </a>
                 )}
 

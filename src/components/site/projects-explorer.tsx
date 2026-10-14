@@ -20,6 +20,7 @@ import { EmptyState } from "./empty-state";
 import type { Project } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { repoUrl } from "@/lib/site-config";
+import { demoHost } from "@/lib/demo-urls";
 import { cn } from "@/lib/utils";
 import { useT, pickEn } from "@/lib/i18n";
 
@@ -419,8 +420,9 @@ export function ProjectsExplorer({
       <p className="text-sm text-muted-foreground leading-7 flex-grow">
         {pickEn(lang, p.descriptionEn, p.description)}
       </p>
-      {/* GitHub Pages / live-site pill — span+role keeps the card a single
-          button (no nested interactive elements inside <button>) */}
+      {/* GitHub Pages / live-site pill — shows the actual demo address;
+          span+role keeps the card a single button (no nested interactive
+          elements inside <button>) */}
       {p.demoUrl && (
         <span
           role="button"
@@ -438,11 +440,11 @@ export function ProjectsExplorer({
               window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
             }
           }}
-          className="w-fit inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+          className="w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all cursor-pointer"
         >
-          <Globe className="w-3 h-3" aria-hidden />
-          {t("projects", "card.live")}
-          <ExternalLink className="w-2.5 h-2.5 opacity-60" aria-hidden />
+          <Globe className="w-3 h-3 shrink-0" aria-hidden />
+          <span dir="ltr" className="truncate">{demoHost(p.demoUrl) ?? t("projects", "card.live")}</span>
+          <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
         </span>
       )}
       <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
@@ -785,9 +787,12 @@ export function ProjectsExplorer({
                   rel="noopener noreferrer"
                   className="mt-3 inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-6 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
                 >
-                  <Globe className="w-5 h-5" aria-hidden />
+                  <Globe className="w-5 h-5 shrink-0" aria-hidden />
                   {t("projects", "detail.live")}
-                  <ExternalLink className="w-4 h-4 opacity-60" aria-hidden />
+                  <span dir="ltr" className="text-[11px] font-mono opacity-70 truncate max-w-[220px]">
+                    {demoHost(selected.demoUrl)}
+                  </span>
+                  <ExternalLink className="w-4 h-4 opacity-60 shrink-0" aria-hidden />
                 </a>
               )}
 

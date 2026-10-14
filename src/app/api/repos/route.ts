@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { store } from "@/lib/store";
 import { GITHUB_HANDLE } from "@/lib/site-config";
+import { CURATED_DEMOS } from "@/lib/demo-urls";
 import type { GitHubRepo } from "@/lib/types";
 
 /**
@@ -1108,6 +1109,16 @@ async function load(): Promise<ReposPayload> {
       } else {
         payload = (await readDbSnapshot()) ?? SEED_PAYLOAD;
       }
+      // Fill curated *.imsoroush.ir demo URLs for repos whose GitHub
+      // homepage field is empty — applies to live, db and seed payloads.
+      payload = {
+        ...payload,
+        repos: payload.repos.map((r) =>
+          r.homepage
+            ? r
+            : { ...r, homepage: CURATED_DEMOS[r.name.toLowerCase()] ?? null }
+        ),
+      };
       cache.data = payload;
       cache.inflight = null;
       return payload;
