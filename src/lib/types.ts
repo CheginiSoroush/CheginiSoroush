@@ -40,6 +40,17 @@ export type SiteStats = {
   messages: number;
 };
 
+/** Aggregate GitHub numbers — GET /api/repos?meta=1 (hero stat tiles). */
+export type RepoMeta = {
+  count: number;
+  publicCount: number;
+  privateCount: number;
+  stars: number;
+  forks: number;
+  languages: number;
+  pages: number;
+};
+
 export type Comment = {
   id: string;
   articleSlug: string;

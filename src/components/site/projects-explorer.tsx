@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ExternalLink, X, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe } from "lucide-react";
+import { ExternalLink, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import { ProjectCover } from "./project-cover";
+import { SearchInput } from "./search-input";
 import { EmptyState } from "./empty-state";
 import type { Project } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
@@ -461,27 +462,14 @@ export function ProjectsExplorer({
     <section id="projects" aria-label={t("projects", "aria.projects")} className="max-w-6xl mx-auto px-4 sm:px-6">
       {/* Search + Filters */}
       <div className="mb-8 space-y-4">
-        <div className="relative max-w-xl mx-auto">
-          <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
-          <input
-            ref={searchRef}
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("projects", "controls.searchPlaceholder")}
-            aria-label={t("projects", "controls.search")}
-            className="w-full rounded-2xl border border-border bg-card px-11 py-3.5 text-sm outline-none focus:border-brand/60 focus:ring-2 focus:ring-brand/20 transition-all min-h-[46px]"
-          />
-          {query && (
-            <button
-              onClick={() => setQuery("")}
-              aria-label={t("projects", "controls.clearSearch")}
-              className="absolute end-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-brand"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          inputRef={searchRef}
+          value={query}
+          onChange={setQuery}
+          placeholder={t("projects", "controls.searchPlaceholder")}
+          ariaLabel={t("projects", "controls.search")}
+          clearLabel={t("projects", "controls.clearSearch")}
+        />
 
         <div className="flex flex-wrap justify-center gap-2" role="tablist" aria-label={t("projects", "controls.filterAria")}>
           {FILTERS.map((f) => (

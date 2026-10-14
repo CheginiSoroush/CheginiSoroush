@@ -2,8 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  Search,
-  X,
   Star,
   GitFork,
   ExternalLink,
@@ -19,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { relativeTime, useT } from "@/lib/i18n";
 import { GITHUB_PROFILE_URL } from "@/lib/site-config";
 import { useToast } from "@/hooks/use-toast";
+import { SearchInput } from "./search-input";
 import { EmptyState } from "./empty-state";
 
 /** Official-ish GitHub language colors. */
@@ -163,30 +162,13 @@ export function ReposExplorer() {
     <div aria-label={t("repos", "aria.section")}>
       {/* Toolbar */}
       <div className="max-w-3xl mx-auto mb-8 space-y-3">
-        <div className="relative">
-          <Search
-            className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
-            aria-hidden
-          />
-          <input
-            type="text"
-            dir="ltr"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("repos", "search.placeholder")}
-            aria-label={t("repos", "aria.search")}
-            className="w-full ps-11 pe-11 py-3 rounded-2xl border border-border bg-card/70 backdrop-blur text-sm outline-none focus:border-brand/60 focus:ring-2 focus:ring-brand/20 transition-all placeholder:text-muted-foreground/70 min-h-[46px]"
-          />
-          {query && (
-            <button
-              onClick={() => setQuery("")}
-              aria-label={t("repos", "search.clear")}
-              className="absolute end-3 top-1/2 -translate-y-1/2 w-7 h-7 grid place-items-center rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder={t("repos", "search.placeholder")}
+          ariaLabel={t("repos", "aria.search")}
+          clearLabel={t("repos", "search.clear")}
+        />
 
         <div className="flex flex-wrap items-center justify-center gap-2">
           {/* Visibility filter chips (all / public / private) */}

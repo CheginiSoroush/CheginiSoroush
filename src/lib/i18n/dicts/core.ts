@@ -31,7 +31,10 @@ export const coreDict: Dict = {
     "hero.cta.github": "گیت‌هاب",
     "hero.stats.projects": "پروژه",
     "hero.stats.articles": "نوشته",
-    "hero.stats.domains": "حوزه تخصصی",
+    "hero.stats.repos": "ریپازیتوری گیت‌هاب",
+    "hero.stats.projectsHint": "مشاهده پروژه‌ها",
+    "hero.stats.articlesHint": "مشاهده نوشته‌ها",
+    "hero.stats.reposHint": "مشاهده ریپازیتوری‌ها",
     // (hero.stats.visits removed — no traffic numbers in the public UI)
     "hero.scroll": "اسکرول کنید",
     "hero.logoAlt": "لوگوی شخصی سروش",
@@ -119,7 +122,10 @@ export const coreDict: Dict = {
     "hero.cta.github": "GitHub",
     "hero.stats.projects": "Projects",
     "hero.stats.articles": "Articles",
-    "hero.stats.domains": "Domains",
+    "hero.stats.repos": "GitHub Repos",
+    "hero.stats.projectsHint": "View projects",
+    "hero.stats.articlesHint": "View articles",
+    "hero.stats.reposHint": "View repositories",
     // (hero.stats.visits removed — no traffic numbers in the public UI)
     "hero.scroll": "Scroll",
     "hero.logoAlt": "Soroush's personal logo",

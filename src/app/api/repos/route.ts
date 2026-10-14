@@ -1117,7 +1117,32 @@ async function load(): Promise<ReposPayload> {
 }
 
 export async function GET(request: Request) {
-  const refresh = new URL(request.url).searchParams.get("refresh") === "1";
+  const url = new URL(request.url);
+
+  // Lightweight aggregate mode — ?meta=1 returns just the headline numbers
+  // (used by the hero stat tiles). Reuses the same load() cascade and cache,
+  // so it never triggers extra GitHub calls on its own.
+  if (url.searchParams.get("meta") === "1") {
+    const payload = await load();
+    const repos = payload.repos;
+    const publicCount = repos.filter((r) => !r.isPrivate).length;
+    return NextResponse.json(
+      {
+        count: repos.length,
+        publicCount,
+        privateCount: repos.length - publicCount,
+        stars: repos.reduce((s, r) => s + r.stars, 0),
+        forks: repos.reduce((s, r) => s + r.forks, 0),
+        languages: new Set(repos.filter((r) => r.language).map((r) => r.language)).size,
+        pages: repos.filter((r) => r.homepage).length,
+        source: payload.source,
+        fetchedAt: payload.fetchedAt,
+      },
+      { headers: { "Cache-Control": "public, max-age=300" } }
+    );
+  }
+
+  const refresh = url.searchParams.get("refresh") === "1";
   if (refresh) {
     cache.data = null; // bypass fresh memory cache
   }

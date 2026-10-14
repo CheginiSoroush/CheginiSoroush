@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
-import { Rocket, PenLine, Target } from "lucide-react";
+import { Rocket, PenLine, FolderGit2 } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { GITHUB_PROFILE_URL } from "@/lib/site-config";
-import type { SiteStats } from "@/lib/types";
+import type { RepoMeta, SiteStats, ViewName } from "@/lib/types";
 
 function useTypewriter(words: string[]) {
   const [text, setText] = useState("");
@@ -63,7 +63,17 @@ function Counter({ value, format }: { value: number; format: (n: number) => stri
   return <span ref={ref}>{format(display)}</span>;
 }
 
-export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore: () => void }) {
+export function Hero({
+  stats,
+  repoMeta,
+  onExplore,
+  onNavigate,
+}: {
+  stats: SiteStats | null;
+  repoMeta: RepoMeta | null;
+  onExplore: () => void;
+  onNavigate: (v: ViewName) => void;
+}) {
   const { t, num } = useT();
   const roles = useMemo(
     () => [0, 1, 2, 3].map((i) => t("core", `hero.role.${i}`)),
@@ -71,12 +81,30 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
   );
   const typed = useTypewriter(roles);
 
-  // Stats strip — visit counters were removed by design: the owner prefers
-  // content-focused tiles over traffic numbers in the public UI.
+  // Stat tiles — every number is real & clickable (jumps to its section):
+  // projects/articles come from /api/stats, repos from /api/repos?meta=1.
   const statItems = [
-    { value: stats?.projects ?? 0, label: t("core", "hero.stats.projects"), icon: Rocket },
-    { value: stats?.articles ?? 0, label: t("core", "hero.stats.articles"), icon: PenLine },
-    { value: 4, label: t("core", "hero.stats.domains"), icon: Target },
+    {
+      value: stats?.projects ?? 0,
+      label: t("core", "hero.stats.projects"),
+      hint: t("core", "hero.stats.projectsHint"),
+      icon: Rocket,
+      view: "projects" as const,
+    },
+    {
+      value: stats?.articles ?? 0,
+      label: t("core", "hero.stats.articles"),
+      hint: t("core", "hero.stats.articlesHint"),
+      icon: PenLine,
+      view: "writing" as const,
+    },
+    {
+      value: repoMeta?.count ?? 0,
+      label: t("core", "hero.stats.repos"),
+      hint: t("core", "hero.stats.reposHint"),
+      icon: FolderGit2,
+      view: "repos" as const,
+    },
   ];
 
   return (
@@ -194,16 +222,19 @@ export function Hero({ stats, onExplore }: { stats: SiteStats | null; onExplore:
           className="mt-14 grid grid-cols-3 gap-3 sm:gap-4 max-w-xl mx-auto"
         >
           {statItems.map((s) => (
-            <div
+            <button
               key={s.label}
-              className="rounded-2xl border border-border bg-card/70 backdrop-blur px-4 py-5 hover:border-brand/40 transition-colors"
+              onClick={() => onNavigate(s.view)}
+              title={s.hint}
+              aria-label={`${s.label}: ${s.hint}`}
+              className="group rounded-2xl border border-border bg-card/70 backdrop-blur px-4 py-5 hover:border-brand/40 hover:-translate-y-0.5 active:scale-95 transition-all focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
             >
-              <s.icon className="w-5 h-5 text-brand mx-auto mb-2" aria-hidden />
+              <s.icon className="w-5 h-5 text-brand mx-auto mb-2 group-hover:scale-110 transition-transform" aria-hidden />
               <div className="text-2xl sm:text-3xl font-black text-brand tabular-nums">
                 <Counter value={s.value} format={num} />
               </div>
               <div className="text-xs sm:text-sm text-muted-foreground mt-1">{s.label}</div>
-            </div>
+            </button>
           ))}
         </motion.div>
 

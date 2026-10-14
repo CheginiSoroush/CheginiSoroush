@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Share2, Check, Heart, Search, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send, History, Trash2, Minus, Plus, Type } from "lucide-react";
+import { Clock, Share2, Check, Heart, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send, History, Trash2, Minus, Plus, Type } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import { ProjectCover } from "@/components/site/project-cover";
 import { EmptyState } from "@/components/site/empty-state";
+import { SearchInput } from "@/components/site/search-input";
 import { cn } from "@/lib/utils";
 import { useT, pickEn, relativeTime } from "@/lib/i18n";
 import { DirArrow } from "@/components/site/dir-arrow";
@@ -589,26 +590,13 @@ export function ArticlesSection({
 
       {/* Search + Filters */}
       <div className="mb-8 space-y-4">
-        <div className="relative max-w-xl mx-auto">
-          <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground pointer-events-none" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("articles", "search.placeholder")}
-            aria-label={t("articles", "search.aria")}
-            className="w-full rounded-2xl border border-border bg-card px-11 py-3.5 text-sm outline-none focus:border-brand/60 focus:ring-2 focus:ring-brand/20 transition-all min-h-[46px]"
-          />
-          {query && (
-            <button
-              onClick={() => setQuery("")}
-              aria-label={t("articles", "search.clear")}
-              className="absolute end-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-brand"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder={t("articles", "search.placeholder")}
+          ariaLabel={t("articles", "search.aria")}
+          clearLabel={t("articles", "search.clear")}
+        />
 
         <div className="flex flex-wrap justify-center gap-2" role="tablist" aria-label={t("articles", "filter.aria")}>
           {ART_FILTERS.map((f) => (

@@ -26,7 +26,7 @@ import { ArticlesSection } from "./articles-section";
 import { ContactSection } from "./contact-section";
 import { applyDocumentLang, toggleLang, useT } from "@/lib/i18n";
 import { CONTACT_EMAIL_URL, GITHUB_PROFILE_URL, LINKEDIN_URL } from "@/lib/site-config";
-import type { Article, Project, SiteStats, ViewName } from "@/lib/types";
+import type { Article, Project, RepoMeta, SiteStats, ViewName } from "@/lib/types";
 
 const VIEWS: ViewName[] = ["home", "projects", "writing", "repos", "contact"];
 
@@ -127,6 +127,7 @@ export function SiteShell({
   initialArticles: Article[];
 }) {
   const [stats, setStats] = useState<SiteStats | null>(null);
+  const [repoMeta, setRepoMeta] = useState<RepoMeta | null>(null);
   const [projects] = useState<Project[]>(initialProjects);
   const [articles] = useState<Article[]>(initialArticles);
   const [adminOpen, setAdminOpen] = useState(false);
@@ -148,6 +149,22 @@ export function SiteShell({
         // ignore
       }
     })();
+  }, []);
+
+  // Hero stat tile — real repository totals (tiny aggregate payload)
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/repos?meta=1")
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((data: RepoMeta) => {
+        if (alive) setRepoMeta(data);
+      })
+      .catch(() => {
+        /* tile simply stays at 0 until a retry */
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   // Keep <html lang/dir> and the document title in sync with the active language
@@ -278,7 +295,12 @@ export function SiteShell({
           >
             {route.view === "home" && (
               <>
-                <Hero stats={stats} onExplore={handleExplore} />
+                <Hero
+                  stats={stats}
+                  repoMeta={repoMeta}
+                  onExplore={handleExplore}
+                  onNavigate={navigate}
+                />
                 <div id="home-content" className="pb-24 scroll-mt-20">
                   <HomeContent
                     projects={projects}
