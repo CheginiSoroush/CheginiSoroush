@@ -44,8 +44,22 @@ Workers نمی‌تواند فایل SQLite محلی (`db/custom.db`) را بخ�
 ۵. **فعال‌سازی اکشن دیپلوی (یک بار):** توکن فعلی اجازهٔ push فایل زیر `.github/workflows` را ندارد؛ پس فایل [`deploy/github-actions-deploy.yml`](deploy/github-actions-deploy.yml) را دستی نصب کنید:
    در گیت‌هاب → تب **Actions** → «set up a workflow yourself» → کل محتوای فایل بالا را کپی و به‌عنوان `.github/workflows/deploy.yml` ذخیره کنید.
 
+   > این workflow فقط یک **پوستهٔ نازک** است؛ تمام منطق دیپلوی در [`deploy/ci-deploy.sh`](deploy/ci-deploy.sh) است که با push عادی آپدیت می‌شود — یعنی اصلاحات بعدی بدون نیاز به کپی-پیست مجدد از سمت شما اعمال می‌شوند.
+
 ۶. تمام! اکشن **«Deploy to Cloudflare Workers»** حالا (یا با push بعدی) اجرا می‌شود:
    ساخت D1 → مایگریشن + Seed → Build با OpenNext → `wrangler deploy` → تنظیم Secrets.
+
+---
+
+## عیب‌یابی
+
+**خطای «Could not resolve D1 database id» (ران‌های قدیمی):** توکن Cloudflare دسترسی D1 ندارد یا Account ID اشتباه است. workflow جدید هر دو را شفاف بررسی می‌کند؛ فقط مطمئن شوید توکن این دسترسی را دارد:
+   داشبورد Cloudflare → profile/api-tokens → توکن را ویرایش کنید → **Add permission: Account → D1 → Edit** → Save.
+   (اگر Account ID غلط باشد، لاگ اکشن لیست اکانت‌های قابل‌دسترس را نشان می‌دهد.)
+
+**خطا در مرحلهٔ Build (OpenNext):** آخرین کامیت ریپو را ببینید؛ منطق Build داخل `deploy/ci-deploy.sh` است و رفعش فقط یک push عادی است — نیازی به ویرایش workflow نیست.
+
+**ورکر قدیمی روی همان اکانت دارید؟** مشکلی نیست؛ اگر اسمش `imsoroush` باشد جایگزین می‌شود و اگر اسم دیگری دارد، هر دو با هم می‌مانند تا سوییچ دامنه.
 
 ---
 
