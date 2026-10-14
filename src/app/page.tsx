@@ -20,6 +20,7 @@ export default async function Page() {
       title: p.title,
       titleEn: p.titleEn,
       repo: p.repo,
+      demoUrl: p.demoUrl,
       description: p.description,
       descriptionEn: p.descriptionEn,
       category: p.category,

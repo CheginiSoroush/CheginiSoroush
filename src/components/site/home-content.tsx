@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { ExternalLink, Globe, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { RadarChart } from "./radar-chart";
 import { GitHubCard } from "./github-card";
@@ -10,6 +10,7 @@ import { DirArrow } from "./dir-arrow";
 import { AboutSection } from "./about-section";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import { useT, pickEn } from "@/lib/i18n";
+import { demoHost } from "@/lib/demo-urls";
 import type { Project, ViewName } from "@/lib/types";
 
 const TECH_MARQUEE = [
@@ -229,17 +230,45 @@ export function HomeContent({
                   </span>
                 ))}
               </div>
-              <a
-                href={`https://github.com/${p.repo}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                dir="ltr"
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => e.stopPropagation()}
-                className="mt-auto text-xs font-mono text-left text-muted-foreground hover:text-brand transition-colors truncate"
-              >
-                github.com/{p.repo}
-              </a>
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+                <a
+                  href={`https://github.com/${p.repo}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  dir="ltr"
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  className="text-xs font-mono text-left text-muted-foreground hover:text-brand transition-colors truncate min-w-0"
+                >
+                  github.com/{p.repo}
+                </a>
+                {/* Live demo pill — span+role keeps the card a single
+                    interactive element (no nested buttons) */}
+                {p.demoUrl && (
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    aria-label={t("projects", "card.liveAria", { title: pickEn(lang, p.titleEn, p.title) })}
+                    title={t("projects", "card.live")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
+                      }
+                    }}
+                    className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+                  >
+                    <Globe className="w-3 h-3 shrink-0" aria-hidden />
+                    <span dir="ltr" className="truncate max-w-[180px]">{demoHost(p.demoUrl)}</span>
+                    <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
+                  </span>
+                )}
+              </div>
             </motion.article>
           ))}
         </div>
