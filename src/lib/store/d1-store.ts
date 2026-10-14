@@ -57,6 +57,7 @@ function mapProject(r: Record<string, unknown>): ProjectRow {
     title: String(r.title),
     titleEn: (r.titleEn as string | null) ?? null,
     repo: String(r.repo),
+    demoUrl: (r.demoUrl as string | null) ?? null,
     description: String(r.description),
     descriptionEn: (r.descriptionEn as string | null) ?? null,
     category: String(r.category),

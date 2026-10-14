@@ -4,6 +4,8 @@ export type Project = {
   title: string;
   titleEn?: string | null;
   repo: string;
+  /** Live site / GitHub Pages URL — null when the project has no website. */
+  demoUrl?: string | null;
   description: string;
   descriptionEn?: string | null;
   category: string;

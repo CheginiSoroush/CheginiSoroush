@@ -133,6 +133,7 @@ export function ReposExplorer() {
           r.descriptionFa ?? "",
           r.topics.join(" "),
           r.language ?? "",
+          r.homepage ?? "",
         ].join(" ")
       );
       return haystack.includes(q);
@@ -405,6 +406,22 @@ export function ReposExplorer() {
                 <p dir="auto" className="text-start text-[13px] leading-6 text-muted-foreground">
                   {desc ?? t("repos", "noDesc")}
                 </p>
+
+                {/* GitHub Pages / live-site pill */}
+                {repo.homepage && (
+                  <a
+                    href={repo.homepage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={t("repos", "liveAria", { name: repo.name })}
+                    title={t("repos", "liveAria", { name: repo.name })}
+                    className="w-fit inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all"
+                  >
+                    <Globe className="w-3 h-3" aria-hidden />
+                    {t("repos", "live.title")}
+                    <ExternalLink className="w-2.5 h-2.5 opacity-60" aria-hidden />
+                  </a>
+                )}
 
                 {repo.topics.length > 0 && (
                   <div className="flex flex-wrap gap-1.5" dir="ltr">

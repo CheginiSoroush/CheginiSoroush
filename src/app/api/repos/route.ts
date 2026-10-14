@@ -57,18 +57,18 @@ const REPO_META: Record<string, { en?: string | null; fa?: string | null }> = {
     "cloudflare-self-destruct": { en: "Serverless version of the Self-Destruct bot on Cloudflare, using one-minute CRON jobs to destroy messages automatically.", fa: "نسخه Serverless ربات Self-Destruct در کلودفلر، مجهز به CRON Jobs یک دقیقه‌ای برای نابودی خودکار پیام‌ها." },
     "cloudflare-telegram-bot": { en: "Telegram bot with a serverless architecture on Cloudflare Workers, backed by a D1 database, KV storage, and rate limiting.", fa: "ربات تلگرامی با معماری بدون سرور روی Cloudflare Workers، مجهز به دیتابیس D1، سیستم KV و Rate Limiting." },
     "configtochannel": { en: "Serverless engine for extracting, managing, and smartly scheduling V2Ray config delivery across multiple Telegram channels.", fa: "موتور Serverless برای استخراج، مدیریت و زمان‌بندی هوشمندِ ارسال کانفیگ‌های V2Ray به چندین کانال تلگرامی." },
-    "cpp-calculator": { en: "Command-line calculator written in C++ with input validation and mathematical error handling.", fa: "برنامه خط فرمان نوشته شده با ++C دارای سیستم اعتبارسنجی ورودی‌ها و مدیریت خطاهای ریاضی." },
+    "cpp-calculator": { en: "A simple but smart C++ CLI calculator — double arithmetic, input validation, divide-by-zero guards and a run-until-quit loop — built as a clean exercise in error handling and control flow.", fa: "ماشین‌حساب ساده اما هوشمند خط فرمان با ++C — اعداد اعشاری، اعتبارسنجی ورودی، جلوگیری از تقسیم بر صفر و حلقه‌ی اجرای مداوم؛ تمرینی تمیز در مدیریت خطا و ساختارهای کنترلی." },
     "dev-portfolio-3d": { en: "Professional personal template with glassmorphism design, a career timeline, and an interactive Three.js background.", fa: "قالب شخصی حرفه‌ای با طراحی شیشه‌ای (Glassmorphism)، تایم‌لاین مسیر شغلی و پس‌زمینه تعاملی Three.js." },
     "fashion-everyday": { en: "Modern, minimal design using advanced SVG filter techniques to create dynamic typography effects.", fa: "طراحی مدرن و مینیمال با استفاده از تکنیک‌های پیشرفته فیلترهای SVG برای خلق افکت‌های تایپوگرافی پویا." },
     "fashionable-3d-experience": { en: "Three.js and GSAP combined to build an interactive landing page with depth along the Z-axis.", fa: "ترکیب جادویی Three.js و GSAP برای خلق یک لندینگ‌پیج تعاملی در عمق فضای سه‌بعدی (Z-Axis)." },
     "fix-network": { en: "Automated, bilingual Bash tool for fixing DNS issues, cleaning up proxies, and resetting the network.", fa: "اسکریپت ساده برای تعمیر مشکلات شبکه لینوکس بعد از قطع شدن VPN." },
-    "flash-panel": { en: "Admin panel of the Flash project.", fa: "پنل مدیریت پروژه فَش." },
-    "flash-wizard": { en: "Interactive setup wizard for the Flash project.", fa: "ویزارد راه‌اندازی تعاملی پروژه فَش." },
+    "flash-panel": { en: "High-performance serverless proxy panel for Cloudflare Workers — VLESS, Trojan and WARP with a rewritten protocol core (zero-copy parsing, cached auth, anti-stampede KV cache), ETag subscriptions 94% smaller, login rate-limiting and full Telegram-bot control.", fa: "پنل پراکسی پرسرعت و بدون‌سرور برای Cloudflare Workers — VLESS و Trojan و WARP با هسته‌ی کاملاً بازنویسی‌شده (پارس بدون کپی، کش احراز هویت، جلوگیری از stampede)، اشتراک‌های ۹۴٪ کوچک‌تر با ETag، محدودسازی ورود و کنترل کامل با ربات تلگرام." },
+    "flash-wizard": { en: "Browser-based one-click deployment wizard for Flash Panel — creates KV storage, uploads the worker and attaches your custom domain in about 60 seconds. Your API token never leaves the browser; Persian RTL interface built in.", fa: "ویزارد نصب یک‌کلیکی Flash Panel داخل مرورگر — ساخت KV، آپلود ورکر و اتصال دامنه‌ی اختصاصی در حدود ۶۰ ثانیه. توکن API هرگز از مرورگر خارج نمی‌شود و رابط فارسی راست‌چین دارد." },
     "gemini-telegram-worker": { en: "Google Gemini AI bot deployed on Cloudflare Workers — serverless and free-tier friendly.", fa: "ربات هوش مصنوعی گوگل گِمینی روی Cloudflare Workers — بدون سرور و مناسب پلن رایگان." },
     "ghost-curator-telegram-bot": { en: "Smart channel-admin tool for saving and auto-cleaning text and publishing scheduled content on Telegram.", fa: "ابزار هوشمند ادمین کانال برای ذخیره، پاکسازی خودکار متن‌ها و ارسال زمان‌بندی‌شده محتوا در تلگرام." },
     "gitpedia-interactive": { en: "Interactive encyclopedia of Git commands with a built-in terminal simulator for live command execution and output.", fa: "دانشنامه تعاملی دستورات گیت مجهز به شبیه‌ساز ترمینال داخلی برای اجرای زنده و نمایش خروجی کدها." },
     "heartadminbot": { en: "Serverless system for centrally managing dozens of Telegram bots that auto-register reactions in channels, built on Cloudflare D1.", fa: "سیستم Serverless برای مدیریت متمرکز ده‌ها ربات تلگرامی جهت ثبت خودکار ری‌اکشن در کانال‌ها با Cloudflare D1." },
-    "kv-dumper": { en: "Content queue-management bot with smart delays, backed by Cloudflare D1 to prevent Telegram flood limits.", fa: "ربات مدیریت صف ارسال محتوا با تاخیر هوشمند، متصل به دیتابیس Cloudflare D1 برای جلوگیری از Flood Limit تلگرام." },
+    "kv-dumper": { en: "Serverless Telegram content-queue bot on Cloudflare Workers — queues photos, videos and captioned text in D1, then drip-publishes them with a 10-second delay (background waitUntil) to dodge flood limits, plus an admin panel with queue stats and one-tap purge.", fa: "ربات صف‌بندی محتوای تلگرام روی Cloudflare Workers — عکس، ویدیو و متن با کپشن را در D1 صف می‌کند و با فاصله‌ی ۱۰ ثانیه‌ای در پس‌زمینه منتشر می‌کند تا از محدودیت‌های تلگرام رد نشود؛ به‌همراه پنل مدیریت با آمار صف و پاکسازی فوری." },
     "linux-cheat-sheet": { en: "Fast, interactive reference for common CLI commands with live search and quick copy.", fa: "یک مرجع سریع و تعاملی برای دستورات پرکاربرد خط فرمان (CLI) با قابلیت جستجوی زنده و کپی سریع." },
     "luxe": { en: "Modern luxury-product UI with a dynamic shopping cart and product filtering built on Bootstrap 5.", fa: "رابط کاربری مدرن محصولات لوکس، مجهز به سبد خرید داینامیک و فیلتر محصولات با Bootstrap 5." },
     "media-pack-telegram-bot": { en: "Cloud serverless bot for managing media, cleaning captions, and auto-publishing photo and video albums at peak hours.", fa: "ربات ابری (Serverless) برای مدیریت، پاکسازی کپشن‌ها و انتشار خودکار آلبوم‌های عکس و ویدیو در ساعات طلایی." },
@@ -83,7 +83,7 @@ const REPO_META: Record<string, { en?: string | null; fa?: string | null }> = {
     "overcoming-laziness-roadmap": { en: "An interactive web app built on behavioral psychology and habit engineering \u2014 a 30-day program for beating laziness, centered on the Two-Minute Rule.", fa: "یک وب‌اپلیکیشن تعاملی بر پایه روانشناسی رفتار و مهندسی عادت‌ها؛ برنامه ۳۰ روزه‌ای برای غلبه بر تنبلی با تمرکز بر قانون ۲ دقیقه‌ای." },
     "persian-gemini-telegram-bot": { en: "Telegram bot connected to Google's AI, offering smart chat, OCR text extraction from images, and an admin panel.", fa: "ربات تلگرامی متصل به هوش مصنوعی گوگل با قابلیت چت هوشمند، استخراج متن از تصویر (OCR) و پنل مدیریت." },
     "portfolio-nebula-theme": { en: "Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.", fa: "یک قالب شخصی تاریک و مدرن با پس‌زمینه تعاملی Three.js، افکت‌های تایپ‌رایتر و انیمیشن‌های GSAP." },
-    "projdump": { en: "CLI tool that dumps a whole project into LLM-ready context for ChatGPT/Claude chats.", fa: "ابزار خط فرمان که کل پروژه را به کانتکست آماده برای چت با LLMها (ChatGPT/Claude) تبدیل می‌کند." },
+    "projdump": { en: "Dumps an entire codebase — directory tree, sources and stats — into a single Markdown, XML or JSON file sized to your token budget, ready to paste into Claude, ChatGPT, DeepSeek or Gemini. 100% local, no dependencies beyond bash; the v2 batch scanner is 7–25× faster.", fa: "کل کدبیس — درخت پروژه، سورس‌ها و آمار — را در یک فایل Markdown/XML/JSON هم‌اندازه‌ی بودجه‌ی توکن مدل می‌ریزد تا مستقیم به Claude و ChatGPT و Gemini بدهی. صددرصد لوکال و بدون وابستگی جز Bash؛ اسکنر دسته‌ای نسخه ۲، ۷ تا ۲۵ برابر سریع‌تر است." },
     "proxy-config-bot": { en: "Network resource distribution system on Cloudflare Workers with a D1 database, forced membership, and automatic updates.", fa: "سیستم توزیع منابع شبکه مبتنی بر Cloudflare Workers، مجهز به دیتابیس D1، عضویت اجباری و آپدیت خودکار." },
     "realistic-earth-webgl": { en: "Realistic Earth rendering with Three.js, high-resolution textures, and dynamic lighting.", fa: "رندرینگ واقع‌گرایانه کره زمین با استفاده از Three.js، تکسچرهای با وضوح بالا و نورپردازی دینامیک." },
     "smart-fitness-planner": { en: "Interactive sports-science web app \u2014 the high-reps vs low-reps weightlifting debate, visualized.", fa: "وب‌اپ تعاملی علوم ورزشی \u2014 جدال علمی تکرار بالا یا پایین در وزنه‌زنی، به زبان تصویر." },
@@ -94,7 +94,7 @@ const REPO_META: Record<string, { en?: string | null; fa?: string | null }> = {
     "telegram-channel-manager-bot": { en: "Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.", fa: "ربات پایتونی برای پایش، پاکسازی خودکار متون با RegEx و سیستم تاییدیه دو مرحله‌ای برای مدیریت کانال." },
     "telegram-temp-file-bot": { en: "Python bot that generates time-limited download links, with forced membership and automatic deletion of files from the user's chat.", fa: "ربات پایتونی برای ایجاد لینک‌های دانلود زمان‌دار، با قابلیت عضویت اجباری و حذف خودکار فایل‌ها از چت کاربر." },
     "threejs-solar-system": { en: "Fully interactive simulation built with Three.js, featuring cinematic Bloom & Lensflare effects and NASA textures.", fa: "شبیه‌سازی کاملاً تعاملی با موتور قدرتمند Three.js، افکت‌های سینمایی (Bloom & Lensflare) و تکسچرهای ناسا." },
-    "ubuntu-optimizer": { en: "Post-install Ubuntu optimizer — debloat, tweaks and speed-ups in one script.", fa: "بهینه‌ساز اوبونتو بعد از نصب — حذف زائدات، تنظیمات و افزایش سرعت در یک اسکریپت." },
+    "ubuntu-optimizer": { en: "All-in-one Ubuntu optimization, app-management and repair toolkit — 23 interactive menu tools, 60+ CLI options, honest dry-run previews and one-command undo. Ships laptop/server profiles, a machine-readable JSON system report, and smart tar.gz installs with automatic dependency resolution.", fa: "جعبه‌ابزار همه‌کاره‌ی بهینه‌سازی، مدیریت اپلیکیشن و تعمیر اوبونتو — ۲۳ ابزار منوی تعاملی، بیش از ۶۰ گزینه‌ی CLI، پیش‌نمایش dry-run صادقانه و برگرداندن تغییرات با یک دستور. پروفایل آماده برای لپ‌تاپ و سرور، گزارش سیستمی JSON و نصب هوشمند tar.gz با تشخیص خودکار وابستگی‌ها." },
     "unsplashphotos": { en: "Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.", fa: "ربات سرورلس تلگرام مجهز به CRON Jobs برای دریافت تصاویر باکیفیت از Unsplash API و انتشار زمان‌بندی‌شده." },
     "vampsole-website": { en: "Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.", fa: "طراحی رابط کاربری خلاقانه و تعاملی با تم وحشت، دارای انیمیشن‌های پیشرفته CSS و افکت باران خون." },
     "willpower-science-amcc": { en: "An interactive, scientific analysis of the neuroscience of willpower \u2014 a dashboard for the anterior midcingulate cortex (aMCC) set against David Goggins\u2019 tough mindset.", fa: "تحلیل تعاملی و علمی نوروساینس اراده؛ داشبورد تعاملی قشر کمربندی میانی قدامی (aMCC) در تقابل با ذهنیت سرسختانه دیوید گاگینز." },
@@ -116,10 +116,17 @@ function mapRepo(r: {
   archived: boolean;
   topics?: string[];
   homepage: string | null;
+  has_pages?: boolean;
   pushed_at: string;
   updated_at: string;
 }): GitHubRepo {
   const meta = metaFor(r.name);
+  // GitHub Pages URL: prefer the repo's homepage field; fall back to the
+  // canonical <owner>.github.io/<repo> URL when Pages is enabled but the
+  // homepage field was left empty (flash-wizard does exactly this).
+  const homepage =
+    r.homepage ||
+    (r.has_pages ? `https://${GITHUB_USER.toLowerCase()}.github.io/${r.name}/` : null);
   return {
     name: r.name,
     url: r.html_url,
@@ -132,7 +139,7 @@ function mapRepo(r: {
     isPrivate: Boolean(r.private),
     archived: Boolean(r.archived),
     topics: Array.isArray(r.topics) ? r.topics.slice(0, 6) : [],
-    homepage: r.homepage || null,
+    homepage,
     pushedAt: r.pushed_at,
     updatedAt: r.updated_at,
   };
@@ -200,8 +207,8 @@ const SEED_PAYLOAD: ReposPayload = {
     {
       name: "ubuntu-optimizer",
       url: "https://github.com/CheginiSoroush/ubuntu-optimizer",
-      description: "Post-install Ubuntu optimizer — debloat, tweaks and speed-ups in one script.",
-      descriptionFa: "بهینه‌ساز اوبونتو بعد از نصب — حذف زائدات، تنظیمات و افزایش سرعت در یک اسکریپت.",
+      description: "All-in-one Ubuntu optimization, app-management and repair toolkit — 23 interactive menu tools, 60+ CLI options, honest dry-run previews and one-command undo. Ships laptop/server profiles, a machine-readable JSON system report, and smart tar.gz installs with automatic dependency resolution.",
+      descriptionFa: "جعبه‌ابزار همه‌کاره‌ی بهینه‌سازی، مدیریت اپلیکیشن و تعمیر اوبونتو — ۲۳ ابزار منوی تعاملی، بیش از ۶۰ گزینه‌ی CLI، پیش‌نمایش dry-run صادقانه و برگرداندن تغییرات با یک دستور. پروفایل آماده برای لپ‌تاپ و سرور، گزارش سیستمی JSON و نصب هوشمند tar.gz با تشخیص خودکار وابستگی‌ها.",
       language: "Shell",
       stars: 1,
       forks: 0,
@@ -216,8 +223,8 @@ const SEED_PAYLOAD: ReposPayload = {
     {
       name: "projdump",
       url: "https://github.com/CheginiSoroush/projdump",
-      description: "CLI tool that dumps a whole project into LLM-ready context for ChatGPT/Claude chats.",
-      descriptionFa: "ابزار خط فرمان که کل پروژه را به کانتکست آماده برای چت با LLMها (ChatGPT/Claude) تبدیل می‌کند.",
+      description: "Dumps an entire codebase — directory tree, sources and stats — into a single Markdown, XML or JSON file sized to your token budget, ready to paste into Claude, ChatGPT, DeepSeek or Gemini. 100% local, no dependencies beyond bash; the v2 batch scanner is 7–25× faster.",
+      descriptionFa: "کل کدبیس — درخت پروژه، سورس‌ها و آمار — را در یک فایل Markdown/XML/JSON هم‌اندازه‌ی بودجه‌ی توکن مدل می‌ریزد تا مستقیم به Claude و ChatGPT و Gemini بدهی. صددرصد لوکال و بدون وابستگی جز Bash؛ اسکنر دسته‌ای نسخه ۲، ۷ تا ۲۵ برابر سریع‌تر است.",
       language: "Shell",
       stars: 1,
       forks: 0,
@@ -280,8 +287,8 @@ const SEED_PAYLOAD: ReposPayload = {
     {
       name: "flash-panel",
       url: "https://github.com/CheginiSoroush/flash-panel",
-      description: "Admin panel of the Flash project.",
-      descriptionFa: "پنل مدیریت پروژه فَش.",
+      description: "High-performance serverless proxy panel for Cloudflare Workers — VLESS, Trojan and WARP with a rewritten protocol core (zero-copy parsing, cached auth, anti-stampede KV cache), ETag subscriptions 94% smaller, login rate-limiting and full Telegram-bot control.",
+      descriptionFa: "پنل پراکسی پرسرعت و بدون‌سرور برای Cloudflare Workers — VLESS و Trojan و WARP با هسته‌ی کاملاً بازنویسی‌شده (پارس بدون کپی، کش احراز هویت، جلوگیری از stampede)، اشتراک‌های ۹۴٪ کوچک‌تر با ETag، محدودسازی ورود و کنترل کامل با ربات تلگرام.",
       language: "TypeScript",
       stars: 1,
       forks: 0,
@@ -296,8 +303,8 @@ const SEED_PAYLOAD: ReposPayload = {
     {
       name: "flash-wizard",
       url: "https://github.com/CheginiSoroush/flash-wizard",
-      description: "Interactive setup wizard for the Flash project.",
-      descriptionFa: "ویزارد راه‌اندازی تعاملی پروژه فَش.",
+      description: "Browser-based one-click deployment wizard for Flash Panel — creates KV storage, uploads the worker and attaches your custom domain in about 60 seconds. Your API token never leaves the browser; Persian RTL interface built in.",
+      descriptionFa: "ویزارد نصب یک‌کلیکی Flash Panel داخل مرورگر — ساخت KV، آپلود ورکر و اتصال دامنه‌ی اختصاصی در حدود ۶۰ ثانیه. توکن API هرگز از مرورگر خارج نمی‌شود و رابط فارسی راست‌چین دارد.",
       language: "JavaScript",
       stars: 1,
       forks: 0,
@@ -305,7 +312,7 @@ const SEED_PAYLOAD: ReposPayload = {
       isPrivate: false,
       archived: false,
       topics: [],
-      homepage: null,
+      homepage: "https://cheginisoroush.github.io/flash-wizard/",
       pushedAt: "2026-09-23T07:12:34Z",
       updatedAt: "2026-09-23T07:12:37Z",
     },
@@ -712,8 +719,8 @@ const SEED_PAYLOAD: ReposPayload = {
     {
       name: "cpp-calculator",
       url: "https://github.com/CheginiSoroush/cpp-calculator",
-      description: "Command-line calculator written in C++ with input validation and mathematical error handling.",
-      descriptionFa: "برنامه خط فرمان نوشته شده با ++C دارای سیستم اعتبارسنجی ورودی‌ها و مدیریت خطاهای ریاضی.",
+      description: "A simple but smart C++ CLI calculator — double arithmetic, input validation, divide-by-zero guards and a run-until-quit loop — built as a clean exercise in error handling and control flow.",
+      descriptionFa: "ماشین‌حساب ساده اما هوشمند خط فرمان با ++C — اعداد اعشاری، اعتبارسنجی ورودی، جلوگیری از تقسیم بر صفر و حلقه‌ی اجرای مداوم؛ تمرینی تمیز در مدیریت خطا و ساختارهای کنترلی.",
       language: "C++",
       stars: 0,
       forks: 0,
@@ -872,8 +879,8 @@ const SEED_PAYLOAD: ReposPayload = {
     {
       name: "KV-Dumper",
       url: "https://github.com/CheginiSoroush/KV-Dumper",
-      description: null,
-      descriptionFa: null,
+      description: "Serverless Telegram content-queue bot on Cloudflare Workers — queues photos, videos and captioned text in D1, then drip-publishes them with a 10-second delay (background waitUntil) to dodge flood limits, plus an admin panel with queue stats and one-tap purge.",
+      descriptionFa: "ربات صف‌بندی محتوای تلگرام روی Cloudflare Workers — عکس، ویدیو و متن با کپشن را در D1 صف می‌کند و با فاصله‌ی ۱۰ ثانیه‌ای در پس‌زمینه منتشر می‌کند تا از محدودیت‌های تلگرام رد نشود؛ به‌همراه پنل مدیریت با آمار صف و پاکسازی فوری.",
       language: "JavaScript",
       stars: 1,
       forks: 0,

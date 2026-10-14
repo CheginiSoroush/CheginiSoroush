@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS "Project" (
     "title" TEXT NOT NULL,
     "titleEn" TEXT,
     "repo" TEXT NOT NULL,
+    "demoUrl" TEXT,
     "description" TEXT NOT NULL,
     "descriptionEn" TEXT,
     "category" TEXT NOT NULL,

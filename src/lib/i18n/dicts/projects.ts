@@ -44,6 +44,9 @@ export const projectsDict: Dict = {
     // ---------- card ----------
     "card.featured": "منتخب",
     "card.details": "جزئیات",
+    "card.live": "وب‌سایت پروژه",
+    "card.liveAria": "باز کردن وب‌سایت {title} (در تب جدید)",
+    "detail.live": "وب‌سایت زنده پروژه",
 
     // ---------- empty states ----------
     "empty.favs.title": "هنوز پروژه‌ای نشان نکرده‌اید",
@@ -111,6 +114,9 @@ export const projectsDict: Dict = {
     // ---------- card ----------
     "card.featured": "Featured",
     "card.details": "Details",
+    "card.live": "Project site",
+    "card.liveAria": "Open the {title} website (new tab)",
+    "detail.live": "Open live site",
 
     // ---------- empty states ----------
     "empty.favs.title": "No starred projects yet",

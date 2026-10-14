@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ExternalLink, X, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole } from "lucide-react";
+import { Search, ExternalLink, X, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -418,6 +418,32 @@ export function ProjectsExplorer({
       <p className="text-sm text-muted-foreground leading-7 flex-grow">
         {pickEn(lang, p.descriptionEn, p.description)}
       </p>
+      {/* GitHub Pages / live-site pill — span+role keeps the card a single
+          button (no nested interactive elements inside <button>) */}
+      {p.demoUrl && (
+        <span
+          role="button"
+          tabIndex={0}
+          aria-label={t("projects", "card.liveAria", { title: pickEn(lang, p.titleEn, p.title) })}
+          title={t("projects", "card.live")}
+          onClick={(e) => {
+            e.stopPropagation();
+            window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
+            }
+          }}
+          className="w-fit inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+        >
+          <Globe className="w-3 h-3" aria-hidden />
+          {t("projects", "card.live")}
+          <ExternalLink className="w-2.5 h-2.5 opacity-60" aria-hidden />
+        </span>
+      )}
       <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
         <span className="text-xs font-bold text-muted-foreground inline-flex items-center gap-1.5">
           <span aria-hidden>{FILTERS.find((f) => f.id === p.category)?.icon ?? "✨"}</span>
@@ -761,6 +787,21 @@ export function ProjectsExplorer({
                   {copied ? <Check className="w-5 h-5 text-brand" /> : <Share2 className="w-5 h-5" />}
                 </button>
               </div>
+
+              {/* Live site (GitHub Pages) secondary CTA — rendered for any
+                  project with a demoUrl, private or not */}
+              {selected.demoUrl && (
+                <a
+                  href={selected.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-6 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
+                >
+                  <Globe className="w-5 h-5" aria-hidden />
+                  {t("projects", "detail.live")}
+                  <ExternalLink className="w-4 h-4 opacity-60" aria-hidden />
+                </a>
+              )}
 
               {/* Terminal-style clone command — hidden for private repos
                   (cloning would require owner auth and 404 for visitors) */}

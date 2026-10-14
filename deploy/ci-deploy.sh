@@ -83,6 +83,14 @@ jq --arg id "$DB_ID" '.d1_databases[0].database_id = $id' \
 
 echo "━━━ 4/6 Apply D1 schema + seed (idempotent)"
 bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-schema.sql
+# Guarded migration: CREATE TABLE IF NOT EXISTS cannot add columns to an
+# already-existing table, so probe for each added column and ALTER if absent.
+for col in demoUrl; do
+  if ! bunx wrangler d1 execute "$DB_NAME" --remote -y --command "SELECT \"$col\" FROM \"Project\" LIMIT 1" >/dev/null 2>&1; then
+    echo "   migrating: adding Project.$col"
+    bunx wrangler d1 execute "$DB_NAME" --remote -y --command "ALTER TABLE \"Project\" ADD COLUMN \"$col\" TEXT"
+  fi
+done
 bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-seed.sql
 
 echo "━━━ 5/6 Build with OpenNext"

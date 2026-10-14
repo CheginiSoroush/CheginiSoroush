@@ -42,10 +42,11 @@ const lines: string[] = [
 
 for (const r of projectRows) {
   lines.push(
-    `INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")\n` +
-      `VALUES (${q(r.id)}, ${q(r.slug)}, ${q(r.title)}, ${q(r.titleEn)}, ${q(r.repo)}, ${q(r.description)}, ${q(r.descriptionEn)}, ${q(r.category)}, ${q(r.tags)}, ${q(r.icon)}, ${r.featured ? 1 : 0}, ${Number(r.views ?? 0)}, ${Number(r.order ?? 0)}, ${q(r.createdAt)})\n` +
+    `INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")\n` +
+      `VALUES (${q(r.id)}, ${q(r.slug)}, ${q(r.title)}, ${q(r.titleEn)}, ${q(r.repo)}, ${q(r.demoUrl)}, ${q(r.description)}, ${q(r.descriptionEn)}, ${q(r.category)}, ${q(r.tags)}, ${q(r.icon)}, ${r.featured ? 1 : 0}, ${Number(r.views ?? 0)}, ${Number(r.order ?? 0)}, ${q(r.createdAt)})\n` +
       `ON CONFLICT("slug") DO UPDATE SET\n` +
       `  "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",\n` +
+      `  "demoUrl" = excluded."demoUrl",\n` +
       `  "description" = excluded."description", "descriptionEn" = excluded."descriptionEn",\n` +
       `  "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",\n` +
       `  "featured" = excluded."featured", "order" = excluded."order";`
