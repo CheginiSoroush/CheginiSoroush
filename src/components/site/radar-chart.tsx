@@ -34,10 +34,13 @@ export function RadarChart({ axes }: { axes: Axis[] }) {
   const n = axes.length;
 
   const maxValue = useMemo(() => Math.max(...axes.map((a) => a.value)), [axes]);
+  // Guard: with no data yet (all zeros — e.g. empty DB on first boot) maxValue
+  // is 0 and value/maxValue would produce NaN SVG attributes (React errors).
+  const safeMax = maxValue > 0 ? maxValue : 1;
 
   const point = (i: number, value: number): [number, number] => {
     const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
-    const r = (value / maxValue) * radius;
+    const r = (value / safeMax) * radius;
     return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
   };
 
@@ -46,7 +49,7 @@ export function RadarChart({ axes }: { axes: Axis[] }) {
   const dataPoints = axes.map((a, i) => point(i, a.value * progress));
   const dataPath = dataPoints.map((p) => p.join(",")).join(" ");
 
-  const labelPos = axes.map((_, i) => point(i, maxValue * 1.22));
+  const labelPos = axes.map((_, i) => point(i, safeMax * 1.22));
 
   return (
     <div ref={ref} className="relative mx-auto" style={{ width: "100%", maxWidth: 460 }}>
@@ -71,7 +74,7 @@ export function RadarChart({ axes }: { axes: Axis[] }) {
             key={ring}
             points={axes
               .map((_, i) => {
-                const [x, y] = point(i, maxValue * ring);
+                const [x, y] = point(i, safeMax * ring);
                 return `${x},${y}`;
               })
               .join(" ")}
@@ -83,7 +86,7 @@ export function RadarChart({ axes }: { axes: Axis[] }) {
 
         {/* Axis lines */}
         {axes.map((_, i) => {
-          const [x, y] = point(i, maxValue);
+          const [x, y] = point(i, safeMax);
           return (
             <line
               key={i}

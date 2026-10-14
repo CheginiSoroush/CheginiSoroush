@@ -161,7 +161,7 @@ export function ReposExplorer() {
   return (
     <div aria-label={t("repos", "aria.section")}>
       {/* Toolbar */}
-      <div className="max-w-3xl mx-auto mb-8 space-y-3">
+      <div className="max-w-3xl mx-auto mb-8 space-y-2.5">
         <SearchInput
           value={query}
           onChange={setQuery}
@@ -190,6 +190,7 @@ export function ReposExplorer() {
                   key={key}
                   onClick={() => setVisFilter(key)}
                   aria-pressed={visFilter === key}
+                  title={key === "private" ? t("repos", "privateNote") : undefined}
                   className={cn(
                     "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold border transition-all min-h-[36px]",
                     visFilter === key
@@ -271,10 +272,21 @@ export function ReposExplorer() {
             ))}
           </div>
           {!loading && !error && repos && (
-            <span aria-live="polite">
-              {t("repos", "status.found", { n: num(shown.length) })}
-              {" · "}
-              {num(totalStars)} {t("repos", "summary.stars")}
+            <span aria-live="polite" className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+              <span>
+                {t("repos", "status.found", { n: num(shown.length) })}
+                {" · "}
+                {num(totalStars)} {t("repos", "summary.stars")}
+              </span>
+              {includesPrivate && (
+                <span
+                  className="inline-flex items-center gap-1 text-[11px] text-amber-600 dark:text-amber-400/90"
+                  title={t("repos", "privateNote")}
+                >
+                  <Lock className="w-3 h-3" aria-hidden />
+                  {t("repos", "privateCount", { n: num(privateCount) })}
+                </span>
+              )}
             </span>
           )}
         </div>
@@ -283,13 +295,6 @@ export function ReposExplorer() {
           <p className="text-center text-[11px] text-muted-foreground/80 flex items-center justify-center gap-1.5">
             <Clock3 className="w-3 h-3" aria-hidden />
             {t("repos", "staleNote")}
-          </p>
-        )}
-
-        {includesPrivate && !loading && !error && (
-          <p className="text-center text-[11px] text-amber-600 dark:text-amber-400/90 flex items-center justify-center gap-1.5">
-            <Lock className="w-3 h-3" aria-hidden />
-            {t("repos", "privateNote")}
           </p>
         )}
       </div>
