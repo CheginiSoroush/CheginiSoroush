@@ -84,13 +84,20 @@ jq --arg id "$DB_ID" '.d1_databases[0].database_id = $id' \
 echo "━━━ 4/6 Apply D1 schema + seed (idempotent)"
 bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-schema.sql
 # Guarded migration: CREATE TABLE IF NOT EXISTS cannot add columns to an
-# already-existing table, so probe for each added column and ALTER if absent.
-for col in demoUrl; do
-  if ! bunx wrangler d1 execute "$DB_NAME" --remote -y --command "SELECT \"$col\" FROM \"Project\" LIMIT 1" >/dev/null 2>&1; then
-    echo "   migrating: adding Project.$col"
-    bunx wrangler d1 execute "$DB_NAME" --remote -y --command "ALTER TABLE \"Project\" ADD COLUMN \"$col\" TEXT"
-  fi
-done
+# already-existing table. Exit codes are unreliable here (wrangler can exit 0
+# on remote SQL errors), so always attempt the ALTER and classify by the
+# error TEXT instead — "duplicate column name" simply means already migrated.
+echo "   ensuring Project.demoUrl exists"
+ALTER_OUT=$(bunx wrangler d1 execute "$DB_NAME" --remote -y --command 'ALTER TABLE "Project" ADD COLUMN "demoUrl" TEXT' 2>&1 || true)
+if echo "$ALTER_OUT" | grep -qi "duplicate column name"; then
+  echo "   Project.demoUrl already exists — ok"
+elif echo "$ALTER_OUT" | grep -qi "\[ERROR\]"; then
+  echo "$ALTER_OUT" >&2
+  echo "   ALTER TABLE failed with an unexpected error" >&2
+  exit 1
+else
+  echo "   Project.demoUrl ready"
+fi
 bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-seed.sql
 
 echo "━━━ 5/6 Build with OpenNext"
