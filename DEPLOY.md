@@ -59,6 +59,10 @@ Workers نمی‌تواند فایل SQLite محلی (`db/custom.db`) را بخ�
 
 **خطا در مرحلهٔ Build (OpenNext):** آخرین کامیت ریپو را ببینید؛ منطق Build داخل `deploy/ci-deploy.sh` است و رفعش فقط یک push عادی است — نیازی به ویرایش workflow نیست.
 
+**خطای «Could not find compiled Open Next config» در Workers Builds (لاگ با الگوی Initializing build environment / Executing user deploy command):** این لاگ مال سیستم Build داخلی کلاودفلر است، نه GitHub Actions ما — یعنی ریپو از داشبورد کلاودفلر هم Connect شده و اکنون دو خط لوله روی یک ریپو دارید. Workers Builds به‌طور پیش‌فرض فقط `npx wrangler deploy` را اجرا می‌کند (بدون Build)، برای همین `.open-next/` پیدا نمی‌شود. فقط یکی از دو خط لوله باید بماند:
+- **پیشنهادی — قطع Workers Builds:** چون Actions همه‌چیز را کامل انجام می‌دهد (Build + مایگریشن/Seed D1 + prisma generate + سینک Secret ها). مسیر: Workers & Pages → `imsoroush` → Settings → Build → Disconnect (حذف اتصال گیت). تا وقتی وصل است، هر push یک ران قرمز اضافه می‌سازد — بی‌ضرر برای سایت ولی شلوغ.
+- **اگر Workers Builds را نگه می‌دارید:** Build command باید `bunx prisma generate && DATABASE_URL="file:./build-time-placeholder.db" npx opennextjs-cloudflare build` باشد و Deploy command همان `npx wrangler deploy`. ضمناً `database_id` واقعی D1 باید در `wrangler.jsonc` کامیت شود (فعلاً `PLACEHOLDER_REPLACED_BY_CI` است و فقط اسکریپت Actions آن را موقع دیپلوی جایگزین می‌کند) — شناسه از داشبورد: Storage & Databases → D1 → `imsoroush-db`. مایگریشن/Seed هم در این مسیر خودکار اجرا نمی‌شود (یک‌بار اعمال شده؛ بعد از هر تغییر اسکیما باید دستی اجرا کنید).
+
 **ورکر قدیمی روی همان اکانت دارید؟** مشکلی نیست؛ اگر اسمش `imsoroush` باشد جایگزین می‌شود و اگر اسم دیگری دارد، هر دو با هم می‌مانند تا سوییچ دامنه.
 
 ---
