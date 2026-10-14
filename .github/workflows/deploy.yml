@@ -1,22 +1,20 @@
-# Cloudflare Workers deployment (GitHub Actions).
+# Cloudflare Workers deployment (GitHub Actions) — thin wrapper.
 #
-# This file lives at deploy/github-actions-deploy.yml because pushing to
-# .github/workflows requires the `workflow` token scope. To activate automatic
-# deployment, EITHER:
-#   a) in GitHub web UI: Actions tab → "New workflow" → "set up a workflow yourself"
-#      → paste this file's content as .github/workflows/deploy.yml, OR
-#   b) create a PAT with repo+workflow scopes and push the file to
-#      .github/workflows/deploy.yml locally.
-name: Deploy to Cloudflare Workers
-
-# Automatic production deployment:
-#   push to main  →  D1 migration + seed  →  OpenNext build  →  wrangler deploy
+# All pipeline logic lives in deploy/ci-deploy.sh (version-controlled), so
+# future fixes only need a normal push to main. This file should rarely
+# change. It lives at deploy/github-actions-deploy.yml because pushing to
+# .github/workflows requires the `workflow` token scope — install it once:
+#   GitHub → Actions tab → "set up a workflow yourself" → name it deploy.yml
+#   → paste this file's content → Commit changes (the push starts run #1).
 #
-# One-time setup (repository Settings → Secrets and variables → Actions):
-#   Required:  CLOUDFLARE_API_TOKEN  (template "Edit Cloudflare Workers" — includes D1)
+# Repository secrets (Settings → Secrets and variables → Actions):
+#   Required:  CLOUDFLARE_API_TOKEN  ("Edit Cloudflare Workers" template
+#                                    + Account → D1 → Edit permission)
 #              CLOUDFLARE_ACCOUNT_ID
-#   Optional:  ADMIN_KEY  (admin panel key; falls back to default)
-#              GH_PAT     (GitHub PAT used by /api/github + /api/repos at runtime)
+#   Optional:  ADMIN_KEY  (admin panel key; falls back to code default)
+#              GH_PAT     (fine-grained PAT: All repositories + Metadata read;
+#                          powers /api/github + /api/repos incl. private repos)
+name: Deploy to Cloudflare Workers
 
 on:
   push:
@@ -32,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup bun
         uses: oven-sh/setup-bun@v2
@@ -42,69 +40,10 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Check Cloudflare credentials
-        id: creds
-        env:
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Deploy skipped — add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets to enable automatic deployment."
-          else
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Ensure D1 database exists (and patch wrangler.jsonc)
-        if: steps.creds.outputs.ready == 'true'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          DB_ID=$(bunx wrangler d1 list --json | jq -r '.[] | select(.name == "imsoroush-db") | .uuid' | head -n1)
-          if [ -z "$DB_ID" ] || [ "$DB_ID" = "null" ]; then
-            echo "Creating D1 database imsoroush-db..."
-            bunx wrangler d1 create imsoroush-db || true
-            DB_ID=$(bunx wrangler d1 list --json | jq -r '.[] | select(.name == "imsoroush-db") | .uuid' | head -n1)
-          fi
-          if [ -z "$DB_ID" ] || [ "$DB_ID" = "null" ]; then
-            echo "::error::Could not resolve D1 database id"; exit 1
-          fi
-          echo "D1 database id: $DB_ID"
-          jq --arg id "$DB_ID" '.d1_databases[0].database_id = $id' wrangler.jsonc > /tmp/wrangler.tmp.jsonc
-          mv /tmp/wrangler.tmp.jsonc wrangler.jsonc
-
-      - name: Apply D1 schema + content seed (idempotent)
-        if: steps.creds.outputs.ready == 'true'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          bunx wrangler d1 execute imsoroush-db --remote --file=./prisma/d1-schema.sql
-          bunx wrangler d1 execute imsoroush-db --remote --file=./prisma/d1-seed.sql
-
-      - name: Build with OpenNext
-        if: steps.creds.outputs.ready == 'true'
-        run: bunx opennextjs-cloudflare build
-
-      - name: Deploy Worker
-        if: steps.creds.outputs.ready == 'true'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: bunx wrangler deploy
-
-      - name: Sync runtime secrets (optional, skipped when unset)
-        if: steps.creds.outputs.ready == 'true'
+      - name: Deploy (verify token → D1 → build → worker → secrets)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           ADMIN_KEY_VALUE: ${{ secrets.ADMIN_KEY }}
           GH_PAT_VALUE: ${{ secrets.GH_PAT }}
-        run: |
-          if [ -n "$ADMIN_KEY_VALUE" ]; then
-            printf '%s' "$ADMIN_KEY_VALUE" | bunx wrangler secret put ADMIN_KEY
-          fi
-          if [ -n "$GH_PAT_VALUE" ]; then
-            printf '%s' "$GH_PAT_VALUE" | bunx wrangler secret put GITHUB_TOKEN
-          fi
+        run: bash deploy/ci-deploy.sh
