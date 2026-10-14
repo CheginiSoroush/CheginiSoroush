@@ -65,9 +65,14 @@ Workers نمی‌تواند فایل SQLite محلی (`db/custom.db`) را بخ�
 
 ## اتصال دامنهٔ imsoroush.ir (یک بار)
 
-داشبورد Cloudflare → **Workers & Pages** → `imsoroush` → **Settings → Domains & Routes** → **Add Custom Domain** → `imsoroush.ir` (و `www.imsoroush.ir`). چون دامنه روی همان اکانت است، DNS خودکار تنظیم می‌شود.
+وضعیت فعلی DNS: دامنه از قبل روی nameserverهای Cloudflare است و رکورد ریشه هنوز به **نسخهٔ قدیمی استاتیک** اشاره می‌کند (صفحهٔ سبکِ بدون API — `/api/projects` می‌دهد 404). یعنی فقط اتصال Custom Domain مانده:
 
-> نسخهٔ قدیمی استاتیک سایت قبل از سوییچ دامنه دست‌نخورده باقی می‌ماند؛ سوییچ یعنی فقط رکورد دامنه به Worker جدید اشاره کند.
+1. داشبورد Cloudflare → **Workers & Pages** → `imsoroush` → **Settings → Domains & Routes** → **Add** → **Custom domain** → `imsoroush.ir`
+2. چون رکورد DNS قدیمی روی ریشه وجود دارد، Cloudflare پیام جایگزینی (Replace) می‌دهد → تأیید کنید.
+3. همین مراحل را برای `www.imsoroush.ir` هم تکرار کنید — www فعلاً هیچ رکورد DNS ندارد؛ Custom Domain هر دو (DNS + گواهی SSL) را خودکار می‌سازد، فعال‌شدنش چند دقیقه طول می‌کشد.
+4. نسخهٔ قدیمی استاتیک دست‌نخورده می‌ماند تا سوییچ تأیید شود؛ بعد می‌توانید آن پروژه/ورکر را retire کنید.
+
+**بررسی سوییچ:** `https://imsoroush.ir/api/projects` باید JSON برگرداند (قبل از سوییچ 404 است) و حجم صفحهٔ اصلی باید حدود ۱۲۰KB باشد (نسخهٔ قدیمی ~۱۶KB است). اگر مرورگر هنوز صفحهٔ قدیمی را نشان می‌دهد، hard-refresh کنید.
 
 ---
 
