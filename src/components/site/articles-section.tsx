@@ -802,7 +802,7 @@ export function ArticlesSection({
         <DialogContent
           ref={scrollRef}
           onScroll={onReaderScroll}
-          className="max-w-2xl max-h-[85vh] overflow-y-auto p-6 sm:p-8 rounded-3xl dialog-accent"
+          className="dialog-sheet max-w-2xl max-h-[92dvh] sm:max-h-[85vh] overflow-y-auto p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] sm:p-8 sm:pb-8 rounded-3xl dialog-accent"
         >
           {selected && (
             <>
@@ -1055,7 +1055,7 @@ export function ArticlesSection({
       <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
         <DialogContent
           aria-describedby={undefined}
-          className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col p-0 rounded-3xl dialog-accent"
+          className="dialog-sheet max-w-lg max-h-[92dvh] sm:max-h-[80vh] overflow-hidden flex flex-col p-0 rounded-3xl dialog-accent"
         >
           <DialogHeader className="px-5 pt-5 pb-3 border-b border-border shrink-0">
             <DialogTitle className="text-base flex items-center gap-2 text-start">

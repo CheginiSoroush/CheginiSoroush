@@ -614,9 +614,14 @@ export function ProjectsExplorer({
 
       {/* Detail dialog */}
       <Dialog open={!!selected} onOpenChange={closeDialog}>
-        <DialogContent className="max-h-[85dvh] overflow-hidden p-0 gap-0 rounded-3xl dialog-accent">
+        <DialogContent className="dialog-sheet dialog-accent max-h-[92dvh] sm:max-h-[85dvh] overflow-hidden p-0 gap-0 rounded-t-3xl rounded-b-none sm:rounded-3xl">
           {selected && (
-            <div className="max-h-[85dvh] overflow-y-auto overscroll-contain rounded-3xl">
+            <div className="max-h-[92dvh] sm:max-h-[85dvh] overflow-y-auto overscroll-contain rounded-t-3xl sm:rounded-3xl">
+              {/* Grabber bar — bottom-sheet affordance, phones only */}
+              <div
+                aria-hidden
+                className="sm:hidden absolute top-2.5 left-1/2 -translate-x-1/2 z-10 h-1.5 w-10 rounded-full bg-foreground/25"
+              />
               {/* Full-bleed hero cover — the sticker floats ABOVE the fade
                   overlay (z-index) and is never clipped by the scroll area */}
               <div className="cover-wrap dialog-cover relative">
@@ -634,7 +639,7 @@ export function ProjectsExplorer({
                   </span>
                 </div>
               </div>
-              <div className="p-5 sm:p-6">
+              <div className="p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:p-6 sm:pb-6">
               <DialogHeader>
                 <div className="flex items-center gap-4 mb-1">
                   <div className="min-w-0 flex-grow">
@@ -713,7 +718,7 @@ export function ProjectsExplorer({
                 </div>
               )}
 
-              <div className="grid grid-cols-[1fr_auto_auto] gap-2.5">
+              <div className="grid grid-cols-[1fr_auto_auto] gap-2 sm:gap-2.5">
                 {selectedIsPrivate ? (
                   /* Private today → no dead GitHub link; a quiet lock CTA instead.
                      Swap happens automatically once the repo goes public. */
@@ -721,7 +726,7 @@ export function ProjectsExplorer({
                     type="button"
                     disabled
                     title={t("projects", "detail.privateNote")}
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-secondary/60 text-muted-foreground font-bold px-6 py-3 cursor-not-allowed min-h-[46px]"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-secondary/60 text-muted-foreground font-bold px-3 text-sm sm:px-6 sm:text-base py-3 cursor-not-allowed min-h-[46px]"
                   >
                     <LockKeyhole className="w-5 h-5" aria-hidden />
                     {t("projects", "detail.privateCta")}
@@ -731,7 +736,7 @@ export function ProjectsExplorer({
                     href={repoUrl(selected.repo)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-shine inline-flex items-center justify-center gap-2 rounded-2xl bg-brand text-primary-foreground font-bold px-6 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
+                    className="btn-shine inline-flex items-center justify-center gap-2 rounded-2xl bg-brand text-primary-foreground font-bold px-3 text-sm sm:px-6 sm:text-base py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
                   >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                     <path
@@ -785,14 +790,20 @@ export function ProjectsExplorer({
                   href={selected.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-6 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
+                  title={selected.demoUrl}
+                  className="mt-3 flex w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-3 text-sm text-center sm:flex-row sm:gap-2 sm:px-6 sm:text-base hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
                 >
-                  <Globe className="w-5 h-5 shrink-0" aria-hidden />
-                  {t("projects", "detail.live")}
-                  <span dir="ltr" className="text-[11px] font-mono opacity-70 truncate max-w-[220px]">
+                  <span className="flex items-center gap-2">
+                    <Globe className="w-5 h-5 shrink-0" aria-hidden />
+                    {t("projects", "detail.live")}
+                  </span>
+                  <span
+                    dir="ltr"
+                    className="max-w-full truncate text-[11px] font-mono opacity-70"
+                  >
                     {demoHost(selected.demoUrl)}
                   </span>
-                  <ExternalLink className="w-4 h-4 opacity-60 shrink-0" aria-hidden />
+                  <ExternalLink className="hidden w-4 h-4 opacity-60 shrink-0 sm:block" aria-hidden />
                 </a>
               )}
 

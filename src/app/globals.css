@@ -595,6 +595,76 @@ body:has([data-slot="dialog-overlay"]) .modal-hide {
   pointer-events: none;
 }
 
+/* ---------- Mobile bottom-sheet dialogs ---------- */
+/* Opt-in via .dialog-sheet: on phones (<640px) the dialog docks to the bottom
+   edge as a full-width sheet that slides up — the native mobile pattern —
+   while sm+ keeps the classic centered dialog. */
+.dialog-sheet[data-slot="dialog-content"] {
+  overscroll-behavior: contain;
+}
+@media (max-width: 639.98px) {
+  .dialog-sheet[data-slot="dialog-content"] {
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    translate: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92vh !important; /* fallback for browsers without dvh */
+    max-height: 92dvh !important;
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    border-bottom: 0;
+    animation: sheet-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  }
+  .dialog-sheet[data-slot="dialog-content"][data-state="closed"] {
+    animation: sheet-out 0.22s ease-in both !important;
+  }
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes sheet-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* ---------- Frosted close button (all dialogs) ---------- */
+/* Visible over colorful cover art, safe 44px target, logical end side (RTL). */
+[data-slot="dialog-content"] > [data-slot="dialog-close"] {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--card) 72%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.45);
+  opacity: 1;
+  z-index: 20;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+[data-slot="dialog-content"] > [data-slot="dialog-close"]:hover {
+  transform: scale(1.06);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+}
+[data-slot="dialog-content"] > [data-slot="dialog-close"]:active {
+  transform: scale(0.9);
+}
+
 /* ---------- Footer gradient hairline ---------- */
 .footer-gradient {
   position: relative;
