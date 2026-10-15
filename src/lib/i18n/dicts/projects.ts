@@ -81,6 +81,11 @@ export const projectsDict: Dict = {
     "detail.demoUp": "دمو در دسترس است",
     "detail.demoDown": "دمو موقتاً در دسترس نیست",
 
+    // ---------- extra project sites (src/lib/project-sites.ts) ----------
+    "site.pages.short": "گیتهاب پیجز",
+    "site.pages.label": "وب‌سایت گیتهاب پیجز",
+    "site.pages.aria": "باز کردن وب‌سایت گیتهاب پیجز این پروژه (در تب جدید)",
+
     // ---------- third-party awards (src/lib/project-awards.ts) ----------
     "award.xerj.label": "انتخاب‌شده در XERJ Corpus Hub",
     "award.xerj.short": "XERJ Corpus Hub",
@@ -168,6 +173,11 @@ export const projectsDict: Dict = {
     "detail.readmeFailed": "Failed to load README.",
     "detail.demoUp": "Demo is up",
     "detail.demoDown": "Demo is temporarily unreachable",
+
+    // ---------- extra project sites (src/lib/project-sites.ts) ----------
+    "site.pages.short": "GitHub Pages",
+    "site.pages.label": "GitHub Pages site",
+    "site.pages.aria": "Open this project's GitHub Pages site (new tab)",
 
     // ---------- third-party awards (src/lib/project-awards.ts) ----------
     "award.xerj.label": "Selected for XERJ Corpus Hub",

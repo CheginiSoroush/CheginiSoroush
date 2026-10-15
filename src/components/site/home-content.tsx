@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Globe, Sparkles } from "lucide-react";
+import { Award, ExternalLink, Github, Globe, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { RadarChart } from "./radar-chart";
 import { GitHubCard } from "./github-card";
@@ -11,6 +11,8 @@ import { AboutSection } from "./about-section";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import { useT, pickEn } from "@/lib/i18n";
 import { demoHost } from "@/lib/demo-urls";
+import { projectAward } from "@/lib/project-awards";
+import { projectSites } from "@/lib/project-sites";
 import type { Project, ViewName } from "@/lib/types";
 
 const TECH_MARQUEE = [
@@ -182,7 +184,12 @@ export function HomeContent({
       <section aria-label={t("home", "featured.aria")}>
         <h2 className="section-title mb-14">{t("home", "featured.title")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {featured.slice(0, 4).map((p, i) => (
+          {featured.slice(0, 4).map((p, i) => {
+            // Every online presence of the project: live demo (DB) + extra
+            // curated sites (GitHub Pages) + third-party recognition
+            const sites = projectSites(p.slug);
+            const award = projectAward(p.slug);
+            return (
             <motion.article
               key={p.id}
               initial={{ opacity: 0, y: 24 }}
@@ -230,47 +237,102 @@ export function HomeContent({
                   </span>
                 ))}
               </div>
-              <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-                <a
-                  href={`https://github.com/${p.repo}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  dir="ltr"
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => e.stopPropagation()}
-                  className="text-xs font-mono text-left text-muted-foreground hover:text-brand transition-colors truncate min-w-0"
-                >
-                  github.com/{p.repo}
-                </a>
-                {/* Live demo pill — span+role keeps the card a single
-                    interactive element (no nested buttons) */}
-                {p.demoUrl && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    aria-label={t("projects", "card.liveAria", { title: pickEn(lang, p.titleEn, p.title) })}
-                    title={t("projects", "card.live")}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
-                      }
-                    }}
-                    className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all cursor-pointer"
-                  >
-                    <Globe className="w-3 h-3 shrink-0" aria-hidden />
-                    <span dir="ltr" className="truncate max-w-[180px]">{demoHost(p.demoUrl)}</span>
-                    <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
-                  </span>
+              <div className="mt-auto space-y-3">
+                {/* Site + recognition pills — demo, GitHub Pages, awards */}
+                {(p.demoUrl || sites.length > 0 || award) && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {p.demoUrl && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label={t("projects", "card.liveAria", { title: pickEn(lang, p.titleEn, p.title) })}
+                        title={t("projects", "card.live")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <Globe className="w-3 h-3 shrink-0" aria-hidden />
+                        <span dir="ltr" className="truncate max-w-[160px]">{demoHost(p.demoUrl)}</span>
+                        <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
+                      </span>
+                    )}
+                    {sites.map((site) => (
+                      <span
+                        key={site.id}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={t("projects", `site.${site.id}.aria`)}
+                        title={t("projects", `site.${site.id}.label`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(site.href, "_blank", "noopener,noreferrer");
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(site.href, "_blank", "noopener,noreferrer");
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border border-border bg-secondary text-foreground/80 hover:text-foreground hover:border-brand/40 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <Github className="w-3 h-3 shrink-0" aria-hidden />
+                        <span className="truncate">{t("projects", `site.${site.id}.short`)}</span>
+                        <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
+                      </span>
+                    ))}
+                    {award && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label={t("projects", `award.${award.id}.aria`)}
+                        title={t("projects", `award.${award.id}.label`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(award.href, "_blank", "noopener,noreferrer");
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(award.href, "_blank", "noopener,noreferrer");
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <Award className="w-3 h-3 shrink-0" aria-hidden />
+                        <span className="truncate">{t("projects", `award.${award.id}.short`)}</span>
+                        <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
+                      </span>
+                    )}
+                  </div>
                 )}
+                <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+                  <a
+                    href={`https://github.com/${p.repo}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    dir="ltr"
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    className="text-xs font-mono text-left text-muted-foreground hover:text-brand transition-colors truncate min-w-0"
+                  >
+                    github.com/{p.repo}
+                  </a>
+                </div>
               </div>
             </motion.article>
-          ))}
+            );
+          })}
         </div>
         <div className="text-center mt-10">
           <button

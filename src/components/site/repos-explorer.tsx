@@ -10,6 +10,7 @@ import {
   Clock3,
   Lock,
   Globe,
+  Award,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { GitHubRepo } from "@/lib/types";
@@ -17,6 +18,8 @@ import { cn } from "@/lib/utils";
 import { relativeTime, useT } from "@/lib/i18n";
 import { GITHUB_PROFILE_URL } from "@/lib/site-config";
 import { demoHost } from "@/lib/demo-urls";
+import { projectSites } from "@/lib/project-sites";
+import { projectAward } from "@/lib/project-awards";
 import { useToast } from "@/hooks/use-toast";
 import { SearchInput } from "./search-input";
 import { EmptyState } from "./empty-state";
@@ -416,6 +419,45 @@ export function ReposExplorer() {
                   >
                     <Globe className="w-3 h-3 shrink-0" aria-hidden />
                     <span dir="ltr" className="truncate">{demoHost(repo.homepage) ?? t("repos", "live.title")}</span>
+                    <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
+                  </a>
+                )}
+
+                {/* Extra curated sites (e.g. GitHub Pages) — config-driven
+                    (src/lib/project-sites.ts). Deduped against repo.homepage:
+                    the API fallback dataset already promotes these Pages URLs
+                    to homepage, so skip identical hrefs to avoid twin pills */}
+                {projectSites(repo.name)
+                  .filter((site) => site.href !== repo.homepage)
+                  .map((site) => (
+                  <a
+                    key={site.id}
+                    href={site.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={t("projects", `site.${site.id}.aria`)}
+                    title={t("projects", `site.${site.id}.label`)}
+                    className="w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border border-border bg-secondary text-foreground/80 hover:text-foreground hover:border-brand/40 active:scale-95 transition-all"
+                  >
+                    <Github className="w-3 h-3 shrink-0" aria-hidden />
+                    <span className="truncate">{t("projects", `site.${site.id}.short`)}</span>
+                    <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
+                  </a>
+                ))}
+
+                {/* Third-party recognition — config-driven
+                    (src/lib/project-awards.ts), keyed by repo name */}
+                {projectAward(repo.name) && (
+                  <a
+                    href={projectAward(repo.name)!.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={t("projects", `award.${projectAward(repo.name)!.id}.aria`)}
+                    title={t("projects", `award.${projectAward(repo.name)!.id}.label`)}
+                    className="w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 active:scale-95 transition-all"
+                  >
+                    <Award className="w-3 h-3 shrink-0" aria-hidden />
+                    <span className="truncate">{t("projects", `award.${projectAward(repo.name)!.id}.short`)}</span>
                     <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
                   </a>
                 )}

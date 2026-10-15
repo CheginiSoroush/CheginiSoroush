@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe, Flame, Tag, BookOpen, ChevronDown, Award } from "lucide-react";
+import { ExternalLink, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe, Flame, Tag, BookOpen, ChevronDown, Award, Github } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema as sanitizeSchema } from "rehype-sanitize";
@@ -25,6 +25,7 @@ import { CATEGORY_LABELS } from "@/lib/types";
 import { repoUrl } from "@/lib/site-config";
 import { demoHost } from "@/lib/demo-urls";
 import { projectAward } from "@/lib/project-awards";
+import { projectSites } from "@/lib/project-sites";
 import { cn } from "@/lib/utils";
 import { useT, pickEn, relativeTime } from "@/lib/i18n";
 
@@ -404,6 +405,7 @@ export function ProjectsExplorer({
 
   // Config-driven third-party recognition for the selected project
   const selectedAward = selected ? projectAward(selected.slug) : null;
+  const selectedSites = selected ? projectSites(selected.slug) : [];
 
   const shareProject = async (p: Project) => {
     const url = `${window.location.origin}/#/projects/${encodeURIComponent(p.slug)}`;
@@ -521,8 +523,9 @@ export function ProjectsExplorer({
   }, [initialProjects, selected]);
 
   const renderCard = (p: Project, index: number) => {
-    // Config-driven award for this slug (currently: ubuntu-optimizer → XERJ)
+    // Config-driven award + extra sites for this slug (src/lib/project-*.ts)
     const award = projectAward(p.slug);
+    const sites = projectSites(p.slug);
     return (
     <motion.button
       key={p.id}
@@ -641,6 +644,33 @@ export function ProjectsExplorer({
           <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
         </span>
       )}
+      {/* Extra curated sites (e.g. GitHub Pages) — config-driven
+          (src/lib/project-sites.ts); same single-button-safe span pattern */}
+      {sites.map((site) => (
+        <span
+          key={site.id}
+          role="button"
+          tabIndex={0}
+          aria-label={t("projects", `site.${site.id}.aria`)}
+          title={t("projects", `site.${site.id}.label`)}
+          onClick={(e) => {
+            e.stopPropagation();
+            window.open(site.href, "_blank", "noopener,noreferrer");
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              window.open(site.href, "_blank", "noopener,noreferrer");
+            }
+          }}
+          className="mt-2 w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border border-border bg-secondary text-foreground/80 hover:text-foreground hover:border-brand/40 transition-all cursor-pointer active:scale-95"
+        >
+          <Github className="w-3 h-3 shrink-0" aria-hidden />
+          <span className="truncate">{t("projects", `site.${site.id}.short`)}</span>
+          <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
+        </span>
+      ))}
       {/* Third-party recognition — config-driven (src/lib/project-awards.ts);
           span+role pattern keeps the card a single <button> (no nested <a>) */}
       {award && (
@@ -1085,6 +1115,31 @@ export function ProjectsExplorer({
                   <ExternalLink className="hidden w-4 h-4 opacity-60 shrink-0 sm:block" aria-hidden />
                 </a>
               )}
+
+              {/* Extra curated sites (e.g. GitHub Pages) — config-driven
+                  (src/lib/project-sites.ts); rendered as secondary CTAs */}
+              {selectedSites.map((site) => (
+                <a
+                  key={site.id}
+                  href={site.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={t("projects", `site.${site.id}.aria`)}
+                  className="mt-3 flex w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-border bg-secondary/60 font-bold px-4 py-3 text-sm text-center sm:flex-row sm:gap-2 sm:px-6 sm:text-base hover:-translate-y-0.5 hover:border-brand/40 active:scale-95 transition-all min-h-[46px]"
+                >
+                  <span className="flex items-center gap-2">
+                    <Github className="w-5 h-5 shrink-0" aria-hidden />
+                    {t("projects", `site.${site.id}.label`)}
+                  </span>
+                  <span
+                    dir="ltr"
+                    className="max-w-full truncate text-[11px] font-mono opacity-70"
+                  >
+                    {demoHost(site.href)}
+                  </span>
+                  <ExternalLink className="hidden w-4 h-4 opacity-60 shrink-0 sm:block" aria-hidden />
+                </a>
+              ))}
 
               {/* Terminal-style clone command — hidden for private repos
                   (cloning would require owner auth and 404 for visitors) */}
