@@ -7,7 +7,7 @@ import { COVER_IMAGES } from "@/lib/cover-images";
 import { cn } from "@/lib/utils";
 
 /** Bump after regenerating any cover art so client HTTP caches revalidate. */
-const COVER_VERSION = "3";
+const COVER_VERSION = "4";
 
 /** Cache-busted cover URL for a slug — "" when the slug has no dedicated art. */
 export function coverSrc(slug: string): string {
