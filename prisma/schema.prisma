@@ -39,6 +39,7 @@ model Article {
   views       Int      @default(0)
   likes       Int      @default(0)
   publishedAt DateTime @default(now())
+  demoUrl     String?
 }
 
 model ContactMessage {

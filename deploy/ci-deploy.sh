@@ -98,6 +98,17 @@ elif echo "$ALTER_OUT" | grep -qi "\[ERROR\]"; then
 else
   echo "   Project.demoUrl ready"
 fi
+echo "   ensuring Article.demoUrl exists"
+ALTER_ART_OUT=$(bunx wrangler d1 execute "$DB_NAME" --remote -y --command 'ALTER TABLE "Article" ADD COLUMN "demoUrl" TEXT' 2>&1 || true)
+if echo "$ALTER_ART_OUT" | grep -qi "duplicate column name"; then
+  echo "   Article.demoUrl already exists — ok"
+elif echo "$ALTER_ART_OUT" | grep -qi "\[ERROR\]"; then
+  echo "$ALTER_ART_OUT" >&2
+  echo "   ALTER TABLE Article failed with an unexpected error" >&2
+  exit 1
+else
+  echo "   Article.demoUrl ready"
+fi
 bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-seed.sql
 
 echo "━━━ 5/6 Build with OpenNext"

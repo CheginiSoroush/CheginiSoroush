@@ -554,6 +554,8 @@ export type SeedArticle = {
   icon: string;
   readTime: number;
   repo?: string;
+  /** Live demo of the interactive app this article documents. */
+  demoUrl?: string;
 };
 
 export const ARTICLE_CATEGORIES = [
@@ -574,6 +576,7 @@ export const seedArticles: SeedArticle[] = [
     category: "self",
     readTime: 8,
     repo: "CheginiSoroush/overcoming-laziness-roadmap",
+    demoUrl: "https://overcoming-laziness-roadmap.imsoroush.ir/",
     content: `## 🧠 کدنویسی برای ذهن انسان
 
 این پروژه تنها یک مقاله ساده نیست، بلکه یک **نقشه راه تعاملی** است. هدف من ترکیب نظریات روانشناسی رفتار (مانند *عادت‌های اتمی* از جیمز کلیر و *کار عمیق* از کال نیوپورت) با تکنیک‌های مدرن فرانت‌اند بود تا کاربران بتوانند مسیر پیشرفت خود را به صورت بصری و گام‌به‌گام در یک بازه ۳۰ روزه طی کنند.
@@ -604,6 +607,7 @@ export const seedArticles: SeedArticle[] = [
     category: "self",
     readTime: 7,
     repo: "CheginiSoroush/atomic-habits-interactive",
+    demoUrl: "https://atomic-habits-interactive.imsoroush.ir/",
     content: `## 🌱 روانشناسی در قالب کد
 
 این وب‌اپلیکیشن مفاهیم کتاب پرفروش **«عادت‌های اتمی»** اثر جیمز کلیر را به ابزارهای تعاملی تبدیل کرده است. به جای خواندن یک متن طولانی، کاربر می‌تواند با المان‌های رابط کاربری تعامل کند، چرخه چهار مرحله‌ای عادت را کشف کند و تأثیر شگفت‌انگیز «رشد یک درصدی» را روی نمودار ببیند.
@@ -643,6 +647,7 @@ export const seedArticles: SeedArticle[] = [
     category: "self",
     readTime: 9,
     repo: "CheginiSoroush/willpower-science-amcc",
+    demoUrl: "https://willpower-science-amcc.imsoroush.ir/",
     content: `## 🔬 تجسم داده‌های روان‌شناختی
 
 این وب‌اپلیکیشن به جای ارائه یک مقاله متنی خشک، محتوای علمی مربوط به قشر کمربندی میانی قدامی (**aMCC**) را به یک داشبورد تعاملی تبدیل کرده است. کاربر می‌تواند ابزارهای ذهنی گاگینز را انتخاب کند و در لحظه، بازخورد و واکنش بیولوژیکی مغز را روی نمودار مشاهده کند.
@@ -678,6 +683,7 @@ export const seedArticles: SeedArticle[] = [
     category: "sports",
     readTime: 10,
     repo: "CheginiSoroush/Smart-Fitness-Planner",
+    demoUrl: "https://smart-fitness-planner.imsoroush.ir/",
     content: `## 🤖💪 مربی هوشمند تناسب اندام
 
 تولید برنامه‌های تمرینی و تغذیه شخصی‌سازی‌شده با استفاده از هوش مصنوعی Gemini.

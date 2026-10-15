@@ -43,6 +43,10 @@ export const articlesDict: Dict = {
     "meta.readTime": "{n} دقیقه مطالعه",
     // (meta.views removed — no traffic numbers in the public UI)
 
+    // ---------- live demo (interactive articles) ----------
+    "demo.live": "مشاهده نسخه تعاملی",
+    "demo.cardChip": "دارای دمو تعاملی",
+
     // ---------- like ----------
     "like.add": "لایک کردن این نوشته",
     "like.remove": "برداشتن لایک",
@@ -146,6 +150,10 @@ export const articlesDict: Dict = {
     // ---------- reader meta badges ----------
     "meta.readTime": "{n} min read",
     // (meta.views removed — no traffic numbers in the public UI)
+
+    // ---------- live demo (interactive articles) ----------
+    "demo.live": "Open live demo",
+    "demo.cardChip": "Interactive demo",
 
     // ---------- like ----------
     "like.add": "Like this article",

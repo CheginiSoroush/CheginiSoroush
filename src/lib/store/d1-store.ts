@@ -41,6 +41,21 @@ function d1(): D1DatabaseLike {
 
 const nowIso = () => new Date().toISOString();
 
+/**
+ * Normalize a stored datetime to an ISO string.
+ * D1 seeds historically inserted `publishedAt` as raw epoch millis
+ * (SQLite DATETIME), which `new Date("1791814409419")` cannot parse —
+ * the UI rendered "Invalid Date". Accepts epoch millis (number or
+ * numeric string) or any parseable date string; ISO passthrough otherwise.
+ */
+function toIso(value: unknown): string {
+  if (typeof value === "number") return new Date(value).toISOString();
+  const s = String(value);
+  if (/^\d{12,15}$/.test(s)) return new Date(Number(s)).toISOString();
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? nowIso() : d.toISOString();
+}
+
 const newId = (): string => {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return crypto.randomUUID();
@@ -69,7 +84,7 @@ function mapProject(r: Record<string, unknown>): ProjectRow {
     featured: !!r.featured,
     views: Number(r.views ?? 0),
     order: Number(r.order ?? 0),
-    createdAt: String(r.createdAt ?? nowIso()),
+    createdAt: toIso(r.createdAt ?? nowIso()),
   };
 }
 
@@ -87,7 +102,8 @@ function mapArticle(r: Record<string, unknown>): ArticleRow {
     readTime: Number(r.readTime ?? 5),
     views: Number(r.views ?? 0),
     likes: Number(r.likes ?? 0),
-    publishedAt: String(r.publishedAt ?? nowIso()),
+    publishedAt: toIso(r.publishedAt ?? nowIso()),
+    demoUrl: (r.demoUrl as string | null) ?? null,
   };
 }
 
@@ -99,7 +115,7 @@ function mapMessage(r: Record<string, unknown>): ContactMessageRow {
     subject: String(r.subject),
     message: String(r.message),
     read: !!r.read,
-    createdAt: String(r.createdAt ?? nowIso()),
+    createdAt: toIso(r.createdAt ?? nowIso()),
   };
 }
 

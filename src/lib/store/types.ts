@@ -41,6 +41,7 @@ export type ArticleRow = {
   views: number;
   likes: number;
   publishedAt: string;
+  demoUrl: string | null;
 };
 
 export type ContactMessageRow = {

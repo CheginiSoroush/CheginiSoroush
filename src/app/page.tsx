@@ -44,6 +44,7 @@ export default async function Page() {
       views: a.views,
       likes: a.likes,
       publishedAt: a.publishedAt,
+      demoUrl: a.demoUrl,
     }));
   } catch (error) {
     console.error("Failed to load initial data:", error);

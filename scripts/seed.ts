@@ -56,6 +56,7 @@ async function main() {
         category: a.category,
         icon: a.icon,
         readTime: a.readTime,
+        demoUrl: a.demoUrl ?? null,
       },
       create: {
         slug: a.slug,
@@ -67,6 +68,7 @@ async function main() {
         category: a.category,
         icon: a.icon,
         readTime: a.readTime,
+        demoUrl: a.demoUrl ?? null,
       },
     });
   }

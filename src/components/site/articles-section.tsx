@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
-import { Clock, Share2, Check, Heart, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send, History, Trash2, Minus, Plus, Type } from "lucide-react";
+import { Clock, Share2, Check, Heart, X, ArrowDownWideNarrow, LayoutGrid, ListTree, ChevronDown, BookOpen, Send, History, Trash2, Minus, Plus, Type, ExternalLink, Rocket } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,7 @@ import { EmptyState } from "@/components/site/empty-state";
 import { SearchInput } from "@/components/site/search-input";
 import { cn } from "@/lib/utils";
 import { useT, pickEn, relativeTime } from "@/lib/i18n";
+import { demoHost } from "@/lib/demo-urls";
 import { DirArrow } from "@/components/site/dir-arrow";
 import type { Article } from "@/lib/types";
 
@@ -737,6 +738,12 @@ export function ArticlesSection({
                           {t("articles", "badge.done")}
                         </span>
                       )}
+                      {a.demoUrl && (
+                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1">
+                          <Rocket className="w-3 h-3" aria-hidden />
+                          {t("articles", "demo.cardChip")}
+                        </span>
+                      )}
                   </div>
                   <h3 className="font-extrabold text-lg mb-2 leading-8 group-hover:text-brand transition-colors">
                     {pickEn(lang, a.titleEn, a.title)}
@@ -923,7 +930,29 @@ export function ArticlesSection({
                 </div>
               </div>
 
-              {/* Table of contents */}
+              {/* Live interactive demo — only for app-backed articles
+                  (same emerald CTA pattern as the projects dialog) */}
+              {selected.demoUrl && (
+                <a
+                  href={selected.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={selected.demoUrl}
+                  className="-mt-1 mb-4 flex w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 font-bold px-4 py-3 text-sm text-center text-emerald-600 sm:flex-row sm:gap-2 sm:px-6 sm:text-base dark:text-emerald-400 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
+                >
+                  <span className="flex items-center gap-2 whitespace-nowrap">
+                    <Rocket className="w-5 h-5 shrink-0" aria-hidden />
+                    {t("articles", "demo.live")}
+                  </span>
+                  <span
+                    dir="ltr"
+                    className="max-w-full truncate text-[11px] font-mono opacity-70"
+                  >
+                    {demoHost(selected.demoUrl)}
+                  </span>
+                  <ExternalLink className="hidden w-4 h-4 opacity-60 shrink-0 sm:block" aria-hidden />
+                </a>
+              )}
               {tocItems.length > 1 && (
                 <nav aria-label={t("articles", "toc.aria")} className="toc-box mb-5">
                   <button

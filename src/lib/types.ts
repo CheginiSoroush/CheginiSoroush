@@ -39,6 +39,8 @@ export type Article = {
   views: number;
   likes: number;
   publishedAt: string;
+  /** Live interactive demo of the app this article documents (nullable). */
+  demoUrl?: string | null;
 };
 
 export type SiteStats = {

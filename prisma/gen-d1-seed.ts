@@ -26,6 +26,18 @@ const q = (v: unknown): string => {
   return `'${String(v).replace(/'/g, "''")}'`;
 };
 
+/**
+ * Quote a datetime column. Prisma's SQLite driver returns DateTime as raw
+ * epoch millis (number); older seeds inserted those as-is, which D1 later
+ * served back as "1791814409419" and the UI rendered as "Invalid Date".
+ * Always emit ISO strings instead.
+ */
+const qDate = (v: unknown): string => {
+  if (typeof v === "number") return `'${new Date(v).toISOString()}'`;
+  if (typeof v === "string" && /^\d{12,15}$/.test(v)) return `'${new Date(Number(v)).toISOString()}'`;
+  return q(v);
+};
+
 type Row = Record<string, unknown>;
 
 const all = (sql: string): Row[] => sqlite.prepare(sql).all() as Row[];
@@ -43,7 +55,7 @@ const lines: string[] = [
 for (const r of projectRows) {
   lines.push(
     `INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")\n` +
-      `VALUES (${q(r.id)}, ${q(r.slug)}, ${q(r.title)}, ${q(r.titleEn)}, ${q(r.repo)}, ${q(r.demoUrl)}, ${q(r.description)}, ${q(r.descriptionEn)}, ${q(r.category)}, ${q(r.tags)}, ${q(r.icon)}, ${r.featured ? 1 : 0}, ${Number(r.views ?? 0)}, ${Number(r.order ?? 0)}, ${q(r.createdAt)})\n` +
+      `VALUES (${q(r.id)}, ${q(r.slug)}, ${q(r.title)}, ${q(r.titleEn)}, ${q(r.repo)}, ${q(r.demoUrl)}, ${q(r.description)}, ${q(r.descriptionEn)}, ${q(r.category)}, ${q(r.tags)}, ${q(r.icon)}, ${r.featured ? 1 : 0}, ${Number(r.views ?? 0)}, ${Number(r.order ?? 0)}, ${qDate(r.createdAt)})\n` +
       `ON CONFLICT("slug") DO UPDATE SET\n` +
       `  "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",\n` +
       `  "demoUrl" = excluded."demoUrl",\n` +
@@ -55,12 +67,12 @@ for (const r of projectRows) {
 
 for (const r of articleRows) {
   lines.push(
-    `INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt")\n` +
-      `VALUES (${q(r.id)}, ${q(r.slug)}, ${q(r.title)}, ${q(r.titleEn)}, ${q(r.excerpt)}, ${q(r.excerptEn)}, ${q(r.content)}, ${q(r.category)}, ${q(r.icon)}, ${Number(r.readTime ?? 5)}, ${Number(r.views ?? 0)}, ${Number(r.likes ?? 0)}, ${q(r.publishedAt)})\n` +
+    `INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt", "demoUrl")\n` +
+      `VALUES (${q(r.id)}, ${q(r.slug)}, ${q(r.title)}, ${q(r.titleEn)}, ${q(r.excerpt)}, ${q(r.excerptEn)}, ${q(r.content)}, ${q(r.category)}, ${q(r.icon)}, ${Number(r.readTime ?? 5)}, ${Number(r.views ?? 0)}, ${Number(r.likes ?? 0)}, ${qDate(r.publishedAt)}, ${q(r.demoUrl)})\n` +
       `ON CONFLICT("slug") DO UPDATE SET\n` +
       `  "title" = excluded."title", "titleEn" = excluded."titleEn", "excerpt" = excluded."excerpt",\n` +
       `  "excerptEn" = excluded."excerptEn", "content" = excluded."content", "category" = excluded."category",\n` +
-      `  "icon" = excluded."icon", "readTime" = excluded."readTime";`
+      `  "icon" = excluded."icon", "readTime" = excluded."readTime", "demoUrl" = excluded."demoUrl";`
   );
 }
 

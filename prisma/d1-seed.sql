@@ -2,7 +2,7 @@
 -- Idempotent content seed for Cloudflare D1 (run AFTER d1-schema.sql).
 
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831kt0000mefv10lsvjpr', 'membership-bot', 'ربات تلگرام: قفل کانال', 'Telegram Bot: Channel Lock', 'CheginiSoroush/Membership-Button-Builder-Telegram-Bot', NULL, 'توسعه یک ربات Serverless با Cloudflare Workers و دیتابیس D1 برای مدیریت پست‌های ویژه با شرط عضویت.', 'Serverless Telegram bot built on Cloudflare Workers with a D1 database to manage premium posts gated by channel membership.', 'bots', '["Cloudflare Workers","D1 Database","TypeScript","Telegram API"]', '🔐', 1, 0, 0, 1792049637053)
+VALUES ('cmv9831kt0000mefv10lsvjpr', 'membership-bot', 'ربات تلگرام: قفل کانال', 'Telegram Bot: Channel Lock', 'CheginiSoroush/Membership-Button-Builder-Telegram-Bot', NULL, 'توسعه یک ربات Serverless با Cloudflare Workers و دیتابیس D1 برای مدیریت پست‌های ویژه با شرط عضویت.', 'Serverless Telegram bot built on Cloudflare Workers with a D1 database to manage premium posts gated by channel membership.', 'bots', '["Cloudflare Workers","D1 Database","TypeScript","Telegram API"]', '🔐', 1, 0, 0, '2026-10-15T07:33:57.053Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -10,7 +10,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831kv0001mefv492sw628', 'persian-gemini-bot', 'دستیار هوش مصنوعی Gemini', 'Gemini AI Assistant', 'CheginiSoroush/Persian-Gemini-Telegram-Bot', NULL, 'ربات تلگرامی متصل به هوش مصنوعی گوگل با قابلیت چت هوشمند، استخراج متن از تصویر (OCR) و پنل مدیریت.', 'Telegram bot connected to Google''s AI, offering smart chat, OCR text extraction from images, and an admin panel.', 'bots', '["Google Gemini","OCR","Telegram API","AI"]', '✨', 1, 0, 1, 1792049637056)
+VALUES ('cmv9831kv0001mefv492sw628', 'persian-gemini-bot', 'دستیار هوش مصنوعی Gemini', 'Gemini AI Assistant', 'CheginiSoroush/Persian-Gemini-Telegram-Bot', NULL, 'ربات تلگرامی متصل به هوش مصنوعی گوگل با قابلیت چت هوشمند، استخراج متن از تصویر (OCR) و پنل مدیریت.', 'Telegram bot connected to Google''s AI, offering smart chat, OCR text extraction from images, and an admin panel.', 'bots', '["Google Gemini","OCR","Telegram API","AI"]', '✨', 1, 0, 1, '2026-10-15T07:33:57.056Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -18,7 +18,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831kw0002mefvvy8daqyx', 'aiflash', 'ربات هوش مصنوعی AiFlash', 'AiFlash AI Bot', 'CheginiSoroush/AiFlash', 'https://aiflash-showcase.imsoroush.ir/', 'دستیار تلگرامی چندوجهی متصل به Google Gemini، توسعه یافته بر بستر Cloudflare Workers بدون سرور.', 'Multimodal Telegram assistant powered by Google Gemini, built serverless on Cloudflare Workers.', 'bots', '["Cloudflare Workers","Google Gemini","Serverless","AI"]', '⚡', 0, 0, 2, 1792049637057)
+VALUES ('cmv9831kw0002mefvvy8daqyx', 'aiflash', 'ربات هوش مصنوعی AiFlash', 'AiFlash AI Bot', 'CheginiSoroush/AiFlash', 'https://aiflash-showcase.imsoroush.ir/', 'دستیار تلگرامی چندوجهی متصل به Google Gemini، توسعه یافته بر بستر Cloudflare Workers بدون سرور.', 'Multimodal Telegram assistant powered by Google Gemini, built serverless on Cloudflare Workers.', 'bots', '["Cloudflare Workers","Google Gemini","Serverless","AI"]', '⚡', 0, 0, 2, '2026-10-15T07:33:57.057Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -26,7 +26,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831kx0003mefveml3mkey', 'cloudflare-telegram-bot', 'ربات Serverless تلگرام', 'Serverless Telegram Bot', 'CheginiSoroush/Cloudflare-Telegram-Bot', NULL, 'ربات تلگرامی با معماری بدون سرور روی Cloudflare Workers، مجهز به دیتابیس D1، سیستم KV و Rate Limiting.', 'Telegram bot with a serverless architecture on Cloudflare Workers, backed by a D1 database, KV storage, and rate limiting.', 'bots', '["Cloudflare Workers","D1","KV Store","Rate Limiting"]', '☁️', 0, 0, 3, 1792049637057)
+VALUES ('cmv9831kx0003mefveml3mkey', 'cloudflare-telegram-bot', 'ربات Serverless تلگرام', 'Serverless Telegram Bot', 'CheginiSoroush/Cloudflare-Telegram-Bot', NULL, 'ربات تلگرامی با معماری بدون سرور روی Cloudflare Workers، مجهز به دیتابیس D1، سیستم KV و Rate Limiting.', 'Telegram bot with a serverless architecture on Cloudflare Workers, backed by a D1 database, KV storage, and rate limiting.', 'bots', '["Cloudflare Workers","D1","KV Store","Rate Limiting"]', '☁️', 0, 0, 3, '2026-10-15T07:33:57.057Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -34,7 +34,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831ky0004mefvg25801en', 'kv-dumper', 'سیستم صف ربات تلگرام', 'Telegram Bot Queue System', 'CheginiSoroush/KV-Dumper', NULL, 'ربات مدیریت صف ارسال محتوا با تاخیر هوشمند، متصل به دیتابیس Cloudflare D1 برای جلوگیری از Flood Limit تلگرام.', 'Content queue-management bot with smart delays, backed by Cloudflare D1 to prevent Telegram flood limits.', 'bots', '["Cloudflare D1","Queue System","Automation"]', '📋', 0, 0, 4, 1792049637059)
+VALUES ('cmv9831ky0004mefvg25801en', 'kv-dumper', 'سیستم صف ربات تلگرام', 'Telegram Bot Queue System', 'CheginiSoroush/KV-Dumper', NULL, 'ربات مدیریت صف ارسال محتوا با تاخیر هوشمند، متصل به دیتابیس Cloudflare D1 برای جلوگیری از Flood Limit تلگرام.', 'Content queue-management bot with smart delays, backed by Cloudflare D1 to prevent Telegram flood limits.', 'bots', '["Cloudflare D1","Queue System","Automation"]', '📋', 0, 0, 4, '2026-10-15T07:33:57.059Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -42,7 +42,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831kz0005mefvny1ik95p', 'unsplash-photos', 'اتوماسیون تصاویر Unsplash', 'Unsplash Photo Automation', 'CheginiSoroush/Unsplash-Photos', NULL, 'ربات سرورلس تلگرام مجهز به CRON Jobs برای دریافت تصاویر باکیفیت از Unsplash API و انتشار زمان‌بندی‌شده.', 'Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.', 'bots', '["CRON Jobs","Unsplash API","Serverless","Cloudflare"]', '📷', 0, 0, 5, 1792049637060)
+VALUES ('cmv9831kz0005mefvny1ik95p', 'unsplash-photos', 'اتوماسیون تصاویر Unsplash', 'Unsplash Photo Automation', 'CheginiSoroush/Unsplash-Photos', NULL, 'ربات سرورلس تلگرام مجهز به CRON Jobs برای دریافت تصاویر باکیفیت از Unsplash API و انتشار زمان‌بندی‌شده.', 'Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.', 'bots', '["CRON Jobs","Unsplash API","Serverless","Cloudflare"]', '📷', 0, 0, 5, '2026-10-15T07:33:57.060Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -50,7 +50,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l00006mefvv5vp2xi4', 'heartadminbot', 'مدیریت ناوگان ربات‌ها', 'Bot Fleet Management', 'CheginiSoroush/heartadminbot', NULL, 'سیستم Serverless برای مدیریت متمرکز ده‌ها ربات تلگرامی جهت ثبت خودکار ری‌اکشن در کانال‌ها با Cloudflare D1.', 'Serverless system for centrally managing dozens of Telegram bots that auto-register reactions in channels, built on Cloudflare D1.', 'bots', '["Fleet Management","Cloudflare D1","Serverless","Automation"]', '🛰️', 0, 0, 6, 1792049637061)
+VALUES ('cmv9831l00006mefvv5vp2xi4', 'heartadminbot', 'مدیریت ناوگان ربات‌ها', 'Bot Fleet Management', 'CheginiSoroush/heartadminbot', NULL, 'سیستم Serverless برای مدیریت متمرکز ده‌ها ربات تلگرامی جهت ثبت خودکار ری‌اکشن در کانال‌ها با Cloudflare D1.', 'Serverless system for centrally managing dozens of Telegram bots that auto-register reactions in channels, built on Cloudflare D1.', 'bots', '["Fleet Management","Cloudflare D1","Serverless","Automation"]', '🛰️', 0, 0, 6, '2026-10-15T07:33:57.061Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -58,7 +58,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l20007mefv3l85dqiw', 'proxy-config-bot', 'ربات پروکسی و کانفیگ', 'Proxy Config Bot', 'CheginiSoroush/Proxy-Config-Bot', NULL, 'سیستم توزیع منابع شبکه مبتنی بر Cloudflare Workers، مجهز به دیتابیس D1، عضویت اجباری و آپدیت خودکار.', 'Network resource distribution system on Cloudflare Workers with a D1 database, forced membership, and automatic updates.', 'bots', '["Cloudflare Workers","D1","Network","Telegram API"]', '🛡️', 0, 0, 7, 1792049637062)
+VALUES ('cmv9831l20007mefv3l85dqiw', 'proxy-config-bot', 'ربات پروکسی و کانفیگ', 'Proxy Config Bot', 'CheginiSoroush/Proxy-Config-Bot', NULL, 'سیستم توزیع منابع شبکه مبتنی بر Cloudflare Workers، مجهز به دیتابیس D1، عضویت اجباری و آپدیت خودکار.', 'Network resource distribution system on Cloudflare Workers with a D1 database, forced membership, and automatic updates.', 'bots', '["Cloudflare Workers","D1","Network","Telegram API"]', '🛡️', 0, 0, 7, '2026-10-15T07:33:57.062Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -66,7 +66,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l30008mefvqublv33n', 'config-to-channel', 'ربات توزیع کانفیگ', 'Config Distribution Bot', 'CheginiSoroush/ConfigToChannel', NULL, 'موتور Serverless برای استخراج، مدیریت و زمان‌بندی هوشمندِ ارسال کانفیگ‌های V2Ray به چندین کانال تلگرامی.', 'Serverless engine for extracting, managing, and smartly scheduling V2Ray config delivery across multiple Telegram channels.', 'bots', '["V2Ray","Serverless","Scheduling","Telegram API"]', '📡', 0, 0, 8, 1792049637063)
+VALUES ('cmv9831l30008mefvqublv33n', 'config-to-channel', 'ربات توزیع کانفیگ', 'Config Distribution Bot', 'CheginiSoroush/ConfigToChannel', NULL, 'موتور Serverless برای استخراج، مدیریت و زمان‌بندی هوشمندِ ارسال کانفیگ‌های V2Ray به چندین کانال تلگرامی.', 'Serverless engine for extracting, managing, and smartly scheduling V2Ray config delivery across multiple Telegram channels.', 'bots', '["V2Ray","Serverless","Scheduling","Telegram API"]', '📡', 0, 0, 8, '2026-10-15T07:33:57.063Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -74,7 +74,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l30009mefvokj6gi6k', 'audio-queue-bot', 'ربات صف صوتی', 'Audio Queue Bot', 'CheginiSoroush/Audio-Queue-Bot', NULL, 'اتوماسیون انتشار موسیقی در کانال‌های تلگرامی با معماری Serverless، مجهز به زمان‌بندی پویا و دیتابیس D1.', 'Music publishing automation for Telegram channels with a serverless architecture, dynamic scheduling, and a D1 database.', 'bots', '["Audio Publishing","Dynamic Scheduling","D1","Serverless"]', '🎧', 0, 0, 9, 1792049637064)
+VALUES ('cmv9831l30009mefvokj6gi6k', 'audio-queue-bot', 'ربات صف صوتی', 'Audio Queue Bot', 'CheginiSoroush/Audio-Queue-Bot', NULL, 'اتوماسیون انتشار موسیقی در کانال‌های تلگرامی با معماری Serverless، مجهز به زمان‌بندی پویا و دیتابیس D1.', 'Music publishing automation for Telegram channels with a serverless architecture, dynamic scheduling, and a D1 database.', 'bots', '["Audio Publishing","Dynamic Scheduling","D1","Serverless"]', '🎧', 0, 0, 9, '2026-10-15T07:33:57.064Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -82,7 +82,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l4000amefvieoz4nc4', 'ghost-curator', 'ربات کیوریتور (Ghost)', 'Ghost Curator Bot', 'CheginiSoroush/Ghost-Curator-Telegram-Bot', NULL, 'ابزار هوشمند ادمین کانال برای ذخیره، پاکسازی خودکار متن‌ها و ارسال زمان‌بندی‌شده محتوا در تلگرام.', 'Smart channel-admin tool for saving and auto-cleaning text and publishing scheduled content on Telegram.', 'bots', '["Curation","Text Processing","Scheduling","Telegram API"]', '👻', 0, 0, 10, 1792049637065)
+VALUES ('cmv9831l4000amefvieoz4nc4', 'ghost-curator', 'ربات کیوریتور (Ghost)', 'Ghost Curator Bot', 'CheginiSoroush/Ghost-Curator-Telegram-Bot', NULL, 'ابزار هوشمند ادمین کانال برای ذخیره، پاکسازی خودکار متن‌ها و ارسال زمان‌بندی‌شده محتوا در تلگرام.', 'Smart channel-admin tool for saving and auto-cleaning text and publishing scheduled content on Telegram.', 'bots', '["Curation","Text Processing","Scheduling","Telegram API"]', '👻', 0, 0, 10, '2026-10-15T07:33:57.065Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -90,7 +90,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l6000bmefvkoqyedfd', 'media-pack-bot', 'ربات مدیریت آلبوم مدیا', 'Media Album Manager Bot', 'CheginiSoroush/Media-Pack-Telegram-Bot', NULL, 'ربات ابری (Serverless) برای مدیریت، پاکسازی کپشن‌ها و انتشار خودکار آلبوم‌های عکس و ویدیو در ساعات طلایی.', 'Cloud serverless bot for managing media, cleaning captions, and auto-publishing photo and video albums at peak hours.', 'bots', '["Media Albums","Caption Cleanup","Cloudflare","Automation"]', '🖼️', 0, 0, 11, 1792049637066)
+VALUES ('cmv9831l6000bmefvkoqyedfd', 'media-pack-bot', 'ربات مدیریت آلبوم مدیا', 'Media Album Manager Bot', 'CheginiSoroush/Media-Pack-Telegram-Bot', NULL, 'ربات ابری (Serverless) برای مدیریت، پاکسازی کپشن‌ها و انتشار خودکار آلبوم‌های عکس و ویدیو در ساعات طلایی.', 'Cloud serverless bot for managing media, cleaning captions, and auto-publishing photo and video albums at peak hours.', 'bots', '["Media Albums","Caption Cleanup","Cloudflare","Automation"]', '🖼️', 0, 0, 11, '2026-10-15T07:33:57.066Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -98,7 +98,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l7000cmefv8oyv3grz', 'temp-file-bot', 'ربات فایل‌های موقت', 'Temp File Bot', 'CheginiSoroush/Telegram-Temp-File-Bot', NULL, 'ربات پایتونی برای ایجاد لینک‌های دانلود زمان‌دار، با قابلیت عضویت اجباری و حذف خودکار فایل‌ها از چت کاربر.', 'Python bot that generates time-limited download links, with forced membership and automatic deletion of files from the user''s chat.', 'bots', '["Python","Temporary Links","Auto-Delete","Telegram API"]', '⏳', 0, 0, 12, 1792049637067)
+VALUES ('cmv9831l7000cmefv8oyv3grz', 'temp-file-bot', 'ربات فایل‌های موقت', 'Temp File Bot', 'CheginiSoroush/Telegram-Temp-File-Bot', NULL, 'ربات پایتونی برای ایجاد لینک‌های دانلود زمان‌دار، با قابلیت عضویت اجباری و حذف خودکار فایل‌ها از چت کاربر.', 'Python bot that generates time-limited download links, with forced membership and automatic deletion of files from the user''s chat.', 'bots', '["Python","Temporary Links","Auto-Delete","Telegram API"]', '⏳', 0, 0, 12, '2026-10-15T07:33:57.067Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -106,7 +106,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l7000dmefvndrkgcve', 'channel-manager', 'دستیار ادمین کانال', 'Channel Admin Assistant', 'CheginiSoroush/Telegram-Channel-Manager', NULL, 'ربات پایتونی برای پایش، پاکسازی خودکار متون با RegEx و سیستم تاییدیه دو مرحله‌ای برای مدیریت کانال.', 'Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.', 'bots', '["Python","RegEx","Moderation","Two-Factor Approval"]', '🛎️', 0, 0, 13, 1792049637068)
+VALUES ('cmv9831l7000dmefvndrkgcve', 'channel-manager', 'دستیار ادمین کانال', 'Channel Admin Assistant', 'CheginiSoroush/Telegram-Channel-Manager', NULL, 'ربات پایتونی برای پایش، پاکسازی خودکار متون با RegEx و سیستم تاییدیه دو مرحله‌ای برای مدیریت کانال.', 'Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.', 'bots', '["Python","RegEx","Moderation","Two-Factor Approval"]', '🛎️', 0, 0, 13, '2026-10-15T07:33:57.068Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -114,7 +114,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l8000emefvbmw626yt', 'self-destruct', 'ربات فایل‌های زمان‌دار', 'Timed File Bot', 'CheginiSoroush/Cloudflare-Self-Destruct', NULL, 'نسخه Serverless ربات Self-Destruct در کلودفلر، مجهز به CRON Jobs یک دقیقه‌ای برای نابودی خودکار پیام‌ها.', 'Serverless version of the Self-Destruct bot on Cloudflare, using one-minute CRON jobs to destroy messages automatically.', 'bots', '["Cloudflare CRON","Self-Destruct","Serverless","Security"]', '💥', 0, 0, 14, 1792049637068)
+VALUES ('cmv9831l8000emefvbmw626yt', 'self-destruct', 'ربات فایل‌های زمان‌دار', 'Timed File Bot', 'CheginiSoroush/Cloudflare-Self-Destruct', NULL, 'نسخه Serverless ربات Self-Destruct در کلودفلر، مجهز به CRON Jobs یک دقیقه‌ای برای نابودی خودکار پیام‌ها.', 'Serverless version of the Self-Destruct bot on Cloudflare, using one-minute CRON jobs to destroy messages automatically.', 'bots', '["Cloudflare CRON","Self-Destruct","Serverless","Security"]', '💥', 0, 0, 14, '2026-10-15T07:33:57.068Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -122,7 +122,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831l9000fmefv2kvrpyya', 'bot-boilerplate', 'قالب پایه ربات تلگرام', 'Telegram Bot Boilerplate', 'CheginiSoroush/Telegram-Bot-Boilerplate', NULL, 'ساختار اولیه و استاندارد (Boilerplate) برای توسعه سریع ربات‌های تلگرامی با پایتون (Asyncio) و سیستم لاگینگ.', 'Standard boilerplate for rapidly building Telegram bots with Python (Asyncio) and structured logging.', 'bots', '["Python","Asyncio","Logging","Boilerplate"]', '🧱', 0, 0, 15, 1792049637070)
+VALUES ('cmv9831l9000fmefv2kvrpyya', 'bot-boilerplate', 'قالب پایه ربات تلگرام', 'Telegram Bot Boilerplate', 'CheginiSoroush/Telegram-Bot-Boilerplate', NULL, 'ساختار اولیه و استاندارد (Boilerplate) برای توسعه سریع ربات‌های تلگرامی با پایتون (Asyncio) و سیستم لاگینگ.', 'Standard boilerplate for rapidly building Telegram bots with Python (Asyncio) and structured logging.', 'bots', '["Python","Asyncio","Logging","Boilerplate"]', '🧱', 0, 0, 15, '2026-10-15T07:33:57.070Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -130,7 +130,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831la000gmefvkijub423', 'vamp-sole', 'فروشگاه خونین کفش', 'VampSole Store', 'CheginiSoroush/VampSole', 'https://vampsole.imsoroush.ir/', 'طراحی رابط کاربری خلاقانه و تعاملی با تم وحشت، دارای انیمیشن‌های پیشرفته CSS و افکت باران خون.', 'Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.', 'web', '["E-Commerce UI","Advanced CSS","Horror Theme","Animations"]', '🩸', 0, 0, 16, 1792049637070)
+VALUES ('cmv9831la000gmefvkijub423', 'vamp-sole', 'فروشگاه خونین کفش', 'VampSole Store', 'CheginiSoroush/VampSole', 'https://vampsole.imsoroush.ir/', 'طراحی رابط کاربری خلاقانه و تعاملی با تم وحشت، دارای انیمیشن‌های پیشرفته CSS و افکت باران خون.', 'Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.', 'web', '["E-Commerce UI","Advanced CSS","Horror Theme","Animations"]', '🩸', 0, 0, 16, '2026-10-15T07:33:57.070Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -138,7 +138,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lb000hmefvq6xkd0d8', 'style-plus', 'فروشگاه استایل پلاس', 'StylePlus Store', 'CheginiSoroush/StylePlus-Ecommerce', 'https://style-plus-ecommerce.imsoroush.ir/', 'رابط کاربری پیشرفته و واکنش‌گرای فروشگاهی با امکاناتی نظیر استوری، گردونه شانس و سبد خرید پویا.', 'Advanced, responsive e-commerce UI with features such as stories, a spin-the-wheel game, and a dynamic cart.', 'web', '["E-Commerce UI","Stories","Spin Wheel","Dynamic Cart"]', '🛍️', 0, 0, 17, 1792049637072)
+VALUES ('cmv9831lb000hmefvq6xkd0d8', 'style-plus', 'فروشگاه استایل پلاس', 'StylePlus Store', 'CheginiSoroush/StylePlus-Ecommerce', 'https://style-plus-ecommerce.imsoroush.ir/', 'رابط کاربری پیشرفته و واکنش‌گرای فروشگاهی با امکاناتی نظیر استوری، گردونه شانس و سبد خرید پویا.', 'Advanced, responsive e-commerce UI with features such as stories, a spin-the-wheel game, and a dynamic cart.', 'web', '["E-Commerce UI","Stories","Spin Wheel","Dynamic Cart"]', '🛍️', 0, 0, 17, '2026-10-15T07:33:57.072Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -146,7 +146,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831ld000imefvge7nnxof', 'aurora-vpn', 'لندینگ پیج AuroraVPN', 'AuroraVPN Landing Page', 'CheginiSoroush/AuroraVPN', 'https://aurora-vpn.imsoroush.ir/', 'طراحی مدرن شیشه‌ای با انیمیشن‌های پس‌زمینه پویا و اسکرول تعاملی با جاوااسکریپت خالص.', 'Modern glassmorphism design with dynamic background animations and interactive scrolling in vanilla JavaScript.', 'web', '["Glassmorphism","Vanilla JS","Landing Page","Animations"]', '🌌', 0, 0, 18, 1792049637073)
+VALUES ('cmv9831ld000imefvge7nnxof', 'aurora-vpn', 'لندینگ پیج AuroraVPN', 'AuroraVPN Landing Page', 'CheginiSoroush/AuroraVPN', 'https://aurora-vpn.imsoroush.ir/', 'طراحی مدرن شیشه‌ای با انیمیشن‌های پس‌زمینه پویا و اسکرول تعاملی با جاوااسکریپت خالص.', 'Modern glassmorphism design with dynamic background animations and interactive scrolling in vanilla JavaScript.', 'web', '["Glassmorphism","Vanilla JS","Landing Page","Animations"]', '🌌', 0, 0, 18, '2026-10-15T07:33:57.073Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -154,7 +154,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831le000jmefvps5qhrs2', 'fashion-everyday', 'طراحی Fashion Everyday', 'Fashion Everyday Design', 'CheginiSoroush/Fashion-Everyday', 'https://fashion-everyday.imsoroush.ir/', 'طراحی مدرن و مینیمال با استفاده از تکنیک‌های پیشرفته فیلترهای SVG برای خلق افکت‌های تایپوگرافی پویا.', 'Modern, minimal design using advanced SVG filter techniques to create dynamic typography effects.', 'web', '["SVG Filters","Typography","Minimal Design","CSS"]', '👗', 0, 0, 19, 1792049637074)
+VALUES ('cmv9831le000jmefvps5qhrs2', 'fashion-everyday', 'طراحی Fashion Everyday', 'Fashion Everyday Design', 'CheginiSoroush/Fashion-Everyday', 'https://fashion-everyday.imsoroush.ir/', 'طراحی مدرن و مینیمال با استفاده از تکنیک‌های پیشرفته فیلترهای SVG برای خلق افکت‌های تایپوگرافی پویا.', 'Modern, minimal design using advanced SVG filter techniques to create dynamic typography effects.', 'web', '["SVG Filters","Typography","Minimal Design","CSS"]', '👗', 0, 0, 19, '2026-10-15T07:33:57.074Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -162,7 +162,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lf000kmefvv7vsim75', 'argus-vpn', 'لندینگ پیج ArgusVPN', 'ArgusVPN Landing Page', 'CheginiSoroush/ArgusVPN', 'https://argus-vpn.imsoroush.ir/', 'طراحی مدرن و تاریک با انیمیشن‌های اسکرول GSAP، ماک‌آپ تعاملی CSS و کره زمین سه‌بعدی.', 'Modern dark design with GSAP scroll animations, an interactive CSS mockup, and a 3D globe.', 'web', '["GSAP","3D Globe","Dark Design","CSS Mockups"]', '👁️', 0, 0, 20, 1792049637075)
+VALUES ('cmv9831lf000kmefvv7vsim75', 'argus-vpn', 'لندینگ پیج ArgusVPN', 'ArgusVPN Landing Page', 'CheginiSoroush/ArgusVPN', 'https://argus-vpn.imsoroush.ir/', 'طراحی مدرن و تاریک با انیمیشن‌های اسکرول GSAP، ماک‌آپ تعاملی CSS و کره زمین سه‌بعدی.', 'Modern dark design with GSAP scroll animations, an interactive CSS mockup, and a 3D globe.', 'web', '["GSAP","3D Globe","Dark Design","CSS Mockups"]', '👁️', 0, 0, 20, '2026-10-15T07:33:57.075Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -170,7 +170,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lg000lmefvvyx1j3ct', 'aramia-cbt', 'اپلیکیشن آرامیا (CBT)', 'Aramia CBT App', 'CheginiSoroush/Aramia-CBT-App', 'https://aramia-cbt-app.imsoroush.ir/', 'وب‌اپلیکیشن روان‌شناسی برای مدیریت استرس مجهز به LocalStorage، نمودارهای Chart.js و ابزارهای ذهن‌آگاهی.', 'Psychology web app for stress management, featuring LocalStorage persistence, Chart.js charts, and mindfulness tools.', 'web', '["Psychology","Chart.js","LocalStorage","Mindfulness"]', '🧘', 1, 0, 21, 1792049637076)
+VALUES ('cmv9831lg000lmefvvyx1j3ct', 'aramia-cbt', 'اپلیکیشن آرامیا (CBT)', 'Aramia CBT App', 'CheginiSoroush/Aramia-CBT-App', 'https://aramia-cbt-app.imsoroush.ir/', 'وب‌اپلیکیشن روان‌شناسی برای مدیریت استرس مجهز به LocalStorage، نمودارهای Chart.js و ابزارهای ذهن‌آگاهی.', 'Psychology web app for stress management, featuring LocalStorage persistence, Chart.js charts, and mindfulness tools.', 'web', '["Psychology","Chart.js","LocalStorage","Mindfulness"]', '🧘', 1, 0, 21, '2026-10-15T07:33:57.076Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -178,7 +178,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lh000mmefvuub320sf', 'luxe-ecommerce', 'فروشگاه آنلاین LUXE', 'LUXE Online Store', 'CheginiSoroush/Luxe', 'https://luxe.imsoroush.ir/', 'رابط کاربری مدرن محصولات لوکس، مجهز به سبد خرید داینامیک و فیلتر محصولات با Bootstrap 5.', 'Modern luxury-product UI with a dynamic shopping cart and product filtering built on Bootstrap 5.', 'web', '["Bootstrap 5","Luxury UI","Dynamic Cart","Filtering"]', '💎', 0, 0, 22, 1792049637077)
+VALUES ('cmv9831lh000mmefvuub320sf', 'luxe-ecommerce', 'فروشگاه آنلاین LUXE', 'LUXE Online Store', 'CheginiSoroush/Luxe', 'https://luxe.imsoroush.ir/', 'رابط کاربری مدرن محصولات لوکس، مجهز به سبد خرید داینامیک و فیلتر محصولات با Bootstrap 5.', 'Modern luxury-product UI with a dynamic shopping cart and product filtering built on Bootstrap 5.', 'web', '["Bootstrap 5","Luxury UI","Dynamic Cart","Filtering"]', '💎', 0, 0, 22, '2026-10-15T07:33:57.077Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -186,7 +186,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831li000nmefvolw3uwqg', 'stepstyle', 'فروشگاه آنلاین StepStyle', 'StepStyle Online Store', 'CheginiSoroush/StepStyle', 'https://stepstyle.imsoroush.ir/', 'رابط کاربری مدرن با Bootstrap 5، مجهز به سیستم فیلترینگ و رندرینگ داینامیک محصولات جاوااسکریپت.', 'Modern Bootstrap 5 UI with a product filtering system and dynamic JavaScript product rendering.', 'web', '["Bootstrap 5","Dynamic Rendering","Filtering","JS"]', '👟', 0, 0, 23, 1792049637078)
+VALUES ('cmv9831li000nmefvolw3uwqg', 'stepstyle', 'فروشگاه آنلاین StepStyle', 'StepStyle Online Store', 'CheginiSoroush/StepStyle', 'https://stepstyle.imsoroush.ir/', 'رابط کاربری مدرن با Bootstrap 5، مجهز به سیستم فیلترینگ و رندرینگ داینامیک محصولات جاوااسکریپت.', 'Modern Bootstrap 5 UI with a product filtering system and dynamic JavaScript product rendering.', 'web', '["Bootstrap 5","Dynamic Rendering","Filtering","JS"]', '👟', 0, 0, 23, '2026-10-15T07:33:57.078Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -194,7 +194,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lj000omefvqvngom2s', 'valentine-game', 'مینی‌گیم ولنتاین', 'Valentine Mini-Game', 'CheginiSoroush/My_Valentine_site', 'https://my-valentine-site.imsoroush.ir/', 'یک صفحه وب تعاملی و فان با جاوااسکریپت که در آن دکمه «خیر» به صورت هوشمند از دست کاربر فرار می‌کند!', 'A playful, interactive JavaScript page where the ''No'' button cleverly escapes the user''s cursor!', 'web', '["Fun","Interactive JS","Mini-Game","Creative"]', '💝', 0, 0, 24, 1792049637079)
+VALUES ('cmv9831lj000omefvqvngom2s', 'valentine-game', 'مینی‌گیم ولنتاین', 'Valentine Mini-Game', 'CheginiSoroush/My_Valentine_site', 'https://my-valentine-site.imsoroush.ir/', 'یک صفحه وب تعاملی و فان با جاوااسکریپت که در آن دکمه «خیر» به صورت هوشمند از دست کاربر فرار می‌کند!', 'A playful, interactive JavaScript page where the ''No'' button cleverly escapes the user''s cursor!', 'web', '["Fun","Interactive JS","Mini-Game","Creative"]', '💝', 0, 0, 24, '2026-10-15T07:33:57.079Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -202,7 +202,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lk000pmefv9gwdc9f1', 'cinematic-solar-system', 'شبیه‌ساز سینمایی منظومه', 'Cinematic Solar System', 'CheginiSoroush/Cinematic-Solar-System-3D', 'https://cinematic-solar-system.imsoroush.ir/', 'شبیه‌سازی کاملاً سه‌بعدی و واقع‌گرایانه با موتور قدرتمند Three.js، تکسچرهای ناسا و افکت‌های Post-Processing.', 'Fully 3D, realistic simulation powered by Three.js, with NASA textures and post-processing effects.', '3d', '["Three.js","NASA Textures","Post-Processing","WebGL"]', '🪐', 1, 1, 25, 1792049637080)
+VALUES ('cmv9831lk000pmefv9gwdc9f1', 'cinematic-solar-system', 'شبیه‌ساز سینمایی منظومه', 'Cinematic Solar System', 'CheginiSoroush/Cinematic-Solar-System-3D', 'https://cinematic-solar-system.imsoroush.ir/', 'شبیه‌سازی کاملاً سه‌بعدی و واقع‌گرایانه با موتور قدرتمند Three.js، تکسچرهای ناسا و افکت‌های Post-Processing.', 'Fully 3D, realistic simulation powered by Three.js, with NASA textures and post-processing effects.', '3d', '["Three.js","NASA Textures","Post-Processing","WebGL"]', '🪐', 1, 2, 25, '2026-10-15T07:33:57.080Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -210,7 +210,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lk000qmefv4ylbaekq', 'threejs-solar-system', 'منظومه شمسی واقع‌گرایانه', 'Realistic Solar System', 'CheginiSoroush/ThreeJS-Solar-System', 'https://threejs-solar-system.imsoroush.ir/', 'شبیه‌سازی کاملاً تعاملی با موتور قدرتمند Three.js، افکت‌های سینمایی (Bloom & Lensflare) و تکسچرهای ناسا.', 'Fully interactive simulation built with Three.js, featuring cinematic Bloom & Lensflare effects and NASA textures.', '3d', '["Three.js","Bloom","Lensflare","WebGL"]', '🌞', 0, 0, 26, 1792049637081)
+VALUES ('cmv9831lk000qmefv4ylbaekq', 'threejs-solar-system', 'منظومه شمسی واقع‌گرایانه', 'Realistic Solar System', 'CheginiSoroush/ThreeJS-Solar-System', 'https://threejs-solar-system.imsoroush.ir/', 'شبیه‌سازی کاملاً تعاملی با موتور قدرتمند Three.js، افکت‌های سینمایی (Bloom & Lensflare) و تکسچرهای ناسا.', 'Fully interactive simulation built with Three.js, featuring cinematic Bloom & Lensflare effects and NASA textures.', '3d', '["Three.js","Bloom","Lensflare","WebGL"]', '🌞', 0, 0, 26, '2026-10-15T07:33:57.081Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -218,7 +218,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831ll000rmefvwvp2jq2q', 'portfolio-nebula', 'قالب پورتفولیو سحابی', 'Nebula Portfolio Template', 'CheginiSoroush/Portfolio-Nebula', 'https://portfolio-nebula.imsoroush.ir/', 'یک قالب شخصی تاریک و مدرن با پس‌زمینه تعاملی Three.js، افکت‌های تایپ‌رایتر و انیمیشن‌های GSAP.', 'Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.', '3d', '["Three.js","GSAP","Typewriter","Dark UI"]', '🌫️', 0, 0, 27, 1792049637081)
+VALUES ('cmv9831ll000rmefvwvp2jq2q', 'portfolio-nebula', 'قالب پورتفولیو سحابی', 'Nebula Portfolio Template', 'CheginiSoroush/Portfolio-Nebula', 'https://portfolio-nebula.imsoroush.ir/', 'یک قالب شخصی تاریک و مدرن با پس‌زمینه تعاملی Three.js، افکت‌های تایپ‌رایتر و انیمیشن‌های GSAP.', 'Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.', '3d', '["Three.js","GSAP","Typewriter","Dark UI"]', '🌫️', 0, 0, 27, '2026-10-15T07:33:57.081Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -226,7 +226,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lm000smefvzgu69f9g', 'fashionable-3d', 'تجربه سینمایی Fashionable', 'Fashionable 3D Experience', 'CheginiSoroush/Fashionable-3D-Experience', 'https://fashionable-3d-experience.imsoroush.ir/', 'ترکیب جادویی Three.js و GSAP برای خلق یک لندینگ‌پیج تعاملی در عمق فضای سه‌بعدی (Z-Axis).', 'Three.js and GSAP combined to build an interactive landing page with depth along the Z-axis.', '3d', '["Three.js","GSAP","Z-Axis","Cinematic"]', '🎬', 0, 0, 28, 1792049637082)
+VALUES ('cmv9831lm000smefvzgu69f9g', 'fashionable-3d', 'تجربه سینمایی Fashionable', 'Fashionable 3D Experience', 'CheginiSoroush/Fashionable-3D-Experience', 'https://fashionable-3d-experience.imsoroush.ir/', 'ترکیب جادویی Three.js و GSAP برای خلق یک لندینگ‌پیج تعاملی در عمق فضای سه‌بعدی (Z-Axis).', 'Three.js and GSAP combined to build an interactive landing page with depth along the Z-axis.', '3d', '["Three.js","GSAP","Z-Axis","Cinematic"]', '🎬', 0, 0, 28, '2026-10-15T07:33:57.082Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -234,7 +234,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lm000tmefvr76jnfd3', 'dev-portfolio-3d', 'پورتفولیو سه‌بعدی', '3D Developer Portfolio', 'CheginiSoroush/Dev-Portfolio-3D', 'https://dev-portfolio-3d.imsoroush.ir/', 'قالب شخصی حرفه‌ای با طراحی شیشه‌ای (Glassmorphism)، تایم‌لاین مسیر شغلی و پس‌زمینه تعاملی Three.js.', 'Professional personal template with glassmorphism design, a career timeline, and an interactive Three.js background.', '3d', '["Glassmorphism","Career Timeline","Three.js","Interactive"]', '💼', 0, 0, 29, 1792049637083)
+VALUES ('cmv9831lm000tmefvr76jnfd3', 'dev-portfolio-3d', 'پورتفولیو سه‌بعدی', '3D Developer Portfolio', 'CheginiSoroush/Dev-Portfolio-3D', 'https://dev-portfolio-3d.imsoroush.ir/', 'قالب شخصی حرفه‌ای با طراحی شیشه‌ای (Glassmorphism)، تایم‌لاین مسیر شغلی و پس‌زمینه تعاملی Three.js.', 'Professional personal template with glassmorphism design, a career timeline, and an interactive Three.js background.', '3d', '["Glassmorphism","Career Timeline","Three.js","Interactive"]', '💼', 0, 0, 29, '2026-10-15T07:33:57.083Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -242,7 +242,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831ln000umefvfccx9gcs', 'realistic-earth', 'شبیه‌سازی زمین و ماه', 'Earth & Moon Simulation', 'CheginiSoroush/Realistic-Earth-WebGL', 'https://realistic-earth-webgl.imsoroush.ir/', 'رندرینگ واقع‌گرایانه کره زمین با استفاده از Three.js، تکسچرهای با وضوح بالا و نورپردازی دینامیک.', 'Realistic Earth rendering with Three.js, high-resolution textures, and dynamic lighting.', '3d', '["Three.js","HD Textures","Dynamic Lighting","WebGL"]', '🌍', 0, 0, 30, 1792049637084)
+VALUES ('cmv9831ln000umefvfccx9gcs', 'realistic-earth', 'شبیه‌سازی زمین و ماه', 'Earth & Moon Simulation', 'CheginiSoroush/Realistic-Earth-WebGL', 'https://realistic-earth-webgl.imsoroush.ir/', 'رندرینگ واقع‌گرایانه کره زمین با استفاده از Three.js، تکسچرهای با وضوح بالا و نورپردازی دینامیک.', 'Realistic Earth rendering with Three.js, high-resolution textures, and dynamic lighting.', '3d', '["Three.js","HD Textures","Dynamic Lighting","WebGL"]', '🌍', 0, 0, 30, '2026-10-15T07:33:57.084Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -250,7 +250,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lo000vmefvqdmg41uy', 'cosmic-earth', 'منظومه زمین (Procedural)', 'Procedural Earth', 'CheginiSoroush/3D-Cosmic-Earth', 'https://3d-cosmic-earth.imsoroush.ir/', 'خلق کره زمین با استفاده از ریاضیات (Simplex Noise) و شیدرنویسی سفارشی در Three.js بدون استفاده از عکس.', 'An Earth sphere generated entirely from math (Simplex Noise) and custom Three.js shaders, with no image textures.', '3d', '["Simplex Noise","Custom Shaders","Procedural","Three.js"]', '🧮', 0, 0, 31, 1792049637084)
+VALUES ('cmv9831lo000vmefvqdmg41uy', 'cosmic-earth', 'منظومه زمین (Procedural)', 'Procedural Earth', 'CheginiSoroush/3D-Cosmic-Earth', 'https://3d-cosmic-earth.imsoroush.ir/', 'خلق کره زمین با استفاده از ریاضیات (Simplex Noise) و شیدرنویسی سفارشی در Three.js بدون استفاده از عکس.', 'An Earth sphere generated entirely from math (Simplex Noise) and custom Three.js shaders, with no image textures.', '3d', '["Simplex Noise","Custom Shaders","Procedural","Three.js"]', '🧮', 0, 0, 31, '2026-10-15T07:33:57.084Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -258,7 +258,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lp000wmefvnw1qahu2', 'microservices-vs-monolith', 'میکروسرویس یا مونولیت؟', 'Microservices or Monolith?', 'CheginiSoroush/microservices-vs-monolith', 'https://microservices-vs-monolith.imsoroush.ir/', 'یک ابزار تعاملی و بصری با Chart.js برای پیشنهاد بهترین معماری نرم‌افزار بر اساس نیازهای پروژه.', 'Interactive visual tool built with Chart.js that recommends the best software architecture based on project needs.', 'tools', '["Architecture","Chart.js","Decision Tool","Interactive"]', '🏗️', 0, 0, 32, 1792049637086)
+VALUES ('cmv9831lp000wmefvnw1qahu2', 'microservices-vs-monolith', 'میکروسرویس یا مونولیت؟', 'Microservices or Monolith?', 'CheginiSoroush/microservices-vs-monolith', 'https://microservices-vs-monolith.imsoroush.ir/', 'یک ابزار تعاملی و بصری با Chart.js برای پیشنهاد بهترین معماری نرم‌افزار بر اساس نیازهای پروژه.', 'Interactive visual tool built with Chart.js that recommends the best software architecture based on project needs.', 'tools', '["Architecture","Chart.js","Decision Tool","Interactive"]', '🏗️', 0, 0, 32, '2026-10-15T07:33:57.086Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -266,7 +266,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lq000xmefvqeq2ab07', 'gitpedia', 'گیت‌پدیا (GitPedia)', 'GitPedia', 'CheginiSoroush/gitpedia-interactive', 'https://gitpedia-interactive.imsoroush.ir/', 'دانشنامه تعاملی دستورات گیت مجهز به شبیه‌ساز ترمینال داخلی برای اجرای زنده و نمایش خروجی کدها.', 'Interactive encyclopedia of Git commands with a built-in terminal simulator for live command execution and output.', 'tools', '["Git","Terminal Simulator","Education","Interactive"]', '📚', 1, 1, 33, 1792049637087)
+VALUES ('cmv9831lq000xmefvqeq2ab07', 'gitpedia', 'گیت‌پدیا (GitPedia)', 'GitPedia', 'CheginiSoroush/gitpedia-interactive', 'https://gitpedia-interactive.imsoroush.ir/', 'دانشنامه تعاملی دستورات گیت مجهز به شبیه‌ساز ترمینال داخلی برای اجرای زنده و نمایش خروجی کدها.', 'Interactive encyclopedia of Git commands with a built-in terminal simulator for live command execution and output.', 'tools', '["Git","Terminal Simulator","Education","Interactive"]', '📚', 1, 1, 33, '2026-10-15T07:33:57.087Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -274,7 +274,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831ls000ymefv3i3mo97k', 'linux-cheat-sheet', 'چیت‌شیت جامع لینوکس', 'Comprehensive Linux Cheat Sheet', 'CheginiSoroush/linux-cheat-sheet', 'https://linux-cheat-sheet.imsoroush.ir/', 'یک مرجع سریع و تعاملی برای دستورات پرکاربرد خط فرمان (CLI) با قابلیت جستجوی زنده و کپی سریع.', 'Fast, interactive reference for common CLI commands with live search and quick copy.', 'tools', '["Linux","CLI","Live Search","Reference"]', '🐧', 0, 1, 34, 1792049637089)
+VALUES ('cmv9831ls000ymefv3i3mo97k', 'linux-cheat-sheet', 'چیت‌شیت جامع لینوکس', 'Comprehensive Linux Cheat Sheet', 'CheginiSoroush/linux-cheat-sheet', 'https://linux-cheat-sheet.imsoroush.ir/', 'یک مرجع سریع و تعاملی برای دستورات پرکاربرد خط فرمان (CLI) با قابلیت جستجوی زنده و کپی سریع.', 'Fast, interactive reference for common CLI commands with live search and quick copy.', 'tools', '["Linux","CLI","Live Search","Reference"]', '🐧', 0, 1, 34, '2026-10-15T07:33:57.089Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -282,7 +282,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lt000zmefvtvl495qv', 'fix-network', 'اسکریپت تعمیر شبکه لینوکس', 'Linux Network Repair Script', 'CheginiSoroush/Fix-Network', NULL, 'یک ابزار Bash خودکار و دوزبانه برای رفع مشکلات DNS، پاکسازی پروکسی‌ها و ریست شبکه.', 'Automated, bilingual Bash tool for fixing DNS issues, cleaning up proxies, and resetting the network.', 'tools', '["Bash","DNS","Network Repair","Automation"]', '🔧', 0, 0, 35, 1792049637090)
+VALUES ('cmv9831lt000zmefvtvl495qv', 'fix-network', 'اسکریپت تعمیر شبکه لینوکس', 'Linux Network Repair Script', 'CheginiSoroush/Fix-Network', NULL, 'یک ابزار Bash خودکار و دوزبانه برای رفع مشکلات DNS، پاکسازی پروکسی‌ها و ریست شبکه.', 'Automated, bilingual Bash tool for fixing DNS issues, cleaning up proxies, and resetting the network.', 'tools', '["Bash","DNS","Network Repair","Automation"]', '🔧', 0, 0, 35, '2026-10-15T07:33:57.090Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -290,7 +290,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lu0010mefvzb64jv63', 'opencv-face-detection', 'تشخیص چهره با OpenCV', 'Face Detection with OpenCV', 'CheginiSoroush/opencv-face-detection', NULL, 'اسکریپت پایتون مبتنی بر خط فرمان برای تشخیص هوشمند چهره در تصاویر با استفاده از الگوریتم Haar Cascade.', 'Command-line Python script for smart face detection in images using the Haar Cascade algorithm.', 'tools', '["Python","OpenCV","Haar Cascade","Computer Vision"]', '😐', 0, 0, 36, 1792049637090)
+VALUES ('cmv9831lu0010mefvzb64jv63', 'opencv-face-detection', 'تشخیص چهره با OpenCV', 'Face Detection with OpenCV', 'CheginiSoroush/opencv-face-detection', NULL, 'اسکریپت پایتون مبتنی بر خط فرمان برای تشخیص هوشمند چهره در تصاویر با استفاده از الگوریتم Haar Cascade.', 'Command-line Python script for smart face detection in images using the Haar Cascade algorithm.', 'tools', '["Python","OpenCV","Haar Cascade","Computer Vision"]', '😐', 0, 0, 36, '2026-10-15T07:33:57.090Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -298,7 +298,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lv0011mefv15q2y9j3', 'opencv-image-blender', 'ابزار ترکیب تصاویر OpenCV', 'OpenCV Image Blender', 'CheginiSoroush/opencv-image-blender', NULL, 'اسکریپت خط فرمان (CLI) پایتون برای ترکیب و ادغام (Blending) دو تصویر با کنترل شفافیت.', 'Python CLI script for combining and blending two images with transparency control.', 'tools', '["Python","OpenCV","CLI","Image Blending"]', '🎭', 0, 0, 37, 1792049637091)
+VALUES ('cmv9831lv0011mefv15q2y9j3', 'opencv-image-blender', 'ابزار ترکیب تصاویر OpenCV', 'OpenCV Image Blender', 'CheginiSoroush/opencv-image-blender', NULL, 'اسکریپت خط فرمان (CLI) پایتون برای ترکیب و ادغام (Blending) دو تصویر با کنترل شفافیت.', 'Python CLI script for combining and blending two images with transparency control.', 'tools', '["Python","OpenCV","CLI","Image Blending"]', '🎭', 0, 0, 37, '2026-10-15T07:33:57.091Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -306,7 +306,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv9831lv0012mefvhbl4b8ln', 'cpp-calculator', 'ماشین حساب C++ (CLI)', 'C++ Calculator (CLI)', 'CheginiSoroush/CPP-Calculator', NULL, 'برنامه خط فرمان نوشته شده با ++C دارای سیستم اعتبارسنجی ورودی‌ها و مدیریت خطاهای ریاضی.', 'Command-line calculator written in C++ with input validation and mathematical error handling.', 'tools', '["C++","CLI","Validation","Error Handling"]', '🧮', 0, 0, 38, 1792049637092)
+VALUES ('cmv9831lv0012mefvhbl4b8ln', 'cpp-calculator', 'ماشین حساب C++ (CLI)', 'C++ Calculator (CLI)', 'CheginiSoroush/CPP-Calculator', NULL, 'برنامه خط فرمان نوشته شده با ++C دارای سیستم اعتبارسنجی ورودی‌ها و مدیریت خطاهای ریاضی.', 'Command-line calculator written in C++ with input validation and mathematical error handling.', 'tools', '["C++","CLI","Validation","Error Handling"]', '🧮', 0, 0, 38, '2026-10-15T07:33:57.092Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -314,7 +314,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45o0000meyu1pjlmw27', 'cheginisoroush', 'CheginiSoroush', 'CheginiSoroush', 'CheginiSoroush/CheginiSoroush', NULL, 'GitHub profile README — the landing page of this account.', 'GitHub profile README — the landing page of this account.', 'web', '["TypeScript"]', '🌐', 0, 0, 1000, 1792050526860)
+VALUES ('cmv98m45o0000meyu1pjlmw27', 'cheginisoroush', 'CheginiSoroush', 'CheginiSoroush', 'CheginiSoroush/CheginiSoroush', NULL, 'GitHub profile README — the landing page of this account.', 'GitHub profile README — the landing page of this account.', 'web', '["TypeScript"]', '🌐', 0, 0, 1000, '2026-10-15T07:48:46.860Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -322,7 +322,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45p0001meyuphflfvsy', 'projdump', 'Projdump', 'Projdump', 'CheginiSoroush/projdump', NULL, 'Dump an entire codebase into one AI-ready file — Markdown, XML or JSON. Pure Bash, zero dependencies. Token budgets, model presets and --split for long contexts. 70+ tests · shellcheck-clean · MIT', 'Dump an entire codebase into one AI-ready file — Markdown, XML or JSON. Pure Bash, zero dependencies. Token budgets, model presets and --split for long contexts. 70+ tests · shellcheck-clean · MIT', 'tools', '["Shell","ai","bash","chatgpt","claude"]', '🗃️', 0, 0, 1001, 1792050526862)
+VALUES ('cmv98m45p0001meyuphflfvsy', 'projdump', 'Projdump', 'Projdump', 'CheginiSoroush/projdump', NULL, 'Dump an entire codebase into one AI-ready file — Markdown, XML or JSON. Pure Bash, zero dependencies. Token budgets, model presets and --split for long contexts. 70+ tests · shellcheck-clean · MIT', 'Dump an entire codebase into one AI-ready file — Markdown, XML or JSON. Pure Bash, zero dependencies. Token budgets, model presets and --split for long contexts. 70+ tests · shellcheck-clean · MIT', 'tools', '["Shell","ai","bash","chatgpt","claude"]', '🗃️', 0, 2, 1001, '2026-10-15T07:48:46.862Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -330,7 +330,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45q0002meyuzld1q7zu', 'obsidian-vault', 'Obsidian Vault', 'Obsidian Vault', 'CheginiSoroush/obsidian-vault', NULL, 'Obsidian Vault — open-source project by CheginiSoroush.', 'Obsidian Vault — open-source project by CheginiSoroush.', 'tools', '["cli"]', '📓', 0, 0, 1002, 1792050526863)
+VALUES ('cmv98m45q0002meyuzld1q7zu', 'obsidian-vault', 'Obsidian Vault', 'Obsidian Vault', 'CheginiSoroush/obsidian-vault', NULL, 'Obsidian Vault — open-source project by CheginiSoroush.', 'Obsidian Vault — open-source project by CheginiSoroush.', 'tools', '["cli"]', '📓', 0, 1, 1002, '2026-10-15T07:48:46.863Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -338,7 +338,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45r0003meyu0mn1r4vc', 'ubuntu-optimizer', 'Ubuntu Optimizer', 'Ubuntu Optimizer', 'CheginiSoroush/ubuntu-optimizer', NULL, 'A self-updating Bash CLI that cleans, optimizes, repairs and secures Ubuntu — 23 tools (DNS switcher, kernel cleanup, swap manager, fzf launcher, AppImage/tar.gz installs), bilingual EN/FA interface, JSON reports & systemd timers. 510 automated tests. MIT.', 'A self-updating Bash CLI that cleans, optimizes, repairs and secures Ubuntu — 23 tools (DNS switcher, kernel cleanup, swap manager, fzf launcher, AppImage/tar.gz installs), bilingual EN/FA interface, JSON reports & systemd timers. 510 automated tests. MIT.', 'tools', '["Shell","apt","bash","bilingual","cleanup"]', '🐧', 0, 0, 1003, 1792050526864)
+VALUES ('cmv98m45r0003meyu0mn1r4vc', 'ubuntu-optimizer', 'Ubuntu Optimizer', 'Ubuntu Optimizer', 'CheginiSoroush/ubuntu-optimizer', NULL, 'A self-updating Bash CLI that cleans, optimizes, repairs and secures Ubuntu — 23 tools (DNS switcher, kernel cleanup, swap manager, fzf launcher, AppImage/tar.gz installs), bilingual EN/FA interface, JSON reports & systemd timers. 510 automated tests. MIT.', 'A self-updating Bash CLI that cleans, optimizes, repairs and secures Ubuntu — 23 tools (DNS switcher, kernel cleanup, swap manager, fzf launcher, AppImage/tar.gz installs), bilingual EN/FA interface, JSON reports & systemd timers. 510 automated tests. MIT.', 'tools', '["Shell","apt","bash","bilingual","cleanup"]', '🐧', 0, 0, 1003, '2026-10-15T07:48:46.864Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -346,7 +346,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45s0004meyuaak6gtp9', 'obsidian-sync-scripts', 'Obsidian Sync Scripts', 'Obsidian Sync Scripts', 'CheginiSoroush/obsidian-sync-scripts', NULL, '⚡ One Bash script. Three platforms. Battle-hardened Obsidian ↔ GitHub sync — verified backups, atomic repair, self-healing git. Termux · Linux · macOS', '⚡ One Bash script. Three platforms. Battle-hardened Obsidian ↔ GitHub sync — verified backups, atomic repair, self-healing git. Termux · Linux · macOS', 'tools', '["Shell","android","backup","backup-script","backup-tool"]', '🐧', 0, 0, 1004, 1792050526865)
+VALUES ('cmv98m45s0004meyuaak6gtp9', 'obsidian-sync-scripts', 'Obsidian Sync Scripts', 'Obsidian Sync Scripts', 'CheginiSoroush/obsidian-sync-scripts', NULL, '⚡ One Bash script. Three platforms. Battle-hardened Obsidian ↔ GitHub sync — verified backups, atomic repair, self-healing git. Termux · Linux · macOS', '⚡ One Bash script. Three platforms. Battle-hardened Obsidian ↔ GitHub sync — verified backups, atomic repair, self-healing git. Termux · Linux · macOS', 'tools', '["Shell","android","backup","backup-script","backup-tool"]', '🐧', 0, 0, 1004, '2026-10-15T07:48:46.865Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -354,7 +354,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45t0005meyusr0iuflv', 'obsidian-project-quest', 'Obsidian Project Quest', 'Obsidian Project Quest', 'CheginiSoroush/obsidian-project-quest', NULL, '🦉 Turn your projects into a game! A bilingual (EN/FA) Duolingo-style Obsidian vault template — XP, streaks, levels, badges & live dashboards.', '🦉 Turn your projects into a game! A bilingual (EN/FA) Duolingo-style Obsidian vault template — XP, streaks, levels, badges & live dashboards.', 'tools', '["bilingual","dataview","duolingo","gamification","obsidian"]', '👗', 0, 0, 1005, 1792050526865)
+VALUES ('cmv98m45t0005meyusr0iuflv', 'obsidian-project-quest', 'Obsidian Project Quest', 'Obsidian Project Quest', 'CheginiSoroush/obsidian-project-quest', NULL, '🦉 Turn your projects into a game! A bilingual (EN/FA) Duolingo-style Obsidian vault template — XP, streaks, levels, badges & live dashboards.', '🦉 Turn your projects into a game! A bilingual (EN/FA) Duolingo-style Obsidian vault template — XP, streaks, levels, badges & live dashboards.', 'tools', '["bilingual","dataview","duolingo","gamification","obsidian"]', '👗', 0, 0, 1005, '2026-10-15T07:48:46.865Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -362,7 +362,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45u0006meyu75z9m131', 'flash-panel', 'Flash Panel', 'Flash Panel', 'CheginiSoroush/flash-panel', NULL, 'High-performance serverless proxy panel for Cloudflare Workers — VLESS, Trojan and WARP with a rewritten protocol core (zero-copy parsing, cached auth, anti-stampede KV cache), ETag subscriptions 94% smaller, login rate-limiting and full Telegram-bot control.', 'High-performance serverless proxy panel for Cloudflare Workers — VLESS, Trojan and WARP with a rewritten protocol core (zero-copy parsing, cached auth, anti-stampede KV cache), ETag subscriptions 94% smaller, login rate-limiting and full Telegram-bot control.', 'bots', '["TypeScript"]', '🧯', 0, 0, 1006, 1792050526866)
+VALUES ('cmv98m45u0006meyu75z9m131', 'flash-panel', 'Flash Panel', 'Flash Panel', 'CheginiSoroush/flash-panel', NULL, 'High-performance serverless proxy panel for Cloudflare Workers — VLESS, Trojan and WARP with a rewritten protocol core (zero-copy parsing, cached auth, anti-stampede KV cache), ETag subscriptions 94% smaller, login rate-limiting and full Telegram-bot control.', 'High-performance serverless proxy panel for Cloudflare Workers — VLESS, Trojan and WARP with a rewritten protocol core (zero-copy parsing, cached auth, anti-stampede KV cache), ETag subscriptions 94% smaller, login rate-limiting and full Telegram-bot control.', 'bots', '["TypeScript"]', '🧯', 0, 0, 1006, '2026-10-15T07:48:46.866Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -370,7 +370,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45v0007meyu4vor8bmc', 'flash-wizard', 'Flash Wizard', 'Flash Wizard', 'CheginiSoroush/flash-wizard', NULL, 'Browser-based one-click deployment wizard for Flash Panel — creates KV storage, uploads the worker and attaches your custom domain in about 60 seconds. Your API token never leaves the browser; Persian RTL interface built in.', 'Browser-based one-click deployment wizard for Flash Panel — creates KV storage, uploads the worker and attaches your custom domain in about 60 seconds. Your API token never leaves the browser; Persian RTL interface built in.', 'tools', '["JavaScript"]', '📷', 0, 0, 1007, 1792050526867)
+VALUES ('cmv98m45v0007meyu4vor8bmc', 'flash-wizard', 'Flash Wizard', 'Flash Wizard', 'CheginiSoroush/flash-wizard', NULL, 'Browser-based one-click deployment wizard for Flash Panel — creates KV storage, uploads the worker and attaches your custom domain in about 60 seconds. Your API token never leaves the browser; Persian RTL interface built in.', 'Browser-based one-click deployment wizard for Flash Panel — creates KV storage, uploads the worker and attaches your custom domain in about 60 seconds. Your API token never leaves the browser; Persian RTL interface built in.', 'tools', '["JavaScript"]', '📷', 0, 0, 1007, '2026-10-15T07:48:46.867Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -378,7 +378,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45w0008meyu4xez1pgw', 'willpower-science-amcc', 'Willpower Science Amcc', 'Willpower Science Amcc', 'CheginiSoroush/willpower-science-amcc', 'https://willpower-science-amcc.imsoroush.ir/', 'An interactive, scientific analysis of the neuroscience of willpower — a dashboard for the anterior midcingulate cortex (aMCC) set against David Goggins’ tough mindset.', 'An interactive, scientific analysis of the neuroscience of willpower — a dashboard for the anterior midcingulate cortex (aMCC) set against David Goggins’ tough mindset.', 'web', '["HTML"]', '🧠', 0, 0, 1008, 1792050526868)
+VALUES ('cmv98m45w0008meyu4xez1pgw', 'willpower-science-amcc', 'Willpower Science Amcc', 'Willpower Science Amcc', 'CheginiSoroush/willpower-science-amcc', 'https://willpower-science-amcc.imsoroush.ir/', 'An interactive, scientific analysis of the neuroscience of willpower — a dashboard for the anterior midcingulate cortex (aMCC) set against David Goggins’ tough mindset.', 'An interactive, scientific analysis of the neuroscience of willpower — a dashboard for the anterior midcingulate cortex (aMCC) set against David Goggins’ tough mindset.', 'web', '["HTML"]', '🧠', 0, 0, 1008, '2026-10-15T07:48:46.868Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -386,7 +386,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45x0009meyugilfzdg6', 'overcoming-laziness-roadmap', 'Overcoming Laziness Roadmap', 'Overcoming Laziness Roadmap', 'CheginiSoroush/overcoming-laziness-roadmap', 'https://overcoming-laziness-roadmap.imsoroush.ir/', 'An interactive web app built on behavioral psychology and habit engineering — a 30-day program for beating laziness, centered on the Two-Minute Rule.', 'An interactive web app built on behavioral psychology and habit engineering — a 30-day program for beating laziness, centered on the Two-Minute Rule.', 'web', '["HTML"]', '🌐', 0, 0, 1009, 1792050526869)
+VALUES ('cmv98m45x0009meyugilfzdg6', 'overcoming-laziness-roadmap', 'Overcoming Laziness Roadmap', 'Overcoming Laziness Roadmap', 'CheginiSoroush/overcoming-laziness-roadmap', 'https://overcoming-laziness-roadmap.imsoroush.ir/', 'An interactive web app built on behavioral psychology and habit engineering — a 30-day program for beating laziness, centered on the Two-Minute Rule.', 'An interactive web app built on behavioral psychology and habit engineering — a 30-day program for beating laziness, centered on the Two-Minute Rule.', 'web', '["HTML"]', '🌐', 0, 0, 1009, '2026-10-15T07:48:46.869Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -394,7 +394,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45y000ameyubbovbbon', 'atomic-habits-interactive', 'Atomic Habits Interactive', 'Atomic Habits Interactive', 'CheginiSoroush/atomic-habits-interactive', 'https://atomic-habits-interactive.imsoroush.ir/', 'A visual JavaScript simulation of behavioral psychology and the compounding effect — exploring the four-stage habit loop and the impact of 1% daily growth.', 'A visual JavaScript simulation of behavioral psychology and the compounding effect — exploring the four-stage habit loop and the impact of 1% daily growth.', 'web', '["HTML"]', '🧠', 0, 0, 1010, 1792050526870)
+VALUES ('cmv98m45y000ameyubbovbbon', 'atomic-habits-interactive', 'Atomic Habits Interactive', 'Atomic Habits Interactive', 'CheginiSoroush/atomic-habits-interactive', 'https://atomic-habits-interactive.imsoroush.ir/', 'A visual JavaScript simulation of behavioral psychology and the compounding effect — exploring the four-stage habit loop and the impact of 1% daily growth.', 'A visual JavaScript simulation of behavioral psychology and the compounding effect — exploring the four-stage habit loop and the impact of 1% daily growth.', 'web', '["HTML"]', '🧠', 0, 0, 1010, '2026-10-15T07:48:46.870Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -402,7 +402,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m45z000bmeyud2puulkt', 'vampsole-website', 'VampSole WebSite', 'VampSole WebSite', 'CheginiSoroush/VampSole-WebSite', 'https://vampsole.imsoroush.ir/', 'Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.', 'Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.', 'web', '["HTML"]', '🌐', 0, 0, 1011, 1792050526871)
+VALUES ('cmv98m45z000bmeyud2puulkt', 'vampsole-website', 'VampSole WebSite', 'VampSole WebSite', 'CheginiSoroush/VampSole-WebSite', 'https://vampsole.imsoroush.ir/', 'Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.', 'Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.', 'web', '["HTML"]', '🌐', 0, 0, 1011, '2026-10-15T07:48:46.871Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -410,7 +410,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m460000cmeyujyck7aon', 'style-plus-ecommerce-ui', 'Style Plus Ecommerce Ui', 'Style Plus Ecommerce Ui', 'CheginiSoroush/style-plus-ecommerce-ui', 'https://style-plus-ecommerce.imsoroush.ir/', 'Advanced, responsive e-commerce UI with features such as stories, a spin-the-wheel game, and a dynamic cart.', 'Advanced, responsive e-commerce UI with features such as stories, a spin-the-wheel game, and a dynamic cart.', 'web', '["JavaScript"]', '👗', 0, 0, 1012, 1792050526872)
+VALUES ('cmv98m460000cmeyujyck7aon', 'style-plus-ecommerce-ui', 'Style Plus Ecommerce Ui', 'Style Plus Ecommerce Ui', 'CheginiSoroush/style-plus-ecommerce-ui', 'https://style-plus-ecommerce.imsoroush.ir/', 'Advanced, responsive e-commerce UI with features such as stories, a spin-the-wheel game, and a dynamic cart.', 'Advanced, responsive e-commerce UI with features such as stories, a spin-the-wheel game, and a dynamic cart.', 'web', '["JavaScript"]', '👗', 0, 0, 1012, '2026-10-15T07:48:46.872Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -418,7 +418,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m461000dmeyubj7b6508', 'portfolio-nebula-theme', 'Portfolio Nebula Theme', 'Portfolio Nebula Theme', 'CheginiSoroush/portfolio-nebula-theme', 'https://portfolio-nebula.imsoroush.ir/', 'Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.', 'Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.', '3d', '["HTML"]', '🪐', 0, 0, 1013, 1792050526873)
+VALUES ('cmv98m461000dmeyubj7b6508', 'portfolio-nebula-theme', 'Portfolio Nebula Theme', 'Portfolio Nebula Theme', 'CheginiSoroush/portfolio-nebula-theme', 'https://portfolio-nebula.imsoroush.ir/', 'Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.', 'Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.', '3d', '["HTML"]', '🪐', 0, 0, 1013, '2026-10-15T07:48:46.873Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -426,7 +426,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m463000emeyukwnv346r', 'argus-vpn-landing', 'Argus Vpn Landing', 'Argus Vpn Landing', 'CheginiSoroush/argus-vpn-landing', 'https://argus-vpn.imsoroush.ir/', 'Modern dark design with GSAP scroll animations, an interactive CSS mockup, and a 3D globe.', 'Modern dark design with GSAP scroll animations, an interactive CSS mockup, and a 3D globe.', '3d', '["HTML"]', '🛡️', 0, 0, 1014, 1792050526875)
+VALUES ('cmv98m463000emeyukwnv346r', 'argus-vpn-landing', 'Argus Vpn Landing', 'Argus Vpn Landing', 'CheginiSoroush/argus-vpn-landing', 'https://argus-vpn.imsoroush.ir/', 'Modern dark design with GSAP scroll animations, an interactive CSS mockup, and a 3D globe.', 'Modern dark design with GSAP scroll animations, an interactive CSS mockup, and a 3D globe.', '3d', '["HTML"]', '🛡️', 0, 0, 1014, '2026-10-15T07:48:46.875Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -434,7 +434,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m464000fmeyuicxutsuv', 'aiflash-showcase-web', 'AiFlash Showcase Web', 'AiFlash Showcase Web', 'CheginiSoroush/AiFlash-Showcase-Web', 'https://aiflash-showcase.imsoroush.ir/', 'Showcase website for the AiFlash AI Telegram bot — features, demos and setup guides.', 'Showcase website for the AiFlash AI Telegram bot — features, demos and setup guides.', 'bots', '["HTML"]', '🤖', 0, 0, 1015, 1792050526876)
+VALUES ('cmv98m464000fmeyuicxutsuv', 'aiflash-showcase-web', 'AiFlash Showcase Web', 'AiFlash Showcase Web', 'CheginiSoroush/AiFlash-Showcase-Web', 'https://aiflash-showcase.imsoroush.ir/', 'Showcase website for the AiFlash AI Telegram bot — features, demos and setup guides.', 'Showcase website for the AiFlash AI Telegram bot — features, demos and setup guides.', 'bots', '["HTML"]', '🤖', 0, 0, 1015, '2026-10-15T07:48:46.876Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -442,7 +442,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m465000gmeyuxntcavm5', 'aurora-vpn-landing', 'Aurora Vpn Landing', 'Aurora Vpn Landing', 'CheginiSoroush/aurora-vpn-landing', 'https://aurora-vpn.imsoroush.ir/', 'Modern glassmorphism design with dynamic background animations and interactive scrolling in vanilla JavaScript.', 'Modern glassmorphism design with dynamic background animations and interactive scrolling in vanilla JavaScript.', 'web', '["HTML"]', '🛡️', 0, 0, 1016, 1792050526877)
+VALUES ('cmv98m465000gmeyuxntcavm5', 'aurora-vpn-landing', 'Aurora Vpn Landing', 'Aurora Vpn Landing', 'CheginiSoroush/aurora-vpn-landing', 'https://aurora-vpn.imsoroush.ir/', 'Modern glassmorphism design with dynamic background animations and interactive scrolling in vanilla JavaScript.', 'Modern glassmorphism design with dynamic background animations and interactive scrolling in vanilla JavaScript.', 'web', '["HTML"]', '🛡️', 0, 0, 1016, '2026-10-15T07:48:46.877Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -450,7 +450,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m466000hmeyuwg1t5e05', 'telegram-channel-manager-bot', 'Telegram Channel Manager Bot', 'Telegram Channel Manager Bot', 'CheginiSoroush/telegram-channel-manager-bot', NULL, 'Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.', 'Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.', 'bots', '["Python"]', '👗', 0, 0, 1017, 1792050526878)
+VALUES ('cmv98m466000hmeyuwg1t5e05', 'telegram-channel-manager-bot', 'Telegram Channel Manager Bot', 'Telegram Channel Manager Bot', 'CheginiSoroush/telegram-channel-manager-bot', NULL, 'Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.', 'Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.', 'bots', '["Python"]', '👗', 0, 0, 1017, '2026-10-15T07:48:46.878Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -458,7 +458,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m467000imeyu6zo986t7', 'audio-queue-telegram-bot', 'Audio Queue Telegram Bot', 'Audio Queue Telegram Bot', 'CheginiSoroush/Audio-Queue-Telegram-Bot', NULL, 'Music publishing automation for Telegram channels with a serverless architecture, dynamic scheduling, and a D1 database.', 'Music publishing automation for Telegram channels with a serverless architecture, dynamic scheduling, and a D1 database.', 'bots', '["JavaScript"]', '🤖', 0, 0, 1018, 1792050526879)
+VALUES ('cmv98m467000imeyu6zo986t7', 'audio-queue-telegram-bot', 'Audio Queue Telegram Bot', 'Audio Queue Telegram Bot', 'CheginiSoroush/Audio-Queue-Telegram-Bot', NULL, 'Music publishing automation for Telegram channels with a serverless architecture, dynamic scheduling, and a D1 database.', 'Music publishing automation for Telegram channels with a serverless architecture, dynamic scheduling, and a D1 database.', 'bots', '["JavaScript"]', '🤖', 0, 0, 1018, '2026-10-15T07:48:46.879Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -466,7 +466,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m468000jmeyuazrwx5ii', 'unsplashphotos', 'Unsplashphotos', 'Unsplashphotos', 'CheginiSoroush/unsplashphotos', NULL, 'Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.', 'Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.', 'bots', '["JavaScript"]', '📷', 0, 0, 1019, 1792050526880)
+VALUES ('cmv98m468000jmeyuazrwx5ii', 'unsplashphotos', 'Unsplashphotos', 'Unsplashphotos', 'CheginiSoroush/unsplashphotos', NULL, 'Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.', 'Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.', 'bots', '["JavaScript"]', '📷', 0, 0, 1019, '2026-10-15T07:48:46.880Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -474,7 +474,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m469000kmeyuyl1jp852', 'smart-fitness-planner', 'Smart Fitness Planner', 'Smart Fitness Planner', 'CheginiSoroush/smart-fitness-planner', 'https://smart-fitness-planner.imsoroush.ir/', 'Interactive sports-science web app — the high-reps vs low-reps weightlifting debate, visualized.', 'Interactive sports-science web app — the high-reps vs low-reps weightlifting debate, visualized.', 'web', '["HTML"]', '🧠', 0, 0, 1020, 1792050526881)
+VALUES ('cmv98m469000kmeyuyl1jp852', 'smart-fitness-planner', 'Smart Fitness Planner', 'Smart Fitness Planner', 'CheginiSoroush/smart-fitness-planner', 'https://smart-fitness-planner.imsoroush.ir/', 'Interactive sports-science web app — the high-reps vs low-reps weightlifting debate, visualized.', 'Interactive sports-science web app — the high-reps vs low-reps weightlifting debate, visualized.', 'web', '["HTML"]', '🧠', 0, 0, 1020, '2026-10-15T07:48:46.881Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -482,7 +482,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m46a000lmeyu08ceagmc', 'gemini-telegram-worker', 'Gemini Telegram Worker', 'Gemini Telegram Worker', 'CheginiSoroush/gemini-telegram-worker', NULL, 'Google Gemini AI bot deployed on Cloudflare Workers — serverless and free-tier friendly.', 'Google Gemini AI bot deployed on Cloudflare Workers — serverless and free-tier friendly.', 'bots', '["JavaScript"]', '🤖', 0, 0, 1021, 1792050526882)
+VALUES ('cmv98m46a000lmeyu08ceagmc', 'gemini-telegram-worker', 'Gemini Telegram Worker', 'Gemini Telegram Worker', 'CheginiSoroush/gemini-telegram-worker', NULL, 'Google Gemini AI bot deployed on Cloudflare Workers — serverless and free-tier friendly.', 'Google Gemini AI bot deployed on Cloudflare Workers — serverless and free-tier friendly.', 'bots', '["JavaScript"]', '🤖', 0, 0, 1021, '2026-10-15T07:48:46.882Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -490,7 +490,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m46b000mmeyuwgw40o05', 'android', 'Android', 'Android', 'CheginiSoroush/android', NULL, 'Android experiments and mobile playground.', 'Android experiments and mobile playground.', 'web', '["web"]', '🌐', 0, 0, 1022, 1792050526884)
+VALUES ('cmv98m46b000mmeyuwgw40o05', 'android', 'Android', 'Android', 'CheginiSoroush/android', NULL, 'Android experiments and mobile playground.', 'Android experiments and mobile playground.', 'web', '["web"]', '🌐', 0, 0, 1022, '2026-10-15T07:48:46.884Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -498,14 +498,14 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmv98m46c000nmeyul1c6hnjd', 'soroush-website', 'Soroush Website', 'Soroush Website', 'CheginiSoroush/soroush-website', NULL, 'The previous generation of imsoroush.ir — original static personal website.', 'The previous generation of imsoroush.ir — original static personal website.', 'web', '["HTML"]', '🌐', 0, 0, 1023, 1792050526885)
+VALUES ('cmv98m46c000nmeyul1c6hnjd', 'soroush-website', 'Soroush Website', 'Soroush Website', 'CheginiSoroush/soroush-website', NULL, 'The previous generation of imsoroush.ir — original static personal website.', 'The previous generation of imsoroush.ir — original static personal website.', 'web', '["HTML"]', '🌐', 0, 0, 1023, '2026-10-15T07:48:46.885Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
   "description" = excluded."description", "descriptionEn" = excluded."descriptionEn",
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
-INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt")
+INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt", "demoUrl")
 VALUES ('cmv9831lw0013mefve5boevox', 'overcoming-laziness-roadmap', 'نقشه راه غلبه بر تنبلی', 'Roadmap to Overcoming Laziness', 'یک وب‌اپلیکیشن تعاملی بر پایه روانشناسی رفتار و مهندسی عادت‌ها؛ برنامه ۳۰ روزه‌ای برای غلبه بر تنبلی با تمرکز بر قانون ۲ دقیقه‌ای.', 'An interactive web app built on behavioral psychology and habit engineering — a 30-day program for beating laziness, centered on the Two-Minute Rule.', '## 🧠 کدنویسی برای ذهن انسان
 
 این پروژه تنها یک مقاله ساده نیست، بلکه یک **نقشه راه تعاملی** است. هدف من ترکیب نظریات روانشناسی رفتار (مانند *عادت‌های اتمی* از جیمز کلیر و *کار عمیق* از کال نیوپورت) با تکنیک‌های مدرن فرانت‌اند بود تا کاربران بتوانند مسیر پیشرفت خود را به صورت بصری و گام‌به‌گام در یک بازه ۳۰ روزه طی کنند.
@@ -522,12 +522,12 @@ VALUES ('cmv9831lw0013mefve5boevox', 'overcoming-laziness-roadmap', 'نقشه ر
 
 ### چرا تعاملی؟
 
-مغز انسان با تصویر و تعامل بهتر یاد می‌گیرد. به جای خواندن یک متن طولانی، کاربر هفته به هفته پیشرفت خود را روی نمودار می‌بیند و حس مالکیت (Ownership) نسبت به مسیر رشد پیدا می‌کند.', 'self', '🚀', 8, 0, 0, 1792049637093)
+مغز انسان با تصویر و تعامل بهتر یاد می‌گیرد. به جای خواندن یک متن طولانی، کاربر هفته به هفته پیشرفت خود را روی نمودار می‌بیند و حس مالکیت (Ownership) نسبت به مسیر رشد پیدا می‌کند.', 'self', '🚀', 8, 0, 0, '2026-10-15T07:33:57.093Z', 'https://overcoming-laziness-roadmap.imsoroush.ir/')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "excerpt" = excluded."excerpt",
   "excerptEn" = excluded."excerptEn", "content" = excluded."content", "category" = excluded."category",
-  "icon" = excluded."icon", "readTime" = excluded."readTime";
-INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt")
+  "icon" = excluded."icon", "readTime" = excluded."readTime", "demoUrl" = excluded."demoUrl";
+INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt", "demoUrl")
 VALUES ('cmv9831lx0014mefvnua12hib', 'atomic-habits-interactive', 'مهندسی عادت‌های اتمی', 'Engineering Atomic Habits', 'شبیه‌سازی بصری روانشناسی رفتار و اثر مرکب با جاوااسکریپت؛ کشف چرخه چهار مرحله‌ای عادت و تأثیر رشد ۱ درصدی روزانه.', 'A visual JavaScript simulation of behavioral psychology and the compounding effect — exploring the four-stage habit loop and the impact of 1% daily growth.', '## 🌱 روانشناسی در قالب کد
 
 این وب‌اپلیکیشن مفاهیم کتاب پرفروش **«عادت‌های اتمی»** اثر جیمز کلیر را به ابزارهای تعاملی تبدیل کرده است. به جای خواندن یک متن طولانی، کاربر می‌تواند با المان‌های رابط کاربری تعامل کند، چرخه چهار مرحله‌ای عادت را کشف کند و تأثیر شگفت‌انگیز «رشد یک درصدی» را روی نمودار ببیند.
@@ -553,12 +553,12 @@ VALUES ('cmv9831lx0014mefvnua12hib', 'atomic-habits-interactive', 'مهندسی 
 3. **پاسخ (Response):** خودِ رفتار
 4. **پاداش (Reward):** نتیجه‌ای که چرخه را تثبیت می‌کند
 
-طراحی هر چهار مرحله به صورت کارت‌های تعاملی باعث شد مفهوم کتاب نه فقط خوانده شود، بلکه *تجربه* شود.', 'self', '🧠', 7, 0, 0, 1792049637094)
+طراحی هر چهار مرحله به صورت کارت‌های تعاملی باعث شد مفهوم کتاب نه فقط خوانده شود، بلکه *تجربه* شود.', 'self', '🧠', 7, 0, 0, '2026-10-15T07:33:57.094Z', 'https://atomic-habits-interactive.imsoroush.ir/')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "excerpt" = excluded."excerpt",
   "excerptEn" = excluded."excerptEn", "content" = excluded."content", "category" = excluded."category",
-  "icon" = excluded."icon", "readTime" = excluded."readTime";
-INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt")
+  "icon" = excluded."icon", "readTime" = excluded."readTime", "demoUrl" = excluded."demoUrl";
+INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt", "demoUrl")
 VALUES ('cmv9831ly0015mefvveejlgnw', 'willpower-science-amcc', 'اراده پولادین (aMCC)', 'Iron Will (aMCC)', 'تحلیل تعاملی و علمی نوروساینس اراده؛ داشبورد تعاملی قشر کمربندی میانی قدامی (aMCC) در تقابل با ذهنیت سرسختانه دیوید گاگینز.', 'An interactive, scientific analysis of the neuroscience of willpower — a dashboard for the anterior midcingulate cortex (aMCC) set against David Goggins'' tough mindset.', '## 🔬 تجسم داده‌های روان‌شناختی
 
 این وب‌اپلیکیشن به جای ارائه یک مقاله متنی خشک، محتوای علمی مربوط به قشر کمربندی میانی قدامی (**aMCC**) را به یک داشبورد تعاملی تبدیل کرده است. کاربر می‌تواند ابزارهای ذهنی گاگینز را انتخاب کند و در لحظه، بازخورد و واکنش بیولوژیکی مغز را روی نمودار مشاهده کند.
@@ -580,12 +580,12 @@ VALUES ('cmv9831ly0015mefvveejlgnw', 'willpower-science-amcc', 'اراده پو�
 
 ### گاگینز در برابر علم
 
-ابزارهای ذهنی دیوید گاگینز (قانون ۴۰٪، اتاقک ذهنی، Accountabilty Mirror) را در کنار یافته‌های نوروساینس تحلیل کردم تا مشخص شود کدام تکنیک‌ها دقیقاً همان مسیر رشد aMCC را فعال می‌کنند.', 'self', '🔋', 9, 0, 0, 1792049637095)
+ابزارهای ذهنی دیوید گاگینز (قانون ۴۰٪، اتاقک ذهنی، Accountabilty Mirror) را در کنار یافته‌های نوروساینس تحلیل کردم تا مشخص شود کدام تکنیک‌ها دقیقاً همان مسیر رشد aMCC را فعال می‌کنند.', 'self', '🔋', 9, 0, 0, '2026-10-15T07:33:57.095Z', 'https://willpower-science-amcc.imsoroush.ir/')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "excerpt" = excluded."excerpt",
   "excerptEn" = excluded."excerptEn", "content" = excluded."content", "category" = excluded."category",
-  "icon" = excluded."icon", "readTime" = excluded."readTime";
-INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt")
+  "icon" = excluded."icon", "readTime" = excluded."readTime", "demoUrl" = excluded."demoUrl";
+INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt", "demoUrl")
 VALUES ('cmv9831lz0016mefv7tx5uiz6', 'smart-fitness-planner', 'جدال نهایی در وزنه‌زنی: تکرار بالا یا پایین؟', 'The Ultimate Weightlifting Debate: High or Low Reps?', 'بر اساس جدیدترین تحقیقات علمی، بهترین روش تمرینی را برای اهداف منحصر به فرد خود انتخاب کنید؛ مربی هوشمند با تولید برنامه تمرینی و تغذیه توسط AI.', 'Choose the best training method for your unique goals based on the latest scientific research — a smart coach that generates workout and nutrition plans with AI.', '## 🤖💪 مربی هوشمند تناسب اندام
 
 تولید برنامه‌های تمرینی و تغذیه شخصی‌سازی‌شده با استفاده از هوش مصنوعی Gemini.
@@ -611,12 +611,12 @@ VALUES ('cmv9831lz0016mefv7tx5uiz6', 'smart-fitness-planner', 'جدال نهای
 
 ### نکته کلیدی
 
-هیچ برنامه تمرینی «بهترین مطلق» وجود ندارد؛ فقط **بهترین برنامه برای هدف، تجهیزات و ظرفیت ریکاوری شما** وجود دارد. این ابزار دقیقاً همین تصمیم‌گیری را به داده و نمودار تبدیل می‌کند.', 'sports', '🏋️', 10, 0, 0, 1792049637096)
+هیچ برنامه تمرینی «بهترین مطلق» وجود ندارد؛ فقط **بهترین برنامه برای هدف، تجهیزات و ظرفیت ریکاوری شما** وجود دارد. این ابزار دقیقاً همین تصمیم‌گیری را به داده و نمودار تبدیل می‌کند.', 'sports', '🏋️', 10, 0, 0, '2026-10-15T07:33:57.096Z', 'https://smart-fitness-planner.imsoroush.ir/')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "excerpt" = excluded."excerpt",
   "excerptEn" = excluded."excerptEn", "content" = excluded."content", "category" = excluded."category",
-  "icon" = excluded."icon", "readTime" = excluded."readTime";
-INSERT INTO "SiteStat" ("key", "value", "updatedAt") VALUES ('visits', 4, 1792050649051)
+  "icon" = excluded."icon", "readTime" = excluded."readTime", "demoUrl" = excluded."demoUrl";
+INSERT INTO "SiteStat" ("key", "value", "updatedAt") VALUES ('visits', 10, 1792055086752)
 ON CONFLICT("key") DO NOTHING;
-INSERT INTO "SiteStat" ("key", "value", "updatedAt") VALUES ('projectViews', 3, 1792050574025)
+INSERT INTO "SiteStat" ("key", "value", "updatedAt") VALUES ('projectViews', 7, 1792055395721)
 ON CONFLICT("key") DO NOTHING;
