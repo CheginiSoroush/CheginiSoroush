@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe, Flame, Tag, BookOpen, ChevronDown } from "lucide-react";
+import { ExternalLink, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe, Flame, Tag, BookOpen, ChevronDown, Award } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema as sanitizeSchema } from "rehype-sanitize";
@@ -24,6 +24,7 @@ import type { Project } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { repoUrl } from "@/lib/site-config";
 import { demoHost } from "@/lib/demo-urls";
+import { projectAward } from "@/lib/project-awards";
 import { cn } from "@/lib/utils";
 import { useT, pickEn, relativeTime } from "@/lib/i18n";
 
@@ -401,6 +402,9 @@ export function ProjectsExplorer({
   // Undefined map (still loading) is treated as "public" so links never flicker
   const selectedIsPrivate = selected ? (privateRepos?.has(repoKey(selected.repo)) ?? false) : false;
 
+  // Config-driven third-party recognition for the selected project
+  const selectedAward = selected ? projectAward(selected.slug) : null;
+
   const shareProject = async (p: Project) => {
     const url = `${window.location.origin}/#/projects/${encodeURIComponent(p.slug)}`;
     setCopied(true);
@@ -516,7 +520,10 @@ export function ProjectsExplorer({
       .slice(0, 3);
   }, [initialProjects, selected]);
 
-  const renderCard = (p: Project, index: number) => (
+  const renderCard = (p: Project, index: number) => {
+    // Config-driven award for this slug (currently: ubuntu-optimizer → XERJ)
+    const award = projectAward(p.slug);
+    return (
     <motion.button
       key={p.id}
       layout
@@ -634,6 +641,32 @@ export function ProjectsExplorer({
           <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
         </span>
       )}
+      {/* Third-party recognition — config-driven (src/lib/project-awards.ts);
+          span+role pattern keeps the card a single <button> (no nested <a>) */}
+      {award && (
+        <span
+          role="button"
+          tabIndex={0}
+          aria-label={t("projects", `award.${award.id}.aria`)}
+          title={t("projects", `award.${award.id}.label`)}
+          onClick={(e) => {
+            e.stopPropagation();
+            window.open(award.href, "_blank", "noopener,noreferrer");
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              window.open(award.href, "_blank", "noopener,noreferrer");
+            }
+          }}
+          className="mt-2 w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all cursor-pointer active:scale-95"
+        >
+          <Award className="w-3 h-3 shrink-0" aria-hidden />
+          <span className="truncate">{t("projects", `award.${award.id}.short`)}</span>
+          <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" aria-hidden />
+        </span>
+      )}
       <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
         <span className="text-xs font-bold text-muted-foreground inline-flex items-center gap-1.5">
           <span aria-hidden>{FILTERS.find((f) => f.id === p.category)?.icon ?? "✨"}</span>
@@ -646,6 +679,7 @@ export function ProjectsExplorer({
       </div>
     </motion.button>
   );
+  };
 
   return (
     <section id="projects" aria-label={t("projects", "aria.projects")} className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -865,6 +899,31 @@ export function ProjectsExplorer({
               <p className="text-sm leading-8 text-foreground/90 mb-5">
                 {pickEn(lang, selected.descriptionEn, selected.description)}
               </p>
+
+              {/* Third-party recognition banner — shows where this project's
+                  code is already trusted as a worked reference */}
+              {selectedAward && (
+                <a
+                  href={selectedAward.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={t("projects", `award.${selectedAward.id}.aria`)}
+                  className="group mb-5 flex items-center gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] px-3.5 py-3 hover:border-amber-500/45 hover:bg-amber-500/[0.12] active:scale-[0.99] transition-all"
+                >
+                  <span className="w-9 h-9 grid place-items-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden>
+                    <Award className="w-5 h-5" />
+                  </span>
+                  <span className="flex-grow min-w-0">
+                    <span className="block text-[13px] font-extrabold text-amber-600 dark:text-amber-400">
+                      {t("projects", `award.${selectedAward.id}.label`)}
+                    </span>
+                    <span className="block text-[11px] leading-5 text-muted-foreground">
+                      {t("projects", `award.${selectedAward.id}.desc`)}
+                    </span>
+                  </span>
+                  <ExternalLink className="w-4 h-4 opacity-50 shrink-0 group-hover:opacity-90 transition-opacity" aria-hidden />
+                </a>
+              )}
 
               <h4 className="text-sm font-extrabold mb-2.5">{t("projects", "detail.stack")}</h4>
               <div className="flex flex-wrap gap-2 mb-5">

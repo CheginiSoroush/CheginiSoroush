@@ -81,6 +81,12 @@ export const projectsDict: Dict = {
     "detail.demoUp": "دمو در دسترس است",
     "detail.demoDown": "دمو موقتاً در دسترس نیست",
 
+    // ---------- third-party awards (src/lib/project-awards.ts) ----------
+    "award.xerj.label": "انتخاب‌شده در XERJ Corpus Hub",
+    "award.xerj.short": "XERJ Corpus Hub",
+    "award.xerj.desc": "پیاده‌سازی v7.16 این پروژه به‌عنوان مرجع کدِ آزموده‌شده — با نام و لینک مخزن — در کرپوس باز XERJ، موتور جست‌وجوی متن‌باز برای ایجنت‌های کدنویسی، ثبت شده است.",
+    "award.xerj.aria": "مشاهده XERJ Corpus Hub در گیت‌هاب (در تب جدید)",
+
     // ---------- toasts ----------
     "toast.linkCopied.title": "لینک کپی شد",
     "toast.linkCopied.desc": "لینک پروژه در کلیپ‌بورد ذخیره شد.",
@@ -162,6 +168,12 @@ export const projectsDict: Dict = {
     "detail.readmeFailed": "Failed to load README.",
     "detail.demoUp": "Demo is up",
     "detail.demoDown": "Demo is temporarily unreachable",
+
+    // ---------- third-party awards (src/lib/project-awards.ts) ----------
+    "award.xerj.label": "Selected for XERJ Corpus Hub",
+    "award.xerj.short": "XERJ Corpus Hub",
+    "award.xerj.desc": "The v7.16 implementation was selected as a worked reference — with attribution to this repo — in the open XERJ Corpus Hub, an open-source AI-native search engine for coding agents.",
+    "award.xerj.aria": "Open the XERJ Corpus Hub on GitHub (new tab)",
 
     // ---------- toasts ----------
     "toast.linkCopied.title": "Link copied",
