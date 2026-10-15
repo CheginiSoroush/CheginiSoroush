@@ -86,6 +86,8 @@ export function matchDemos(
 ): Record<string, string> {
   const brand = domains.filter(
     (d) =>
+      !!d?.worker &&
+      !!d?.domain &&
       d.domain.toLowerCase().endsWith(".imsoroush.ir") &&
       !APEX_HOSTS.has(d.domain.toLowerCase())
   );

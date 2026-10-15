@@ -153,9 +153,19 @@ async function fetchRepos(): Promise<SyncRepo[]> {
 
 async function fetchWorkerDomains(): Promise<WorkerDomain[]> {
   if (WORKERS_FILE) {
-    const raw = JSON.parse(readFileSync(WORKERS_FILE, "utf8")) as WorkerDomain[];
-    console.log(`  workers source: fixture ${WORKERS_FILE} (${raw.length} domains)`);
-    return raw;
+    const raw = JSON.parse(readFileSync(WORKERS_FILE, "utf8")) as {
+      worker?: string;
+      service?: string;
+      domain?: string;
+      hostname?: string;
+    }[];
+    // Accept both the engine shape ({worker, domain}) and the raw Cloudflare
+    // API shape ({service, hostname}) so real API snapshots work as fixtures.
+    const list = raw
+      .map((d) => ({ worker: d.worker ?? d.service ?? "", domain: d.domain ?? d.hostname ?? "" }))
+      .filter((d) => d.worker && d.domain);
+    console.log(`  workers source: fixture ${WORKERS_FILE} (${list.length} domains)`);
+    return list;
   }
   if (CF_TOKEN && CF_ACCOUNT) {
     const res = await fetch(
@@ -163,13 +173,17 @@ async function fetchWorkerDomains(): Promise<WorkerDomain[]> {
       { headers: { Authorization: `Bearer ${CF_TOKEN}` }, cache: "no-store" }
     );
     if (res.ok) {
+      // Real API item shape: { id, zone_id, zone_name, hostname, service } —
+      // the custom domain lives in `hostname` (NOT `domain`).
       const json = (await res.json()) as {
-        result?: { domain: string; service: string }[];
+        result?: { hostname?: string; domain?: string; service?: string }[];
       };
-      const list = (json.result ?? []).map((d) => ({
-        worker: d.service,
-        domain: d.domain,
-      }));
+      const list = (json.result ?? [])
+        .map((d) => ({
+          worker: d.service ?? "",
+          domain: d.hostname ?? d.domain ?? "",
+        }))
+        .filter((d) => d.worker && d.domain);
       console.log(`  workers source: Cloudflare API (${list.length} domains)`);
       return list;
     }
