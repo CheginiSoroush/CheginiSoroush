@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe, Flame, Tag, BookOpen, ChevronDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema as sanitizeSchema } from "rehype-sanitize";
 import {
   Dialog,
   DialogContent,
@@ -183,9 +185,48 @@ function ReadmeSection({ repo }: { repo: string }) {
               )}
               {status === "ok" && (
                 <ReactMarkdown
+                  // Raw HTML (GitHub banners, <details>, <img>) is parsed and
+                  // then sanitized — scripts/event handlers never survive.
+                  rehypePlugins={[
+                    rehypeRaw,
+                    [
+                      rehypeSanitize,
+                      {
+                        ...sanitizeSchema,
+                        tagNames: [
+                          ...(sanitizeSchema.tagNames ?? []),
+                          "img",
+                          "details",
+                          "summary",
+                          "picture",
+                          "source",
+                          "kbd",
+                        ],
+                        attributes: {
+                          ...sanitizeSchema.attributes,
+                          img: [
+                            "src",
+                            "srcSet",
+                            "alt",
+                            "title",
+                            "width",
+                            "height",
+                            "loading",
+                          ],
+                          source: ["src", "srcSet", "media", "type"],
+                          span: ["dir"],
+                          div: ["align", "dir"],
+                          p: ["align", "dir"],
+                        },
+                      },
+                    ],
+                  ]}
                   components={{
                     a: (props) => (
                       <a {...props} target="_blank" rel="noopener noreferrer" />
+                    ),
+                    img: (props) => (
+                      <img {...props} loading="lazy" alt={props.alt ?? ""} />
                     ),
                   }}
                 >

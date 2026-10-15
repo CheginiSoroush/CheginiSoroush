@@ -18,6 +18,36 @@ const globalForReadme = globalThis as unknown as {
 };
 const cache = (globalForReadme.readmeCache ??= new Map());
 
+const EXTERNAL_PREFIX = /^(https?:)?\/\//i;
+
+/**
+ * GitHub READMEs use repo-relative image/link URLs which would resolve
+ * against imsoroush.ir and 404. Rewrite them to raw.githubusercontent.com
+ * (HEAD = default branch). External, anchor, mailto and data URLs pass
+ * through untouched. Handles both HTML (src=/href=) and markdown ](..) forms.
+ */
+function absolutize(markdown: string, repo: string): string {
+  const base = `https://raw.githubusercontent.com/${repo}/HEAD/`;
+  const ok = (url: string) =>
+    !EXTERNAL_PREFIX.test(url) &&
+    !url.startsWith("#") &&
+    !url.startsWith("mailto:") &&
+    !url.startsWith("data:") &&
+    !url.includes("{{") &&
+    !url.startsWith("$");
+
+  const withBase = (url: string) =>
+    `${base}${url.replace(/^\.\//, "").replace(/^\//, "")}`;
+
+  return markdown
+    .replace(/(src|href)=(["'])([^"']+)\2/g, (m, attr, quote, url) =>
+      ok(url) ? `${attr}=${quote}${withBase(url)}${quote}` : m
+    )
+    .replace(/\]\(([^)\s]+)(\s+"[^"]*")?\)/g, (m, url, title = "") =>
+      ok(url) ? `](${withBase(url)})${title}` : m
+    );
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const repo = (searchParams.get("repo") ?? "").trim();
@@ -49,7 +79,9 @@ export async function GET(request: NextRequest) {
       cache: "no-store",
     });
 
-    const content = res.ok ? await res.text() : null;
+    const raw = res.ok ? await res.text() : null;
+    // Rewrite repo-relative asset URLs before handing markdown to the client.
+    const content = raw ? absolutize(raw, repo) : null;
     cache.set(repo, { content, at: Date.now() });
 
     return NextResponse.json(
