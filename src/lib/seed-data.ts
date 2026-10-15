@@ -35,7 +35,8 @@ export const seedProjects: SeedProject[] = [
     category: "bots",
     tags: ["Cloudflare Workers", "D1 Database", "TypeScript", "Telegram API"],
     icon: "🔐",
-    featured: true,
+    // Not featured since Task 61 — homepage slot given to ubuntu-optimizer
+    featured: false,
   },
   {
     slug: "persian-gemini-bot",
