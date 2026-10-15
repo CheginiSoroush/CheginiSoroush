@@ -125,4 +125,13 @@ else
 fi
 
 echo ""
+echo "━━━ 7/6 Auto-sync (repo→catalog, demo discovery, meta, uptime)"
+# Best-effort: a sync failure must never fail the deploy itself.
+if bash deploy/auto-sync.sh; then
+  echo "    auto-sync OK"
+else
+  echo "    auto-sync failed (non-fatal) — the scheduled workflow will retry"
+fi
+
+echo ""
 echo "✅ Deploy finished — Worker 'imsoroush' is live."

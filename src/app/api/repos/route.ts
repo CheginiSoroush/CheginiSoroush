@@ -1109,15 +1109,65 @@ async function load(): Promise<ReposPayload> {
       } else {
         payload = (await readDbSnapshot()) ?? SEED_PAYLOAD;
       }
-      // Fill curated *.imsoroush.ir demo URLs for repos whose GitHub
-      // homepage field is empty — applies to live, db and seed payloads.
+      // Fill curated + auto-discovered *.imsoroush.ir demo URLs for repos
+      // whose GitHub homepage field is empty — applies to live, db and seed
+      // payloads. Auto-discovered demos come from the RepoDemo table, written
+      // by the auto-sync job (Cloudflare Workers custom-domain matching).
+      // Enrich every repo with auto-sync meta (latest release, commit
+      // activity) and demo-host health for the uptime dot.
+      let demos: Record<string, string> = {};
+      let metaByRepo = new Map<string, { latestTag: string | null; latestTagAt: string | null; commitActivity: string }>();
+      let healthByHost = new Map<string, boolean>();
+      try {
+        const [demoRows, metaRows, healthRows] = await Promise.all([
+          store.listRepoDemos(),
+          store.listRepoMeta(),
+          store.listDemoHealth(),
+        ]);
+        demos = Object.fromEntries(demoRows.map((d) => [d.repo, d.url]));
+        metaByRepo = new Map(
+          metaRows.map((m) => [
+            m.repo,
+            { latestTag: m.latestTag, latestTagAt: m.latestTagAt, commitActivity: m.commitActivity },
+          ])
+        );
+        healthByHost = new Map(healthRows.map((h) => [h.host, h.ok]));
+      } catch (error) {
+        console.error("/api/repos auto-sync tables unavailable:", error);
+      }
+
+      const hostOf = (url: string): string | null => {
+        try {
+          return new URL(url).hostname.toLowerCase();
+        } catch {
+          return null;
+        }
+      };
+
       payload = {
         ...payload,
-        repos: payload.repos.map((r) =>
-          r.homepage
-            ? r
-            : { ...r, homepage: CURATED_DEMOS[r.name.toLowerCase()] ?? null }
-        ),
+        repos: payload.repos.map((r) => {
+          const homepage =
+            r.homepage ?? CURATED_DEMOS[r.name.toLowerCase()] ?? demos[r.name.toLowerCase()] ?? null;
+          const meta = metaByRepo.get(r.name);
+          const host = homepage ? hostOf(homepage) : null;
+          let activity: number[] = [];
+          if (meta) {
+            try {
+              activity = JSON.parse(meta.commitActivity) as number[];
+            } catch {
+              activity = [];
+            }
+          }
+          return {
+            ...r,
+            homepage,
+            latestTag: meta?.latestTag ?? null,
+            latestTagAt: meta?.latestTagAt ?? null,
+            commitActivity: activity,
+            demoOk: host ? (healthByHost.has(host) ? healthByHost.get(host)! : null) : null,
+          };
+        }),
       };
       cache.data = payload;
       cache.inflight = null;

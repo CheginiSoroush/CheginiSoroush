@@ -2,9 +2,12 @@ import type {
   AdminStats,
   ArticleRow,
   ContactMessageRow,
+  DemoHealthRow,
   ListMessagesOpts,
   ListProjectsOpts,
   ProjectRow,
+  RepoDemoRow,
+  RepoMetaRow,
   SnapshotTable,
   SubscriberRow,
 } from "./types";
@@ -69,6 +72,11 @@ export interface DataStore {
   // ---------- GitHub snapshots (single-row caches) ----------
   getSnapshot(table: SnapshotTable): Promise<{ payloadJson: string; updatedAt: string } | null>;
   putSnapshot(table: SnapshotTable, payloadJson: string): Promise<void>;
+
+  // ---------- Auto-sync data (repo demos / meta / demo health) ----------
+  listRepoDemos(): Promise<RepoDemoRow[]>;
+  listRepoMeta(): Promise<RepoMetaRow[]>;
+  listDemoHealth(): Promise<DemoHealthRow[]>;
 
   // ---------- Admin dashboard ----------
   adminStats(): Promise<AdminStats>;

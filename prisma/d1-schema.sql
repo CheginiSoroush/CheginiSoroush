@@ -81,3 +81,26 @@ CREATE TABLE IF NOT EXISTS "GithubSnapshot" (
     "payloadJson" TEXT NOT NULL,
     "updatedAt" DATETIME NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS "RepoDemo" (
+    "repo" TEXT NOT NULL PRIMARY KEY,
+    "url" TEXT NOT NULL,
+    "source" TEXT NOT NULL DEFAULT 'cloudflare',
+    "updatedAt" DATETIME NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "RepoMeta" (
+    "repo" TEXT NOT NULL PRIMARY KEY,
+    "latestTag" TEXT,
+    "latestTagAt" DATETIME,
+    "commitActivity" TEXT NOT NULL DEFAULT '[]',
+    "openIssues" INTEGER NOT NULL DEFAULT 0,
+    "fetchedAt" DATETIME NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "DemoHealth" (
+    "host" TEXT NOT NULL PRIMARY KEY,
+    "ok" BOOLEAN NOT NULL DEFAULT 1,
+    "latencyMs" INTEGER NOT NULL DEFAULT 0,
+    "lastChecked" DATETIME NOT NULL
+);

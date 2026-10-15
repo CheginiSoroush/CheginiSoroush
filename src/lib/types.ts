@@ -14,6 +14,15 @@ export type Project = {
   featured: boolean;
   views: number;
   order: number;
+  /** Latest GitHub release tag (auto-sync). */
+  latestTag?: string | null;
+  latestTagAt?: string | null;
+  /** Weekly commit counts, oldest → newest (auto-sync). */
+  commitActivity?: number[];
+  /** null = unknown / not a pinged host; true = up; false = down. */
+  demoOk?: boolean | null;
+  /** Top-3 most-viewed catalog rows. */
+  trending?: boolean;
 };
 
 export type Article = {
@@ -78,6 +87,13 @@ export type GitHubRepo = {
   homepage: string | null;
   pushedAt: string;
   updatedAt: string;
+  /** Latest GitHub release tag (auto-sync, optional). */
+  latestTag?: string | null;
+  latestTagAt?: string | null;
+  /** Weekly commit counts, oldest → newest (auto-sync, optional). */
+  commitActivity?: number[];
+  /** Demo-host health from the last uptime ping — null when unknown. */
+  demoOk?: boolean | null;
 };
 
 export const CATEGORY_LABELS: Record<string, { label: string; en: string; icon: string }> = {

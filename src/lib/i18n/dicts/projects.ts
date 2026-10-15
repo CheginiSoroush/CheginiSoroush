@@ -43,6 +43,7 @@ export const projectsDict: Dict = {
 
     // ---------- card ----------
     "card.featured": "منتخب",
+    "card.trending": "پربازدید",
     "card.details": "جزئیات",
     "card.live": "وب‌سایت پروژه",
     "card.liveAria": "باز کردن وب‌سایت {title} (در تب جدید)",
@@ -68,6 +69,17 @@ export const projectsDict: Dict = {
     "detail.shareTitle": "هم‌رسانی لینک",
     "detail.copyClone": "کپی دستور کلون",
     "detail.deeplinkNote": "لینک این پروژه قابل هم‌رسانی و نشانی‌پذیر است",
+    // auto-sync enrichment
+    "detail.release": "آخرین انتشار",
+    "detail.activity": "فعالیت هفتگی کامیت‌ها",
+    "detail.readme": "مستندات مخزن",
+    "detail.readmeShow": "نمایش README",
+    "detail.readmeHide": "بستن README",
+    "detail.readmeLoading": "در حال دریافت README…",
+    "detail.readmeEmpty": "مستنداتی برای این مخزن پیدا نشد.",
+    "detail.readmeFailed": "دریافت README ناموفق بود.",
+    "detail.demoUp": "دمو در دسترس است",
+    "detail.demoDown": "دمو موقتاً در دسترس نیست",
 
     // ---------- toasts ----------
     "toast.linkCopied.title": "لینک کپی شد",
@@ -113,6 +125,7 @@ export const projectsDict: Dict = {
 
     // ---------- card ----------
     "card.featured": "Featured",
+    "card.trending": "Trending",
     "card.details": "Details",
     "card.live": "Project site",
     "card.liveAria": "Open the {title} website (new tab)",
@@ -138,6 +151,17 @@ export const projectsDict: Dict = {
     "detail.shareTitle": "Share link",
     "detail.copyClone": "Copy clone command",
     "detail.deeplinkNote": "This project's link is shareable and bookmarkable.",
+    // auto-sync enrichment
+    "detail.release": "Latest release",
+    "detail.activity": "Weekly commit activity",
+    "detail.readme": "Repository docs",
+    "detail.readmeShow": "Show README",
+    "detail.readmeHide": "Hide README",
+    "detail.readmeLoading": "Loading README…",
+    "detail.readmeEmpty": "No documentation found for this repository.",
+    "detail.readmeFailed": "Failed to load README.",
+    "detail.demoUp": "Demo is up",
+    "detail.demoDown": "Demo is temporarily unreachable",
 
     // ---------- toasts ----------
     "toast.linkCopied.title": "Link copied",

@@ -84,3 +84,32 @@ model GithubSnapshot {
   payloadJson String
   updatedAt   DateTime @updatedAt
 }
+
+/// Repo → live demo URL discovered by the auto-sync job (Cloudflare Workers
+/// custom domains matched against repo names). Keyed by LOWERCASED repo name.
+model RepoDemo {
+  repo      String   @id
+  url       String
+  source    String   @default("cloudflare")
+  updatedAt DateTime @updatedAt
+}
+
+/// Per-repo live metadata refreshed by the auto-sync job (latest GitHub
+/// release + weekly commit counts). Keyed by exact repo name.
+model RepoMeta {
+  repo           String    @id
+  latestTag      String?
+  latestTagAt    DateTime?
+  commitActivity String    @default("[]")
+  openIssues     Int       @default(0)
+  fetchedAt      DateTime  @updatedAt
+}
+
+/// Health of one demo host, HEAD-pinged during the auto-sync run.
+/// `host` is the bare hostname (e.g. luxe.imsoroush.ir).
+model DemoHealth {
+  host        String   @id
+  ok          Boolean  @default(true)
+  latencyMs   Int      @default(0)
+  lastChecked DateTime @updatedAt
+}

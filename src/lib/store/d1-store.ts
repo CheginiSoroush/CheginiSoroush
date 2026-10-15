@@ -4,9 +4,12 @@ import type {
   AdminStats,
   ArticleRow,
   ContactMessageRow,
+  DemoHealthRow,
   ListMessagesOpts,
   ListProjectsOpts,
   ProjectRow,
+  RepoDemoRow,
+  RepoMetaRow,
   SubscriberRow,
 } from "./types";
 
@@ -331,6 +334,47 @@ export const d1Store: DataStore = {
       )
       .bind(payloadJson, nowIso())
       .run();
+  },
+
+  // ---------- Auto-sync data (repo demos / meta / demo health) ----------
+  async listRepoDemos(): Promise<RepoDemoRow[]> {
+    const { results } = await d1()
+      .prepare(`SELECT "repo", "url", "source", "updatedAt" FROM "RepoDemo"`)
+      .all<Record<string, unknown>>();
+    return results.map((r) => ({
+      repo: String(r.repo),
+      url: String(r.url),
+      source: String(r.source ?? "cloudflare"),
+      updatedAt: String(r.updatedAt ?? nowIso()),
+    }));
+  },
+
+  async listRepoMeta(): Promise<RepoMetaRow[]> {
+    const { results } = await d1()
+      .prepare(
+        `SELECT "repo", "latestTag", "latestTagAt", "commitActivity", "openIssues", "fetchedAt" FROM "RepoMeta"`
+      )
+      .all<Record<string, unknown>>();
+    return results.map((r) => ({
+      repo: String(r.repo),
+      latestTag: (r.latestTag as string | null) ?? null,
+      latestTagAt: (r.latestTagAt as string | null) ?? null,
+      commitActivity: String(r.commitActivity ?? "[]"),
+      openIssues: Number(r.openIssues ?? 0),
+      fetchedAt: String(r.fetchedAt ?? nowIso()),
+    }));
+  },
+
+  async listDemoHealth(): Promise<DemoHealthRow[]> {
+    const { results } = await d1()
+      .prepare(`SELECT "host", "ok", "latencyMs", "lastChecked" FROM "DemoHealth"`)
+      .all<Record<string, unknown>>();
+    return results.map((r) => ({
+      host: String(r.host),
+      ok: !!r.ok,
+      latencyMs: Number(r.latencyMs ?? 0),
+      lastChecked: String(r.lastChecked ?? nowIso()),
+    }));
   },
 
   // ---------- Admin dashboard ----------

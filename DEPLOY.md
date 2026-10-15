@@ -99,3 +99,16 @@ Workers نمی‌تواند فایل SQLite محلی (`db/custom.db`) را بخ�
 1. **Seed محتوا:** `prisma/d1-seed.sql` با اسکریپت `bun prisma/gen-d1-seed.ts` از `db/custom.db` تولید می‌شود؛ هر بار محتوای لوکال عوض شد، همین اسکریپت را اجرا و commit کنید تا دیپلوی بعدی خودش اعمالش کند (مایگریشن/Seed در CI اجرا می‌شوند، فایل SQL کامیت‌شده منبعِ حقیقت است).
 2. **کش:** کارت گیت‌هاب کش ۱۰ دقیقه‌ای در حافظهٔ Worker دارد.
 3. **اسکیمای D1:** `prisma/d1-schema.sql` با `prisma/schema.prisma` همگام است؛ هر تغییر اسکیما باید به هر دو اعمال شود.
+
+## Scheduled auto-sync (one-time manual install — like deploy.yml)
+
+`scripts/auto-sync.ts` already runs on every deploy (step 7/6 of
+`ci-deploy.sh`). To ALSO run it daily (new repos → cards, new Workers →
+demo links, uptime refresh) without pushing anything:
+
+1. GitHub → Actions tab → "New workflow" → "set up a workflow yourself"
+2. Name it `sync.yml`
+3. Paste the contents of `deploy/sync-workflow.yml` → Commit
+
+The workflow uses the same repo secrets as the deploy (CLOUDFLARE_API_TOKEN,
+CLOUDFLARE_ACCOUNT_ID, GH_PAT) — nothing else to configure.

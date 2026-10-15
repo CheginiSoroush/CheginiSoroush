@@ -107,3 +107,29 @@ export type ListMessagesOpts = {
 };
 
 export type SnapshotTable = "RepoSnapshot" | "GithubSnapshot";
+
+export type RepoDemoRow = {
+  /** LOWERCASED GitHub repo name. */
+  repo: string;
+  url: string;
+  source: string;
+  updatedAt: string;
+};
+
+export type RepoMetaRow = {
+  /** Exact GitHub repo name. */
+  repo: string;
+  latestTag: string | null;
+  latestTagAt: string | null;
+  /** JSON-encoded number[] — weekly commit counts (recent first slice). */
+  commitActivity: string;
+  openIssues: number;
+  fetchedAt: string;
+};
+
+export type DemoHealthRow = {
+  host: string;
+  ok: boolean;
+  latencyMs: number;
+  lastChecked: string;
+};

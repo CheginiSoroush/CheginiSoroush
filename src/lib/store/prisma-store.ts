@@ -5,9 +5,12 @@ import type {
   AdminStats,
   ArticleRow,
   ContactMessageRow,
+  DemoHealthRow,
   ListMessagesOpts,
   ListProjectsOpts,
   ProjectRow,
+  RepoDemoRow,
+  RepoMetaRow,
   SubscriberRow,
 } from "./types";
 
@@ -21,6 +24,9 @@ type Prisma = Pick<
   | "siteStat"
   | "repoSnapshot"
   | "githubSnapshot"
+  | "repoDemo"
+  | "repoMeta"
+  | "demoHealth"
 >;
 
 const iso = (d: Date | string): string => (d instanceof Date ? d.toISOString() : String(d));
@@ -242,6 +248,39 @@ export function createPrismaStore(client: Prisma = db): DataStore {
         update: { payloadJson },
         create: { id: 1, payloadJson },
       });
+    },
+
+    // ---------- Auto-sync data (repo demos / meta / demo health) ----------
+    async listRepoDemos(): Promise<RepoDemoRow[]> {
+      const rows = await pdb.repoDemo.findMany({ orderBy: { repo: "asc" } });
+      return rows.map((r) => ({
+        repo: r.repo,
+        url: r.url,
+        source: r.source,
+        updatedAt: iso(r.updatedAt),
+      }));
+    },
+
+    async listRepoMeta(): Promise<RepoMetaRow[]> {
+      const rows = await pdb.repoMeta.findMany({ orderBy: { repo: "asc" } });
+      return rows.map((r) => ({
+        repo: r.repo,
+        latestTag: r.latestTag,
+        latestTagAt: r.latestTagAt ? iso(r.latestTagAt) : null,
+        commitActivity: r.commitActivity,
+        openIssues: r.openIssues,
+        fetchedAt: iso(r.fetchedAt),
+      }));
+    },
+
+    async listDemoHealth(): Promise<DemoHealthRow[]> {
+      const rows = await pdb.demoHealth.findMany({ orderBy: { host: "asc" } });
+      return rows.map((r) => ({
+        host: r.host,
+        ok: r.ok,
+        latencyMs: r.latencyMs,
+        lastChecked: iso(r.lastChecked),
+      }));
     },
 
     // ---------- Admin dashboard ----------

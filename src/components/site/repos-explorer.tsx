@@ -398,7 +398,8 @@ export function ReposExplorer() {
                   {desc ?? t("repos", "noDesc")}
                 </p>
 
-                {/* GitHub Pages / live-site pill — shows the actual demo address */}
+                {/* GitHub Pages / live-site pill — shows the actual demo address.
+                    Turns red when the last uptime ping failed (auto-sync). */}
                 {repo.homepage && (
                   <a
                     href={repo.homepage}
@@ -406,7 +407,12 @@ export function ReposExplorer() {
                     rel="noopener noreferrer"
                     aria-label={t("repos", "liveAria", { name: repo.name })}
                     title={t("repos", "liveAria", { name: repo.name })}
-                    className="w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all"
+                    className={cn(
+                      "w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border active:scale-95 transition-all",
+                      repo.demoOk === false
+                        ? "text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/30 hover:bg-red-500/20"
+                        : "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/25 hover:bg-emerald-500/20"
+                    )}
                   >
                     <Globe className="w-3 h-3 shrink-0" aria-hidden />
                     <span dir="ltr" className="truncate">{demoHost(repo.homepage) ?? t("repos", "live.title")}</span>

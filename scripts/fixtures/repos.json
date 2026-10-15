@@ -1,0 +1,580 @@
+[
+ {
+  "name": "CheginiSoroush",
+  "description": "GitHub profile README — the landing page of this account.",
+  "language": "TypeScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-10-15T07:16:26Z"
+ },
+ {
+  "name": "projdump",
+  "description": "Dump an entire codebase into one AI-ready file — Markdown, XML or JSON. Pure Bash, zero dependencies. Token budgets, model presets and --split for long contexts. 70+ tests · shellcheck-clean · MIT",
+  "language": "Shell",
+  "topics": [
+   "ai",
+   "bash",
+   "chatgpt",
+   "claude",
+   "cli",
+   "code-analysis"
+  ],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": false,
+  "pushedAt": "2026-10-14T14:24:24Z"
+ },
+ {
+  "name": "obsidian-vault",
+  "description": null,
+  "language": null,
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-10-13T18:05:24Z"
+ },
+ {
+  "name": "ubuntu-optimizer",
+  "description": "A self-updating Bash CLI that cleans, optimizes, repairs and secures Ubuntu — 23 tools (DNS switcher, kernel cleanup, swap manager, fzf launcher, AppImage/tar.gz installs), bilingual EN/FA interface, JSON reports & systemd timers. 510 automated tests. MIT.",
+  "language": "Shell",
+  "topics": [
+   "apt",
+   "bash",
+   "bilingual",
+   "cleanup",
+   "cli",
+   "dns"
+  ],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": false,
+  "pushedAt": "2026-10-13T16:35:59Z"
+ },
+ {
+  "name": "obsidian-sync-scripts",
+  "description": "⚡ One Bash script. Three platforms. Battle-hardened Obsidian ↔ GitHub sync — verified backups, atomic repair, self-healing git. Termux · Linux · macOS",
+  "language": "Shell",
+  "topics": [
+   "android",
+   "backup",
+   "backup-script",
+   "backup-tool",
+   "bash",
+   "bash-script"
+  ],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": false,
+  "pushedAt": "2026-10-11T07:34:41Z"
+ },
+ {
+  "name": "obsidian-project-quest",
+  "description": "🦉 Turn your projects into a game! A bilingual (EN/FA) Duolingo-style Obsidian vault template — XP, streaks, levels, badges & live dashboards.",
+  "language": null,
+  "topics": [
+   "bilingual",
+   "dataview",
+   "duolingo",
+   "gamification",
+   "obsidian",
+   "obsidian-vault"
+  ],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": false,
+  "pushedAt": "2026-10-11T07:24:33Z"
+ },
+ {
+  "name": "flash-panel",
+  "description": "High-performance serverless proxy panel for Cloudflare Workers — VLESS, Trojan and WARP with a rewritten protocol core (zero-copy parsing, cached auth, anti-stampede KV cache), ETag subscriptions 94% smaller, login rate-limiting and full Telegram-bot control.",
+  "language": "TypeScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": false,
+  "pushedAt": "2026-09-23T07:28:35Z"
+ },
+ {
+  "name": "flash-wizard",
+  "description": "Browser-based one-click deployment wizard for Flash Panel — creates KV storage, uploads the worker and attaches your custom domain in about 60 seconds. Your API token never leaves the browser; Persian RTL interface built in.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": false,
+  "pushedAt": "2026-09-23T07:12:34Z"
+ },
+ {
+  "name": "willpower-science-amcc",
+  "description": "An interactive, scientific analysis of the neuroscience of willpower — a dashboard for the anterior midcingulate cortex (aMCC) set against David Goggins’ tough mindset.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T10:13:49Z"
+ },
+ {
+  "name": "overcoming-laziness-roadmap",
+  "description": "An interactive web app built on behavioral psychology and habit engineering — a 30-day program for beating laziness, centered on the Two-Minute Rule.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T10:05:34Z"
+ },
+ {
+  "name": "atomic-habits-interactive",
+  "description": "A visual JavaScript simulation of behavioral psychology and the compounding effect — exploring the four-stage habit loop and the impact of 1% daily growth.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T10:00:53Z"
+ },
+ {
+  "name": "VampSole-WebSite",
+  "description": "Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T09:11:54Z"
+ },
+ {
+  "name": "threejs-solar-system",
+  "description": "Fully interactive simulation built with Three.js, featuring cinematic Bloom & Lensflare effects and NASA textures.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T09:07:20Z"
+ },
+ {
+  "name": "style-plus-ecommerce-ui",
+  "description": "Advanced, responsive e-commerce UI with features such as stories, a spin-the-wheel game, and a dynamic cart.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T08:28:56Z"
+ },
+ {
+  "name": "StepStyle",
+  "description": "Modern Bootstrap 5 UI with a product filtering system and dynamic JavaScript product rendering.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T07:54:16Z"
+ },
+ {
+  "name": "realistic-earth-webgl",
+  "description": "Realistic Earth rendering with Three.js, high-resolution textures, and dynamic lighting.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T07:50:21Z"
+ },
+ {
+  "name": "portfolio-nebula-theme",
+  "description": "Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T07:44:22Z"
+ },
+ {
+  "name": "My_Valentine_site",
+  "description": "A playful, interactive JavaScript page where the 'No' button cleverly escapes the user's cursor!",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T07:39:14Z"
+ },
+ {
+  "name": "microservices-vs-monolith",
+  "description": "Interactive visual tool built with Chart.js that recommends the best software architecture based on project needs.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T07:35:25Z"
+ },
+ {
+  "name": "Luxe",
+  "description": "Modern luxury-product UI with a dynamic shopping cart and product filtering built on Bootstrap 5.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T07:14:38Z"
+ },
+ {
+  "name": "linux-cheat-sheet",
+  "description": "Fast, interactive reference for common CLI commands with live search and quick copy.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T07:03:21Z"
+ },
+ {
+  "name": "gitpedia-interactive",
+  "description": "Interactive encyclopedia of Git commands with a built-in terminal simulator for live command execution and output.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-26T06:48:42Z"
+ },
+ {
+  "name": "fashionable-3d-experience",
+  "description": "Three.js and GSAP combined to build an interactive landing page with depth along the Z-axis.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-25T21:57:25Z"
+ },
+ {
+  "name": "fashion-everyday",
+  "description": "Modern, minimal design using advanced SVG filter techniques to create dynamic typography effects.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-25T19:52:51Z"
+ },
+ {
+  "name": "dev-portfolio-3d",
+  "description": "Professional personal template with glassmorphism design, a career timeline, and an interactive Three.js background.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-25T19:42:50Z"
+ },
+ {
+  "name": "cinematic-solar-system-3d",
+  "description": "Fully 3D, realistic simulation powered by Three.js, with NASA textures and post-processing effects.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-25T19:37:16Z"
+ },
+ {
+  "name": "argus-vpn-landing",
+  "description": "Modern dark design with GSAP scroll animations, an interactive CSS mockup, and a 3D globe.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-25T19:13:28Z"
+ },
+ {
+  "name": "aramia-cbt-app",
+  "description": "Psychology web app for stress management, featuring LocalStorage persistence, Chart.js charts, and mindfulness tools.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-25T11:10:15Z"
+ },
+ {
+  "name": "AiFlash-Showcase-Web",
+  "description": "Showcase website for the AiFlash AI Telegram bot — features, demos and setup guides.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-25T11:04:56Z"
+ },
+ {
+  "name": "3d-cosmic-earth",
+  "description": "An Earth sphere generated entirely from math (Simplex Noise) and custom Three.js shaders, with no image textures.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-25T11:00:25Z"
+ },
+ {
+  "name": "aurora-vpn-landing",
+  "description": "Modern glassmorphism design with dynamic background animations and interactive scrolling in vanilla JavaScript.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-25T10:56:15Z"
+ },
+ {
+  "name": "cloudflare-self-destruct",
+  "description": "Serverless version of the Self-Destruct bot on Cloudflare, using one-minute CRON jobs to destroy messages automatically.",
+  "language": "Python",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:50:47Z"
+ },
+ {
+  "name": "cpp-calculator",
+  "description": "A simple but smart C++ CLI calculator — double arithmetic, input validation, divide-by-zero guards and a run-until-quit loop — built as a clean exercise in error handling and control flow.",
+  "language": "C++",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": false,
+  "pushedAt": "2026-08-20T18:50:01Z"
+ },
+ {
+  "name": "telegram-channel-manager-bot",
+  "description": "Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.",
+  "language": "Python",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:49:10Z"
+ },
+ {
+  "name": "telegram-temp-file-bot",
+  "description": "Python bot that generates time-limited download links, with forced membership and automatic deletion of files from the user's chat.",
+  "language": "Python",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:48:48Z"
+ },
+ {
+  "name": "Media-Pack-Telegram-Bot",
+  "description": "Cloud serverless bot for managing media, cleaning captions, and auto-publishing photo and video albums at peak hours.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:17:14Z"
+ },
+ {
+  "name": "Ghost-Curator-Telegram-Bot",
+  "description": "Smart channel-admin tool for saving and auto-cleaning text and publishing scheduled content on Telegram.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:16:50Z"
+ },
+ {
+  "name": "Audio-Queue-Telegram-Bot",
+  "description": "Music publishing automation for Telegram channels with a serverless architecture, dynamic scheduling, and a D1 database.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:16:26Z"
+ },
+ {
+  "name": "configtochannel",
+  "description": "Serverless engine for extracting, managing, and smartly scheduling V2Ray config delivery across multiple Telegram channels.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:15:59Z"
+ },
+ {
+  "name": "proxy-config-bot",
+  "description": "Network resource distribution system on Cloudflare Workers with a D1 database, forced membership, and automatic updates.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:15:37Z"
+ },
+ {
+  "name": "heartadminbot",
+  "description": "Serverless system for centrally managing dozens of Telegram bots that auto-register reactions in channels, built on Cloudflare D1.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:15:09Z"
+ },
+ {
+  "name": "unsplashphotos",
+  "description": "Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:14:44Z"
+ },
+ {
+  "name": "KV-Dumper",
+  "description": "Serverless Telegram content-queue bot on Cloudflare Workers — queues photos, videos and captioned text in D1, then drip-publishes them with a 10-second delay (background waitUntil) to dodge flood limits, plus an admin panel with queue stats and one-tap purge.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": false,
+  "pushedAt": "2026-08-20T18:13:57Z"
+ },
+ {
+  "name": "cloudflare-telegram-bot",
+  "description": "Telegram bot with a serverless architecture on Cloudflare Workers, backed by a D1 database, KV storage, and rate limiting.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:13:37Z"
+ },
+ {
+  "name": "telegram-bot-boilerplate",
+  "description": "Standard boilerplate for rapidly building Telegram bots with Python (Asyncio) and structured logging.",
+  "language": "Python",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:13:13Z"
+ },
+ {
+  "name": "Membership-Button-Builder-Telegram-Bot",
+  "description": "Serverless Telegram bot built on Cloudflare Workers with a D1 database to manage premium posts gated by channel membership.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:10:02Z"
+ },
+ {
+  "name": "opencv-image-blender",
+  "description": "Python CLI script for combining and blending two images with transparency control.",
+  "language": "Python",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:05:38Z"
+ },
+ {
+  "name": "opencv-face-detection",
+  "description": "Command-line Python script for smart face detection in images using the Haar Cascade algorithm.",
+  "language": "Python",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:04:24Z"
+ },
+ {
+  "name": "fix-network",
+  "description": "A simple script to fix Linux network issues after VPN disconnects",
+  "language": "Shell",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T18:02:05Z"
+ },
+ {
+  "name": "smart-fitness-planner",
+  "description": "Interactive sports-science web app — the high-reps vs low-reps weightlifting debate, visualized.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T14:20:42Z"
+ },
+ {
+  "name": "AiFlash",
+  "description": "Multimodal Telegram assistant powered by Google Gemini, built serverless on Cloudflare Workers.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T14:09:37Z"
+ },
+ {
+  "name": "Persian-Gemini-Telegram-Bot",
+  "description": "Telegram bot connected to Google's AI, offering smart chat, OCR text extraction from images, and an admin panel.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-08-20T08:30:09Z"
+ },
+ {
+  "name": "gemini-telegram-worker",
+  "description": "Google Gemini AI bot deployed on Cloudflare Workers — serverless and free-tier friendly.",
+  "language": "JavaScript",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-07-30T17:41:09Z"
+ },
+ {
+  "name": "android",
+  "description": "Android experiments and mobile playground.",
+  "language": null,
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-07-30T05:49:10Z"
+ },
+ {
+  "name": "soroush-website",
+  "description": "The previous generation of imsoroush.ir — original static personal website.",
+  "language": "HTML",
+  "topics": [],
+  "isFork": false,
+  "archived": false,
+  "isPrivate": true,
+  "pushedAt": "2026-06-17T11:40:13Z"
+ }
+]

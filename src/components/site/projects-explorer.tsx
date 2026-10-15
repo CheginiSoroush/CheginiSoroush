@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe } from "lucide-react";
+import { ExternalLink, Star, Share2, Dices, Link2, Check, ArrowDownWideNarrow, LayoutGrid, Terminal, Copy, LockKeyhole, Globe, Flame, Tag, BookOpen, ChevronDown } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +23,7 @@ import { CATEGORY_LABELS } from "@/lib/types";
 import { repoUrl } from "@/lib/site-config";
 import { demoHost } from "@/lib/demo-urls";
 import { cn } from "@/lib/utils";
-import { useT, pickEn } from "@/lib/i18n";
+import { useT, pickEn, relativeTime } from "@/lib/i18n";
 
 const DETAIL_INIT = Symbol("detail-init");
 const FAV_STORAGE_KEY = "imsoroush-fav-projects";
@@ -102,6 +103,127 @@ const FILTERS = [
   { id: "3d", icon: "🪐" },
   { id: "tools", icon: "🛠️" },
 ];
+
+/**
+ * Collapsible repo documentation inside the detail dialog — lazily fetched
+ * through /api/github/readme (server-side, works for private repos too),
+ * rendered with react-markdown (raw HTML never executes).
+ */
+function ReadmeSection({ repo }: { repo: string }) {
+  const { t } = useT();
+  const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "empty" | "error">("idle");
+  const [content, setContent] = useState("");
+  const requested = useRef(false);
+
+  const toggle = () => {
+    const next = !open;
+    setOpen(next);
+    if (next && !requested.current) {
+      requested.current = true;
+      setStatus("loading");
+      fetch(`/api/github/readme?repo=${encodeURIComponent(repo)}`)
+        .then((r) => r.json() as Promise<{ content: string | null }>)
+        .then((j) => {
+          if (j.content && j.content.trim()) {
+            setContent(j.content);
+            setStatus("ok");
+          } else {
+            setStatus("empty");
+          }
+        })
+        .catch(() => setStatus("error"));
+    }
+  };
+
+  return (
+    <div className="mt-3 rounded-2xl border border-border bg-secondary/30 overflow-hidden">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={open}
+        className="w-full flex items-center gap-2 px-3.5 py-2.5 text-start hover:bg-secondary/50 transition-colors min-h-[44px]"
+      >
+        <BookOpen className="w-4 h-4 text-brand shrink-0" aria-hidden />
+        <span className="text-xs font-bold flex-grow">{t("projects", "detail.readme")}</span>
+        <span className="text-[10px] text-muted-foreground font-medium hidden sm:inline">
+          {open ? t("projects", "detail.readmeHide") : t("projects", "detail.readmeShow")}
+        </span>
+        <ChevronDown
+          className={cn("w-4 h-4 text-muted-foreground transition-transform", open && "rotate-180")}
+          aria-hidden
+        />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div
+              dir="ltr"
+              className="readme-body max-h-72 overflow-y-auto px-4 pb-4 pt-1 text-left text-xs leading-6 text-foreground/85 [&_h1]:text-sm [&_h1]:font-extrabold [&_h1]:mt-3 [&_h1]:mb-1.5 [&_h2]:text-[13px] [&_h2]:font-extrabold [&_h2]:mt-3 [&_h2]:mb-1.5 [&_h3]:text-xs [&_h3]:font-bold [&_h3]:mt-2.5 [&_h3]:mb-1 [&_p]:my-1.5 [&_ul]:list-disc [&_ul]:ps-5 [&_ul]:my-1.5 [&_ol]:list-decimal [&_ol]:ps-5 [&_ol]:my-1.5 [&_li]:my-0.5 [&_a]:text-brand [&_a]:underline [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2 [&_pre]:bg-secondary/70 [&_pre]:rounded-lg [&_pre]:p-2.5 [&_pre]:overflow-x-auto [&_code]:text-[10px] [&_code]:font-mono [&_blockquote]:border-s-2 [&_blockquote]:border-brand/40 [&_blockquote]:ps-3 [&_blockquote]:text-muted-foreground [&_table]:w-full [&_th]:text-start [&_th]:border [&_th]:border-border [&_th]:px-2 [&_th]:py-1 [&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1"
+            >
+              {status === "loading" && (
+                <div className="space-y-2 py-2">
+                  <div className="h-3 w-3/4 rounded bg-secondary animate-pulse" />
+                  <div className="h-3 w-full rounded bg-secondary animate-pulse" />
+                  <div className="h-3 w-5/6 rounded bg-secondary animate-pulse" />
+                  <div className="h-3 w-2/3 rounded bg-secondary animate-pulse" />
+                </div>
+              )}
+              {status === "empty" && (
+                <p className="py-3 text-muted-foreground">{t("projects", "detail.readmeEmpty")}</p>
+              )}
+              {status === "error" && (
+                <p className="py-3 text-red-500">{t("projects", "detail.readmeFailed")}</p>
+              )}
+              {status === "ok" && (
+                <ReactMarkdown
+                  components={{
+                    a: (props) => (
+                      <a {...props} target="_blank" rel="noopener noreferrer" />
+                    ),
+                  }}
+                >
+                  {content}
+                </ReactMarkdown>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/** Tiny 12-week commit sparkline — pure SVG, no chart lib. */
+function CommitSparkline({ data }: { data: number[] }) {
+  const weeks = data.slice(-12);
+  if (weeks.length === 0) return null;
+  const max = Math.max(...weeks, 1);
+  return (
+    <svg width="92" height="24" viewBox="0 0 92 24" aria-hidden className="shrink-0">
+      {weeks.map((v, i) => {
+        const h = Math.max(2, Math.round((v / max) * 20));
+        return (
+          <rect
+            key={i}
+            x={i * 8}
+            y={22 - h}
+            width="5"
+            height={h}
+            rx="1.5"
+            className={cn(i === weeks.length - 1 ? "fill-brand" : "fill-brand/45")}
+          />
+        );
+      })}
+    </svg>
+  );
+}
 
 export function ProjectsExplorer({
   initialProjects,
@@ -307,7 +429,15 @@ export function ProjectsExplorer({
           signal: controller.signal,
         });
         const data = (await res.json()) as { projects?: Project[] };
-        if (data.projects) setProjects(data.projects);
+        if (data.projects) {
+          setProjects(data.projects);
+          // Keep the open dialog in sync with the enriched row (auto-sync
+          // meta lives only in the API payload, not in the server props).
+          setSelected((prev) => {
+            if (!prev) return prev;
+            return data.projects?.find((x) => x.slug === prev.slug) ?? prev;
+          });
+        }
       } catch {
         // aborted
       } finally {
@@ -371,6 +501,17 @@ export function ProjectsExplorer({
         {p.featured && (
           <span className="absolute top-2.5 end-2.5 inline-flex items-center gap-1 text-[10px] font-bold text-[#05261f] bg-brand border border-white/20 rounded-full px-2 py-0.5 shadow-lg">
             <Star className="w-3 h-3" /> {t("projects", "card.featured")}
+          </span>
+        )}
+        {p.trending && (
+          <span
+            title={t("projects", "card.trending")}
+            className={cn(
+              "absolute end-2.5 inline-flex items-center gap-1 text-[10px] font-bold text-foreground bg-background/85 backdrop-blur border border-border rounded-full px-2 py-0.5 shadow-lg",
+              p.featured ? "top-11" : "top-2.5"
+            )}
+          >
+            <Flame className="w-3 h-3 text-orange-500" aria-hidden /> {t("projects", "card.trending")}
           </span>
         )}
         {/* Favorite toggle — span keeps the card's single-button semantics valid */}
@@ -440,7 +581,12 @@ export function ProjectsExplorer({
               window.open(p.demoUrl ?? "", "_blank", "noopener,noreferrer");
             }
           }}
-          className="w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 hover:bg-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+          className={cn(
+            "w-fit max-w-full inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer active:scale-95",
+            p.demoOk === false
+              ? "text-red-600 dark:text-red-400 bg-red-500/10 border-red-500/30 hover:bg-red-500/20"
+              : "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/25 hover:bg-emerald-500/20"
+          )}
         >
           <Globe className="w-3 h-3 shrink-0" aria-hidden />
           <span dir="ltr" className="truncate">{demoHost(p.demoUrl) ?? t("projects", "card.live")}</span>
@@ -692,6 +838,30 @@ export function ProjectsExplorer({
                 ))}
               </div>
 
+              {/* Auto-sync panel — latest release + weekly commit activity */}
+              {(selected.latestTag || (selected.commitActivity?.length ?? 0) > 0) && (
+                <div className="mb-5 rounded-2xl border border-border bg-secondary/40 px-3.5 py-3 flex items-center justify-between gap-3 flex-wrap">
+                  {selected.latestTag && (
+                    <span
+                      dir="ltr"
+                      title={t("projects", "detail.release")}
+                      className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand bg-brand/10 border border-brand/25 rounded-full px-2.5 py-1"
+                    >
+                      <Tag className="w-3 h-3" aria-hidden />
+                      {selected.latestTag}
+                    </span>
+                  )}
+                  {(selected.commitActivity?.length ?? 0) > 0 && (
+                    <div className="flex items-center gap-2 min-w-0" dir="ltr">
+                      <span className="text-[10px] text-muted-foreground shrink-0">
+                        {t("projects", "detail.activity")}
+                      </span>
+                      <CommitSparkline data={selected.commitActivity ?? []} />
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Related projects (same category) */}
               {relatedProjects.length > 0 && (
                 <div className="mb-5">
@@ -790,8 +960,17 @@ export function ProjectsExplorer({
                   href={selected.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  title={selected.demoUrl}
-                  className="mt-3 flex w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-4 py-3 text-sm text-center sm:flex-row sm:gap-2 sm:px-6 sm:text-base hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]"
+                  title={
+                    selected.demoOk === false
+                      ? t("projects", "detail.demoDown")
+                      : selected.demoUrl
+                  }
+                  className={cn(
+                    "mt-3 flex w-full flex-col items-center justify-center gap-1.5 rounded-2xl border font-bold px-4 py-3 text-sm text-center sm:flex-row sm:gap-2 sm:px-6 sm:text-base hover:-translate-y-0.5 active:scale-95 transition-all min-h-[46px]",
+                    selected.demoOk === false
+                      ? "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
+                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  )}
                 >
                   <span className="flex items-center gap-2">
                     <Globe className="w-5 h-5 shrink-0" aria-hidden />
@@ -839,6 +1018,9 @@ export function ProjectsExplorer({
                 </button>
               </div>
               )}
+
+              {/* Repository documentation — lazy, cached server-side */}
+              <ReadmeSection key={selected.slug} repo={selected.repo} />
 
               <p className="mt-2.5 text-[11px] text-muted-foreground flex items-center gap-1 justify-center">
                 <Link2 className="w-3 h-3" />
