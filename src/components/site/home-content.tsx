@@ -213,7 +213,7 @@ export function HomeContent({
                   so the sticker can overhang the edge instead of sinking */}
               <div className="cover-wrap relative -mx-6 sm:-mx-7 -mt-6 sm:-mt-7 mb-5">
                 <div className="overflow-hidden rounded-t-3xl">
-                  <ProjectCover slug={p.slug} category={p.category} idPrefix="feat" className="h-28 sm:h-32 w-full" />
+                  <ProjectCover slug={p.slug} category={p.category} idPrefix="feat" eager={i < 2} className="h-28 sm:h-32 w-full" />
                 </div>
                 <div className="cover-float">
                   <span className="text-3xl card-emoji drop-shadow-lg" aria-hidden>

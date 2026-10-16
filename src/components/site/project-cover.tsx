@@ -29,11 +29,15 @@ export function ProjectCover({
   category,
   className,
   idPrefix = "cov",
+  eager = false,
 }: {
   slug: string;
   category: string;
   className?: string;
   idPrefix?: string;
+  /** Pass true for the first cards in a view — they are the LCP image and
+   *  must not lazy-load (Next.js console otherwise nags every load). */
+  eager?: boolean;
 }) {
   const image = COVER_IMAGES[slug];
   const spec = useMemo(() => coverSpec(slug, category), [slug, category]);
@@ -50,7 +54,8 @@ export function ProjectCover({
         height={640}
         sizes="(max-width: 640px) 100vw, 420px"
         className={cn("cover-art", className)}
-        priority={false}
+        priority={eager}
+        loading={eager ? "eager" : "lazy"}
       />
     );
   }

@@ -3,6 +3,7 @@ import type { DataStore } from "./store-contract";
 import type {
   AdminStats,
   ArticleRow,
+  CommentRow,
   ContactMessageRow,
   DemoHealthRow,
   ListMessagesOpts,
@@ -119,7 +120,15 @@ function mapMessage(r: Record<string, unknown>): ContactMessageRow {
   };
 }
 
-// (Comments mapper removed with the feature — see store-contract note.)
+function mapComment(r: Record<string, unknown>): CommentRow {
+  return {
+    id: String(r.id),
+    articleSlug: String(r.articleSlug),
+    name: String(r.name),
+    body: String(r.body),
+    createdAt: toIso(r.createdAt ?? nowIso()),
+  };
+}
 
 /* --------------------------- the driver ---------------------------- */
 
@@ -299,7 +308,30 @@ export const d1Store: DataStore = {
     await d1().prepare(`DELETE FROM "ContactMessage" WHERE "id" = ?`).bind(id).run();
   },
 
-  // (Comments methods removed with the feature — see store-contract note.)
+  // ---------- Article comments ----------
+  async listComments(articleSlug: string): Promise<CommentRow[]> {
+    const { results } = await d1()
+      .prepare(`SELECT * FROM "Comment" WHERE "articleSlug" = ? ORDER BY "createdAt" ASC LIMIT 200`)
+      .bind(articleSlug)
+      .all<Record<string, unknown>>();
+    return results.map(mapComment);
+  },
+
+  async createComment(c: {
+    articleSlug: string;
+    name: string;
+    body: string;
+  }): Promise<CommentRow> {
+    const row = await d1()
+      .prepare(
+        `INSERT INTO "Comment" ("id", "articleSlug", "name", "body", "createdAt")
+         VALUES (?, ?, ?, ?, ?) RETURNING *`
+      )
+      .bind(newId(), c.articleSlug, c.name, c.body, nowIso())
+      .first<Record<string, unknown>>();
+    if (!row) throw new Error("Failed to insert comment");
+    return mapComment(row);
+  },
 
   // ---------- Subscribers ----------
   async countSubscribers(): Promise<number> {

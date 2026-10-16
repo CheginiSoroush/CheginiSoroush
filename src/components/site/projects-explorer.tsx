@@ -542,7 +542,7 @@ export function ProjectsExplorer({
           floating sticker can overhang the cover edge instead of being cut off */}
       <div className="cover-wrap relative -mx-5 sm:-mx-6 -mt-5 sm:-mt-6 mb-5">
         <div className="overflow-hidden rounded-t-2xl">
-          <ProjectCover slug={p.slug} category={p.category} className="h-24 sm:h-28 w-full" />
+          <ProjectCover slug={p.slug} category={p.category} eager={index < 2} className="h-24 sm:h-28 w-full" />
         </div>
         <div className="cover-float">
           <span className="text-3xl card-emoji drop-shadow-lg" aria-hidden>

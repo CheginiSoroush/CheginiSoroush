@@ -82,6 +82,22 @@ export const articlesDict: Dict = {
     // ---------- related articles ----------
     "related.title": "نوشته‌های مرتبط",
 
+    // ---------- comments ----------
+    "comments.title": "دیدگاه‌ها",
+    "comments.count": "{n} دیدگاه",
+    "comments.empty": "هنوز دیدگاهی نیست — اولین نفر باشید!",
+    "comments.nameAria": "نام شما",
+    "comments.namePlaceholder": "نام شما",
+    "comments.bodyAria": "متن دیدگاه",
+    "comments.bodyPlaceholder": "دیدگاه خود را بنویسید…",
+    "comments.submit": "ارسال دیدگاه",
+    "comments.submitting": "در حال ارسال…",
+    "comments.success": "دیدگاه شما ثبت شد. ممنون!",
+    "comments.error": "ثبت دیدگاه ناموفق بود. دوباره تلاش کنید.",
+    "comments.loadError": "دریافت دیدگاه‌ها ناموفق بود.",
+    "comments.validationName": "نام باید حداقل ۲ حرف باشد",
+    "comments.validationBody": "متن دیدگاه خیلی کوتاه است",
+
     // ---------- reading history ----------
     "history.short": "تاریخچه",
     "history.triggerTitle": "تاریخچه مطالعه شما",
@@ -189,6 +205,22 @@ export const articlesDict: Dict = {
 
     // ---------- related articles ----------
     "related.title": "Related articles",
+
+    // ---------- comments ----------
+    "comments.title": "Comments",
+    "comments.count": "{n} comments",
+    "comments.empty": "No comments yet — be the first!",
+    "comments.nameAria": "Your name",
+    "comments.namePlaceholder": "Your name",
+    "comments.bodyAria": "Comment text",
+    "comments.bodyPlaceholder": "Write a comment…",
+    "comments.submit": "Post comment",
+    "comments.submitting": "Posting…",
+    "comments.success": "Comment posted. Thanks!",
+    "comments.error": "Failed to post your comment. Please try again.",
+    "comments.loadError": "Failed to load comments.",
+    "comments.validationName": "Name must be at least 2 characters",
+    "comments.validationBody": "Comment is too short",
 
     // ---------- reading history ----------
     "history.short": "History",

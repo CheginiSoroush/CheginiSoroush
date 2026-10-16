@@ -4,6 +4,7 @@ import type { DataStore } from "./store-contract";
 import type {
   AdminStats,
   ArticleRow,
+  CommentRow,
   ContactMessageRow,
   DemoHealthRow,
   ListMessagesOpts,
@@ -200,7 +201,24 @@ export function createPrismaStore(client: Prisma = db): DataStore {
       await pdb.contactMessage.delete({ where: { id } });
     },
 
-    // (Comments methods removed with the feature — see store-contract note.)
+    // ---------- Article comments ----------
+    async listComments(articleSlug: string): Promise<CommentRow[]> {
+      const rows = await pdb.comment.findMany({
+        where: { articleSlug },
+        orderBy: { createdAt: "asc" },
+        take: 200,
+      });
+      return rows.map((c) => ({ ...c, createdAt: iso(c.createdAt) }));
+    },
+
+    async createComment(c: {
+      articleSlug: string;
+      name: string;
+      body: string;
+    }): Promise<CommentRow> {
+      const saved = await pdb.comment.create({ data: c });
+      return { ...saved, createdAt: iso(saved.createdAt) };
+    },
 
     // ---------- Subscribers ----------
     async countSubscribers(): Promise<number> {

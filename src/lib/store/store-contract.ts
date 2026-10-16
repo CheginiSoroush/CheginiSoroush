@@ -1,6 +1,7 @@
 import type {
   AdminStats,
   ArticleRow,
+  CommentRow,
   ContactMessageRow,
   DemoHealthRow,
   ListMessagesOpts,
@@ -60,8 +61,14 @@ export interface DataStore {
   setMessageRead(id: string, read: boolean): Promise<ContactMessageRow | null>;
   deleteMessage(id: string): Promise<void>;
 
-  // NOTE: the Comment table remains in the Prisma schema (data preserved) but
-  // no store/API/UI surface exists for it in the product.
+  // ---------- Article comments (public, per-article) ----------
+  /** Chronological (oldest → newest) comments for one article. */
+  listComments(articleSlug: string): Promise<CommentRow[]>;
+  createComment(c: {
+    articleSlug: string;
+    name: string;
+    body: string;
+  }): Promise<CommentRow>;
 
   // ---------- Subscribers ----------
   countSubscribers(): Promise<number>;

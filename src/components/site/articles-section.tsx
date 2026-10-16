@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useSpotlight } from "@/hooks/use-spotlight";
 import { ProjectCover } from "@/components/site/project-cover";
+import { ArticleComments } from "@/components/site/article-comments";
 import { EmptyState } from "@/components/site/empty-state";
 import { SearchInput } from "@/components/site/search-input";
 import { cn } from "@/lib/utils";
@@ -1042,6 +1043,9 @@ export function ArticlesSection({
               <div className="prose-fa max-w-none" style={{ fontSize: `${FONT_STEPS[fontStep] / 100}rem` }}>
                 <ReactMarkdown components={markdownComponents}>{selected.content}</ReactMarkdown>
               </div>
+
+              {/* Reader comments — DB-backed, per article (Comment table) */}
+              <ArticleComments key={selected.slug} slug={selected.slug} />
 
               {/* Related articles (same category) */}
               {relatedArticles.length > 0 && (

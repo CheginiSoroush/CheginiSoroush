@@ -54,6 +54,14 @@ export type ContactMessageRow = {
   createdAt: string;
 };
 
+export type CommentRow = {
+  id: string;
+  articleSlug: string;
+  name: string;
+  body: string;
+  createdAt: string;
+};
+
 export type SubscriberRow = {
   email: string;
   createdAt: string;
