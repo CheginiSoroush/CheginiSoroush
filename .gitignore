@@ -75,3 +75,7 @@ download/
 # cloudflare build artifacts
 .open-next/
 .wrangler/
+
+# audit workspace & chat uploads (never part of the product)
+/audit/
+/upload/

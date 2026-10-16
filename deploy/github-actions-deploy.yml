@@ -11,7 +11,8 @@
 #   Required:  CLOUDFLARE_API_TOKEN  ("Edit Cloudflare Workers" template
 #                                    + Account → D1 → Edit permission)
 #              CLOUDFLARE_ACCOUNT_ID
-#   Optional:  ADMIN_KEY  (admin panel key; falls back to code default)
+#   Optional:  ADMIN_KEY  (admin panel key; the panel stays LOCKED without it
+#                         — there is no code fallback, by design)
 #              GH_PAT     (fine-grained PAT: All repositories + Metadata read;
 #                          powers /api/github + /api/repos incl. private repos)
 name: Deploy to Cloudflare Workers
@@ -39,6 +40,16 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      # Quality gates — a failing lint or type error must never reach production.
+      - name: Lint
+        run: bun run lint
+
+      - name: Generate Prisma client (types for the typecheck gate)
+        run: bunx prisma generate
+
+      - name: Typecheck
+        run: bun run typecheck
 
       - name: Deploy (verify token → D1 → build → worker → secrets)
         env:
