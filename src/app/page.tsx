@@ -6,6 +6,28 @@ export const dynamic = "force-dynamic";
 
 const SITE_URL = "https://imsoroush.ir";
 
+/**
+ * D1 occasionally rejects a burst of queries (transient storage errors).
+ * A single failed read used to render the whole home page with EMPTY
+ * project/article lists (hero tiles at 0, empty explorers). Retrying a few
+ * times with a short backoff papers over the transient window; only when
+ * every attempt fails do we fall back to empty lists.
+ */
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+  let lastError: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (i < attempts - 1) {
+        await new Promise((r) => setTimeout(r, 1200 * (i + 1)));
+      }
+    }
+  }
+  throw lastError;
+}
+
 /** Persian script detection — used for per-article inLanguage hints. */
 const isPersian = (s: string) => /[\u0600-\u06FF]/.test(s);
 
@@ -42,10 +64,12 @@ export default async function Page() {
   let articles: Article[] = [];
 
   try {
-    const [rawProjects, rawArticles] = await Promise.all([
-      store.listProjects({ category: "all", q: "", featured: false, sort: "default" }),
-      store.listArticles("all"),
-    ]);
+    const [rawProjects, rawArticles] = await withRetry(() =>
+      Promise.all([
+        store.listProjects({ category: "all", q: "", featured: false, sort: "default" }),
+        store.listArticles("all"),
+      ])
+    );
 
     projects = rawProjects.map((p) => ({
       id: p.id,

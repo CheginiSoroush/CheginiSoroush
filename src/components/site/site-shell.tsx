@@ -30,6 +30,37 @@ import type { Article, Project, RepoMeta, SiteStats, ViewName } from "@/lib/type
 
 const VIEWS: ViewName[] = ["home", "projects", "writing", "repos", "contact"];
 
+/**
+ * Retry a JSON fetch a few times with a growing delay.
+ *
+ * D1 (the production datastore) occasionally rejects requests in transient
+ * windows; a single-shot fetch used to leave the hero stat tiles stuck at 0
+ * until the next full page reload. Retrying in the background recovers
+ * silently. The shared AbortSignal lets unmount cancel every pending attempt.
+ */
+async function fetchJsonRetry<T>(
+  url: string,
+  init: RequestInit | undefined,
+  attempts: number,
+  signal: AbortSignal
+): Promise<T> {
+  let lastError: unknown = new Error("unreachable");
+  for (let i = 0; i < attempts; i++) {
+    if (signal.aborted) break;
+    try {
+      const res = await fetch(url, { ...init, signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return (await res.json()) as T;
+    } catch (error) {
+      lastError = error;
+      if (i < attempts - 1 && !signal.aborted) {
+        await new Promise((r) => setTimeout(r, 1500 * (i + 1)));
+      }
+    }
+  }
+  throw lastError;
+}
+
 function SectionHeading({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <div className="text-center mb-12">
@@ -136,27 +167,29 @@ export function SiteShell({
   const route = useSyncExternalStore(subscribeHash, getHashSnapshot, getServerRoute);
   const { t, num, lang } = useT();
 
-  // Register visit once per session
+  // Register visit once per session. Retried — the hero tiles fall back to
+  // the SSR-loaded counts if every attempt fails, so they never fake a 0.
   useEffect(() => {
     if (visitedOnce.current) return;
     visitedOnce.current = true;
-    (async () => {
-      try {
-        const res = await fetch("/api/stats", { method: "POST" });
-        const data = (await res.json()) as SiteStats;
-        setStats(data);
-      } catch {
-        // ignore
-      }
-    })();
+    const ac = new AbortController();
+    fetchJsonRetry<SiteStats>("/api/stats", { method: "POST" }, 3, ac.signal)
+      .then((data) => {
+        if (!ac.signal.aborted) setStats(data);
+      })
+      .catch(() => {
+        /* stats stay null — hero uses the SSR list counts instead */
+      });
+    return () => ac.abort();
   }, []);
 
-  // Hero stat tile — real repository totals (tiny aggregate payload)
+  // Hero stat tile — real repository totals (tiny aggregate payload).
+  // The endpoint itself already falls back live→db→seed, so a retry here is
+  // only for transport-level hiccups.
   useEffect(() => {
     const ac = new AbortController();
-    fetch("/api/repos?meta=1", { signal: ac.signal })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((data: RepoMeta) => {
+    fetchJsonRetry<RepoMeta>("/api/repos?meta=1", undefined, 3, ac.signal)
+      .then((data) => {
         if (!ac.signal.aborted) setRepoMeta(data);
       })
       .catch(() => {
@@ -275,6 +308,17 @@ export function SiteShell({
   const selfCount = articles.filter((a) => a.category === "self").length;
   const sportsCount = articles.filter((a) => a.category === "sports").length;
 
+  // Hero tiles must never show a false 0: if the live stats call fails
+  // (D1 hiccup), the SSR-loaded lists still know the real totals.
+  const heroStats: SiteStats =
+    stats ?? {
+      visits: 0,
+      projectViews: 0,
+      projects: projects.length,
+      articles: articles.length,
+      messages: 0,
+    };
+
   return (
     <div className="min-h-screen flex flex-col relative">
       {/* Page-spanning turquoise glows — shared by every view */}
@@ -294,7 +338,7 @@ export function SiteShell({
             {route.view === "home" && (
               <>
                 <Hero
-                  stats={stats}
+                  stats={heroStats}
                   repoMeta={repoMeta}
                   onExplore={handleExplore}
                   onNavigate={navigate}
