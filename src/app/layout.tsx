@@ -68,9 +68,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/photos/logo_dark.png", type: "image/png" }],
-    apple: [{ url: "/photos/logo_dark.png" }],
-    shortcut: ["/photos/logo_dark.png"],
+    icon: [{ url: "/photos/logo_icon_48.png", type: "image/png", sizes: "48x48" }],
+    apple: [{ url: "/photos/logo_icon_180.png" }],
+    shortcut: ["/photos/logo_icon_48.png"],
   },
   manifest: "/manifest.webmanifest",
   robots: {

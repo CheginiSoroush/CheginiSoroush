@@ -127,19 +127,19 @@ export function Hero({
             />
             <div className="conic-ring" aria-hidden />
             <Image
-              src="/photos/logo_dark.png"
+              src="/photos/logo_dark.webp"
               alt={t("core", "hero.logoAlt")}
-              width={280}
-              height={100}
+              width={860}
+              height={972}
               priority
               className="relative dark:block hidden w-56 sm:w-72 h-auto select-none drop-shadow-2xl"
               draggable={false}
             />
             <Image
-              src="/photos/logo_light.png"
+              src="/photos/logo_light.webp"
               alt={t("core", "hero.logoAlt")}
-              width={280}
-              height={100}
+              width={860}
+              height={975}
               priority
               className="relative dark:hidden w-56 sm:w-72 h-auto select-none drop-shadow-xl"
               draggable={false}

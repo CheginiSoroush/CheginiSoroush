@@ -136,7 +136,7 @@ export function SiteHeader({
           >
             <span className="absolute inset-0 blur-lg opacity-40 rounded-full bg-brand" />
             <Image
-              src="/photos/logo_dark.png"
+              src="/photos/logo_dark.webp"
               alt=""
               width={44}
               height={50}
@@ -144,7 +144,7 @@ export function SiteHeader({
               draggable={false}
             />
             <Image
-              src="/photos/logo_light.png"
+              src="/photos/logo_light.webp"
               alt=""
               width={44}
               height={50}
