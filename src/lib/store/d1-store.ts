@@ -301,13 +301,11 @@ export const d1Store: DataStore = {
   },
 
   async getArticle(slug: string): Promise<ArticleRow | null> {
-    return cachedRead(`article:${slug}`, async () => {
-      const row = await d1()
-        .prepare(`SELECT * FROM "Article" WHERE "slug" = ?`)
-        .bind(slug)
-        .first<Record<string, unknown>>();
-      return row ? mapArticle(row) : null;
-    });
+    // Reuses the cached listArticles("all") payload (L1 RAM + L2 edge) instead
+    // of issuing its own query — zero extra D1 reads, and article pages keep
+    // rendering during quota outages once any list read has succeeded.
+    const all = await this.listArticles("all");
+    return all.find((a) => a.slug === slug) ?? null;
   },
 
   async getArticleLikes(slug: string): Promise<number | null> {
@@ -337,21 +335,30 @@ export const d1Store: DataStore = {
   async readStats() {
     return cachedRead("stats", async () => {
       const database = d1();
-      const [visits, projectViews, projects, articles, messages] = await Promise.all([
+      // Counts are derived from the cached project/article lists (shared L1/L2
+      // entries — no extra queries) and each remaining query settles
+      // independently, so one flaky read can no longer fail the whole stats
+      // payload during quota windows.
+      const [visits, projectViews, projectsList, articlesList, messages] = await Promise.allSettled([
         database.prepare(`SELECT "value" FROM "SiteStat" WHERE "key" = 'visits'`).first<{ value: number }>(),
         database
           .prepare(`SELECT "value" FROM "SiteStat" WHERE "key" = 'projectViews'`)
           .first<{ value: number }>(),
-        database.prepare(`SELECT COUNT(*) AS c FROM "Project"`).first<{ c: number }>(),
-        database.prepare(`SELECT COUNT(*) AS c FROM "Article"`).first<{ c: number }>(),
+        this.listProjects({ category: "all", q: "", featured: false, sort: "default" }),
+        this.listArticles("all"),
         database.prepare(`SELECT COUNT(*) AS c FROM "ContactMessage"`).first<{ c: number }>(),
       ]);
       return {
-        visits: visits ? Number(visits.value) : 0,
-        projectViews: projectViews ? Number(projectViews.value) : 0,
-        projects: Number(projects?.c ?? 0),
-        articles: Number(articles?.c ?? 0),
-        messages: Number(messages?.c ?? 0),
+        visits:
+          visits.status === "fulfilled" && visits.value ? Number(visits.value.value) : 0,
+        projectViews:
+          projectViews.status === "fulfilled" && projectViews.value
+            ? Number(projectViews.value.value)
+            : 0,
+        projects: projectsList.status === "fulfilled" ? projectsList.value.length : 0,
+        articles: articlesList.status === "fulfilled" ? articlesList.value.length : 0,
+        messages:
+          messages.status === "fulfilled" && messages.value ? Number(messages.value.c) : 0,
       };
     });
   },
