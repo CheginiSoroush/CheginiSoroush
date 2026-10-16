@@ -142,34 +142,77 @@ function mapAdminComment(r: Record<string, unknown>): AdminCommentRow {
 
 /* --------------------------- the driver ---------------------------- */
 
+/* ------------------- per-isolate read cache ------------------------ */
+
+/**
+ * Tiny TTL cache with serve-stale-on-error semantics.
+ *
+ * Why: D1's free-tier row-read quota is ACCOUNT-WIDE, and any other Worker
+ * on the same Cloudflare account can exhaust it — every query then fails
+ * until midnight UTC (observed 2026-10-16: whole site rendered empty).
+ *
+ * The hot public reads below run on every SSR render + API request, so they
+ * are cached briefly (45s fresh) and keep serving the last known good value
+ * for another 15 minutes while D1 rejects queries. Bounded key space
+ * (categories × slugs), per-isolate — no cross-worker coordination needed.
+ */
+type CacheEntry = { value: unknown; freshUntil: number; staleUntil: number };
+const readCache = new Map<string, CacheEntry>();
+
+const FRESH_MS = 45_000;
+const STALE_MS = 15 * 60_000;
+
+async function cachedRead<T>(key: string, load: () => Promise<T>): Promise<T> {
+  const now = Date.now();
+  const hit = readCache.get(key);
+  if (hit && hit.freshUntil > now) return hit.value as T;
+  try {
+    const value = await load();
+    readCache.set(key, {
+      value,
+      freshUntil: now + FRESH_MS,
+      staleUntil: now + FRESH_MS + STALE_MS,
+    });
+    return value;
+  } catch (error) {
+    if (hit && hit.staleUntil > now) return hit.value as T; // D1 down → last known good
+    throw error;
+  }
+}
+
 export const d1Store: DataStore = {
   // ---------- Projects ----------
   async listProjects(opts: ListProjectsOpts): Promise<ProjectRow[]> {
-    const conds: string[] = [];
-    const params: unknown[] = [];
+    return cachedRead(
+      `projects:${opts.category}:${opts.q}:${opts.featured}:${opts.sort}`,
+      async () => {
+        const conds: string[] = [];
+        const params: unknown[] = [];
 
-    if (opts.category && opts.category !== "all") {
-      conds.push(`"category" = ?`);
-      params.push(opts.category);
-    }
-    if (opts.featured) conds.push(`"featured" = 1`);
-    if (opts.q) {
-      const like = likeParam(opts.q);
-      conds.push(
-        `("title" LIKE ?${ESCAPE_CLAUSE} OR "description" LIKE ?${ESCAPE_CLAUSE} OR "repo" LIKE ?${ESCAPE_CLAUSE} OR "tags" LIKE ?${ESCAPE_CLAUSE})`
-      );
-      params.push(like, like, like, like);
-    }
+        if (opts.category && opts.category !== "all") {
+          conds.push(`"category" = ?`);
+          params.push(opts.category);
+        }
+        if (opts.featured) conds.push(`"featured" = 1`);
+        if (opts.q) {
+          const like = likeParam(opts.q);
+          conds.push(
+            `("title" LIKE ?${ESCAPE_CLAUSE} OR "description" LIKE ?${ESCAPE_CLAUSE} OR "repo" LIKE ?${ESCAPE_CLAUSE} OR "tags" LIKE ?${ESCAPE_CLAUSE})`
+          );
+          params.push(like, like, like, like);
+        }
 
-    const whereSql = conds.length ? ` WHERE ${conds.join(" AND ")}` : "";
-    const orderSql =
-      opts.sort === "views"
-        ? ` ORDER BY "views" DESC, "featured" DESC, "order" ASC`
-        : ` ORDER BY "featured" DESC, "order" ASC`;
+        const whereSql = conds.length ? ` WHERE ${conds.join(" AND ")}` : "";
+        const orderSql =
+          opts.sort === "views"
+            ? ` ORDER BY "views" DESC, "featured" DESC, "order" ASC`
+            : ` ORDER BY "featured" DESC, "order" ASC`;
 
-    const stmt = d1().prepare(`SELECT * FROM "Project"${whereSql}${orderSql}`).bind(...params);
-    const { results } = await stmt.all<Record<string, unknown>>();
-    return results.map(mapProject);
+        const stmt = d1().prepare(`SELECT * FROM "Project"${whereSql}${orderSql}`).bind(...params);
+        const { results } = await stmt.all<Record<string, unknown>>();
+        return results.map(mapProject);
+      }
+    );
   },
 
   async incrProjectViews(slug: string): Promise<number | null> {
@@ -192,22 +235,26 @@ export const d1Store: DataStore = {
 
   // ---------- Articles ----------
   async listArticles(category: string): Promise<ArticleRow[]> {
-    const stmt =
-      category && category !== "all"
-        ? d1()
-            .prepare(`SELECT * FROM "Article" WHERE "category" = ? ORDER BY "publishedAt" DESC`)
-            .bind(category)
-        : d1().prepare(`SELECT * FROM "Article" ORDER BY "publishedAt" DESC`);
-    const { results } = await stmt.all<Record<string, unknown>>();
-    return results.map(mapArticle);
+    return cachedRead(`articles:${category}`, async () => {
+      const stmt =
+        category && category !== "all"
+          ? d1()
+              .prepare(`SELECT * FROM "Article" WHERE "category" = ? ORDER BY "publishedAt" DESC`)
+              .bind(category)
+          : d1().prepare(`SELECT * FROM "Article" ORDER BY "publishedAt" DESC`);
+      const { results } = await stmt.all<Record<string, unknown>>();
+      return results.map(mapArticle);
+    });
   },
 
   async getArticle(slug: string): Promise<ArticleRow | null> {
-    const row = await d1()
-      .prepare(`SELECT * FROM "Article" WHERE "slug" = ?`)
-      .bind(slug)
-      .first<Record<string, unknown>>();
-    return row ? mapArticle(row) : null;
+    return cachedRead(`article:${slug}`, async () => {
+      const row = await d1()
+        .prepare(`SELECT * FROM "Article" WHERE "slug" = ?`)
+        .bind(slug)
+        .first<Record<string, unknown>>();
+      return row ? mapArticle(row) : null;
+    });
   },
 
   async getArticleLikes(slug: string): Promise<number | null> {
@@ -235,23 +282,25 @@ export const d1Store: DataStore = {
 
   // ---------- Site stats ----------
   async readStats() {
-    const database = d1();
-    const [visits, projectViews, projects, articles, messages] = await Promise.all([
-      database.prepare(`SELECT "value" FROM "SiteStat" WHERE "key" = 'visits'`).first<{ value: number }>(),
-      database
-        .prepare(`SELECT "value" FROM "SiteStat" WHERE "key" = 'projectViews'`)
-        .first<{ value: number }>(),
-      database.prepare(`SELECT COUNT(*) AS c FROM "Project"`).first<{ c: number }>(),
-      database.prepare(`SELECT COUNT(*) AS c FROM "Article"`).first<{ c: number }>(),
-      database.prepare(`SELECT COUNT(*) AS c FROM "ContactMessage"`).first<{ c: number }>(),
-    ]);
-    return {
-      visits: visits ? Number(visits.value) : 0,
-      projectViews: projectViews ? Number(projectViews.value) : 0,
-      projects: Number(projects?.c ?? 0),
-      articles: Number(articles?.c ?? 0),
-      messages: Number(messages?.c ?? 0),
-    };
+    return cachedRead("stats", async () => {
+      const database = d1();
+      const [visits, projectViews, projects, articles, messages] = await Promise.all([
+        database.prepare(`SELECT "value" FROM "SiteStat" WHERE "key" = 'visits'`).first<{ value: number }>(),
+        database
+          .prepare(`SELECT "value" FROM "SiteStat" WHERE "key" = 'projectViews'`)
+          .first<{ value: number }>(),
+        database.prepare(`SELECT COUNT(*) AS c FROM "Project"`).first<{ c: number }>(),
+        database.prepare(`SELECT COUNT(*) AS c FROM "Article"`).first<{ c: number }>(),
+        database.prepare(`SELECT COUNT(*) AS c FROM "ContactMessage"`).first<{ c: number }>(),
+      ]);
+      return {
+        visits: visits ? Number(visits.value) : 0,
+        projectViews: projectViews ? Number(projectViews.value) : 0,
+        projects: Number(projects?.c ?? 0),
+        articles: Number(articles?.c ?? 0),
+        messages: Number(messages?.c ?? 0),
+      };
+    });
   },
 
   async incrVisits(): Promise<void> {
@@ -407,10 +456,12 @@ export const d1Store: DataStore = {
 
   // ---------- GitHub snapshots ----------
   async getSnapshot(table): Promise<{ payloadJson: string; updatedAt: string } | null> {
-    const row = await d1()
-      .prepare(`SELECT "payloadJson", "updatedAt" FROM "${table}" WHERE "id" = 1`)
-      .first<{ payloadJson: string; updatedAt: string }>();
-    return row ? { payloadJson: row.payloadJson, updatedAt: String(row.updatedAt) } : null;
+    return cachedRead(`snap:${table}`, async () => {
+      const row = await d1()
+        .prepare(`SELECT "payloadJson", "updatedAt" FROM "${table}" WHERE "id" = 1`)
+        .first<{ payloadJson: string; updatedAt: string }>();
+      return row ? { payloadJson: row.payloadJson, updatedAt: String(row.updatedAt) } : null;
+    });
   },
 
   async putSnapshot(table, payloadJson: string): Promise<void> {
@@ -425,43 +476,49 @@ export const d1Store: DataStore = {
 
   // ---------- Auto-sync data (repo demos / meta / demo health) ----------
   async listRepoDemos(): Promise<RepoDemoRow[]> {
-    const { results } = await d1()
-      .prepare(`SELECT "repo", "url", "source", "updatedAt" FROM "RepoDemo"`)
-      .all<Record<string, unknown>>();
-    return results.map((r) => ({
-      repo: String(r.repo),
-      url: String(r.url),
-      source: String(r.source ?? "cloudflare"),
-      updatedAt: String(r.updatedAt ?? nowIso()),
-    }));
+    return cachedRead("repodemos", async () => {
+      const { results } = await d1()
+        .prepare(`SELECT "repo", "url", "source", "updatedAt" FROM "RepoDemo"`)
+        .all<Record<string, unknown>>();
+      return results.map((r) => ({
+        repo: String(r.repo),
+        url: String(r.url),
+        source: String(r.source ?? "cloudflare"),
+        updatedAt: String(r.updatedAt ?? nowIso()),
+      }));
+    });
   },
 
   async listRepoMeta(): Promise<RepoMetaRow[]> {
-    const { results } = await d1()
-      .prepare(
-        `SELECT "repo", "latestTag", "latestTagAt", "commitActivity", "openIssues", "fetchedAt" FROM "RepoMeta"`
-      )
-      .all<Record<string, unknown>>();
-    return results.map((r) => ({
-      repo: String(r.repo),
-      latestTag: (r.latestTag as string | null) ?? null,
-      latestTagAt: (r.latestTagAt as string | null) ?? null,
-      commitActivity: String(r.commitActivity ?? "[]"),
-      openIssues: Number(r.openIssues ?? 0),
-      fetchedAt: String(r.fetchedAt ?? nowIso()),
-    }));
+    return cachedRead("repometas", async () => {
+      const { results } = await d1()
+        .prepare(
+          `SELECT "repo", "latestTag", "latestTagAt", "commitActivity", "openIssues", "fetchedAt" FROM "RepoMeta"`
+        )
+        .all<Record<string, unknown>>();
+      return results.map((r) => ({
+        repo: String(r.repo),
+        latestTag: (r.latestTag as string | null) ?? null,
+        latestTagAt: (r.latestTagAt as string | null) ?? null,
+        commitActivity: String(r.commitActivity ?? "[]"),
+        openIssues: Number(r.openIssues ?? 0),
+        fetchedAt: String(r.fetchedAt ?? nowIso()),
+      }));
+    });
   },
 
   async listDemoHealth(): Promise<DemoHealthRow[]> {
-    const { results } = await d1()
-      .prepare(`SELECT "host", "ok", "latencyMs", "lastChecked" FROM "DemoHealth"`)
-      .all<Record<string, unknown>>();
-    return results.map((r) => ({
-      host: String(r.host),
-      ok: !!r.ok,
-      latencyMs: Number(r.latencyMs ?? 0),
-      lastChecked: String(r.lastChecked ?? nowIso()),
-    }));
+    return cachedRead("demohealth", async () => {
+      const { results } = await d1()
+        .prepare(`SELECT "host", "ok", "latencyMs", "lastChecked" FROM "DemoHealth"`)
+        .all<Record<string, unknown>>();
+      return results.map((r) => ({
+        host: String(r.host),
+        ok: !!r.ok,
+        latencyMs: Number(r.latencyMs ?? 0),
+        lastChecked: String(r.lastChecked ?? nowIso()),
+      }));
+    });
   },
 
   // ---------- Admin dashboard ----------

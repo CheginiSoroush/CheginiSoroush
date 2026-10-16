@@ -112,3 +112,9 @@ CREATE TABLE IF NOT EXISTS "RateLimit" (
     "count" INTEGER NOT NULL,
     PRIMARY KEY ("key", "windowStart")
 );
+
+-- Point-lookup indexes: every `WHERE slug = ?` previously full-scanned its
+-- table. Scan rows count against D1's account-wide daily row-read quota, so
+-- these indexes directly reduce quota burn as the tables grow.
+CREATE INDEX IF NOT EXISTS "Article_slug_idx" ON "Article" ("slug");
+CREATE INDEX IF NOT EXISTS "Project_slug_idx" ON "Project" ("slug");
