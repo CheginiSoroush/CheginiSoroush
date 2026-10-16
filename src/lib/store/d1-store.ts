@@ -162,6 +162,49 @@ const readCache = new Map<string, CacheEntry>();
 const FRESH_MS = 45_000;
 const STALE_MS = 15 * 60_000;
 
+/**
+ * L2: the Workers Cache API (free, edge-persistent, does NOT burn D1 quota).
+ * Every successful read is written through, so cold isolates (and whole
+ * colos) can recover real content even while D1 rejects every query.
+ * Synthetic URLs on the site's own zone — they are never fetched, only used
+ * as cache keys.
+ */
+interface CacheLike {
+  put(key: RequestInfo, res: Response): Promise<void>;
+  match(key: RequestInfo): Promise<Response | undefined>;
+}
+const CACHE_API: CacheLike | undefined =
+  typeof caches !== "undefined"
+    ? (caches as unknown as { default?: CacheLike }).default
+    : undefined;
+
+const L2_PREFIX = "https://imsoroush.ir/__d1-l2/";
+
+async function l2Put(key: string, value: unknown): Promise<void> {
+  if (!CACHE_API) return;
+  try {
+    await CACHE_API.put(
+      `${L2_PREFIX}${encodeURIComponent(key)}`,
+      new Response(JSON.stringify(value), {
+        headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=86400" },
+      })
+    );
+  } catch {
+    /* best effort — the memory cache still works */
+  }
+}
+
+async function l2Get<T>(key: string): Promise<T | null> {
+  if (!CACHE_API) return null;
+  try {
+    const hit = await CACHE_API.match(`${L2_PREFIX}${encodeURIComponent(key)}`);
+    if (!hit) return null;
+    return (await hit.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
 async function cachedRead<T>(key: string, load: () => Promise<T>): Promise<T> {
   const now = Date.now();
   const hit = readCache.get(key);
@@ -173,9 +216,19 @@ async function cachedRead<T>(key: string, load: () => Promise<T>): Promise<T> {
       freshUntil: now + FRESH_MS,
       staleUntil: now + FRESH_MS + STALE_MS,
     });
+    void l2Put(key, value); // fire-and-forget write-through
     return value;
   } catch (error) {
-    if (hit && hit.staleUntil > now) return hit.value as T; // D1 down → last known good
+    if (hit && hit.staleUntil > now) return hit.value as T; // D1 down → last known good (RAM)
+    const l2 = await l2Get<T>(key); // D1 down + cold isolate → edge cache
+    if (l2 !== null) {
+      readCache.set(key, {
+        value: l2,
+        freshUntil: now + FRESH_MS,
+        staleUntil: now + FRESH_MS + STALE_MS,
+      });
+      return l2;
+    }
     throw error;
   }
 }
