@@ -66,6 +66,9 @@ export const metadata: Metadata = {
   applicationName: "imsoroush.ir",
   alternates: {
     canonical: "/",
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
   },
   icons: {
     icon: [{ url: "/photos/logo_icon_48.png", type: "image/png", sizes: "48x48" }],
@@ -85,12 +88,13 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: TITLE,
-    description: "توسعه‌دهنده نرم‌افزار، نویسنده و علاقه‌مند به یادگیری مستمر.",
+    description:
+      "Software developer, Telegram bot maker, 3D experience builder and writer — projects, articles and open-source work.",
     url: SITE_URL,
     siteName: "imsoroush.ir",
     type: "website",
-    locale: "fa_IR",
-    alternateLocale: ["en_US"],
+    locale: "en_US",
+    alternateLocale: ["fa_IR"],
     // NOTE: og:image is provided by the src/app/opengraph-image.tsx file
     // convention (dynamic 1200×630 card) — do not duplicate it here.
   },

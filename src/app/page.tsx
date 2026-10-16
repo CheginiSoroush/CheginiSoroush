@@ -4,6 +4,38 @@ import type { Article, Project } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+const SITE_URL = "https://imsoroush.ir";
+
+/** Persian script detection — used for per-article inLanguage hints. */
+const isPersian = (s: string) => /[\u0600-\u06FF]/.test(s);
+
+/**
+ * Blog + latest-articles JSON-LD (complements the Person/WebSite graph that
+ * the root layout renders). Permalinks use the SPA deep-link format
+ * `/#/writing/<slug>` — the same URLs the reader UI shares.
+ */
+function blogJsonLd(articles: Article[]) {
+  if (articles.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": `${SITE_URL}/#blog`,
+    name: "Soroush Chegini — Articles",
+    url: `${SITE_URL}/#/writing`,
+    publisher: { "@id": `${SITE_URL}/#person` },
+    inLanguage: ["en", "fa-IR"],
+    blogPost: articles.slice(0, 10).map((a) => ({
+      "@type": "BlogPosting",
+      headline: a.titleEn ?? a.title,
+      alternativeHeadline: a.titleEn ? a.title : undefined,
+      url: `${SITE_URL}/#/writing/${a.slug}`,
+      datePublished: a.publishedAt,
+      inLanguage: isPersian(a.title) ? "fa-IR" : "en",
+      author: { "@id": `${SITE_URL}/#person` },
+    })),
+  };
+}
+
 export default async function Page() {
   let projects: Project[] = [];
   let articles: Article[] = [];
@@ -50,5 +82,20 @@ export default async function Page() {
     console.error("Failed to load initial data:", error);
   }
 
-  return <SiteShell initialProjects={projects} initialArticles={articles} />;
+  const blogLd = blogJsonLd(articles);
+
+  return (
+    <>
+      {blogLd && (
+        <script
+          type="application/ld+json"
+          // `<` escaping keeps article titles from closing the script tag
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(blogLd).replace(/</g, "\\u003c"),
+          }}
+        />
+      )}
+      <SiteShell initialProjects={projects} initialArticles={articles} />
+    </>
+  );
 }
