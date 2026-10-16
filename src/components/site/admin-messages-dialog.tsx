@@ -84,11 +84,24 @@ type StatsPayload = {
     unread: number;
     messagesLastWeek: number;
     likes: number;
+    comments: number;
     subscribers: number;
   };
   topProjects: TopProject[];
   topArticles: TopArticle[];
   generatedAt: string;
+};
+
+/** Row shape returned by /api/admin/comments (joined with article meta). */
+type AdminComment = {
+  id: string;
+  articleSlug: string;
+  name: string;
+  body: string;
+  createdAt: string;
+  articleTitle: string;
+  articleTitleEn: string | null;
+  articleIcon: string;
 };
 
 const DATE_OPTS: Intl.DateTimeFormatOptions = {
@@ -98,6 +111,15 @@ const DATE_OPTS: Intl.DateTimeFormatOptions = {
   hour: "2-digit",
   minute: "2-digit",
 };
+
+/** Deterministic avatar hue from the commenter name — mirrors the public comments UI. */
+function avatarStyle(name: string): { background: string } {
+  let hash = 0;
+  for (let i = 0; i < name.length; i += 1) {
+    hash = (hash * 31 + name.charCodeAt(i)) % 360;
+  }
+  return { background: `conic-gradient(from 200deg, oklch(0.72 0.14 ${hash}), oklch(0.6 0.16 ${(hash + 60) % 360}))` };
+}
 
 function AdminStatsPanel({ apiKey }: { apiKey: string }) {
   const [stats, setStats] = useState<StatsPayload | null>(null);
@@ -153,7 +175,6 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
   }
 
   const totals = stats.totals;
-  // Comments feature was removed from the site — no comments tile here.
   const tiles = [
     { icon: Eye, label: t("admin", "tileVisits"), value: totals.visits },
     { icon: FolderGit2, label: t("admin", "tileProjectViews"), value: totals.projectViews },
@@ -165,6 +186,7 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
       hint: t("admin", "unreadCount", { n: num(totals.unread) }),
     },
     { icon: CalendarClock, label: t("admin", "tileMessagesWeek"), value: totals.messagesLastWeek },
+    { icon: MessageSquare, label: t("admin", "tileComments"), value: totals.comments },
     { icon: FolderGit2, label: t("admin", "tileProjects"), value: totals.projects },
     { icon: FileText, label: t("admin", "tileArticles"), value: totals.articles },
     { icon: Users, label: t("admin", "tileSubscribers"), value: totals.subscribers },
@@ -330,6 +352,190 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
   );
 }
 
+/** Comments moderation tab — list everything readers posted, delete junk. */
+function AdminCommentsPanel({ apiKey }: { apiKey: string }) {
+  const [comments, setComments] = useState<AdminComment[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const { toast } = useToast();
+  const { t, lang, date } = useT();
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setFailed(false);
+    try {
+      const res = await fetch("/api/admin/comments", {
+        headers: { "x-admin-key": apiKey },
+        cache: "no-store",
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const data = (await res.json()) as { comments?: AdminComment[] };
+      setComments(Array.isArray(data.comments) ? data.comments : []);
+    } catch {
+      setFailed(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiKey]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const fmtDate = (iso: string) => {
+    try {
+      return date(iso, DATE_OPTS);
+    } catch {
+      return iso;
+    }
+  };
+
+  const deleteComment = async (c: AdminComment) => {
+    if (busyId === c.id) return;
+    setBusyId(c.id);
+    try {
+      const res = await fetch("/api/admin/comments", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "x-admin-key": apiKey },
+        body: JSON.stringify({ id: c.id }),
+      });
+      if (res.ok) {
+        setComments((list) => (list ? list.filter((x) => x.id !== c.id) : list));
+        setConfirmDeleteId(null);
+        toast({
+          title: t("admin", "commentDeleted"),
+          description: t("admin", "commentDeletedDesc", { s: c.name }),
+        });
+      } else {
+        toast({ title: t("admin", "commentDeleteFailed"), variant: "destructive" });
+      }
+    } catch {
+      toast({ title: t("admin", "networkTitle"), variant: "destructive" });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="py-14 grid place-items-center text-muted-foreground">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
+
+  if (failed || comments === null) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-50" />
+        <p className="text-sm mb-4">{t("admin", "commentsFailed")}</p>
+        <button
+          onClick={load}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-4 py-2 hover:bg-brand/20 transition-all min-h-[34px]"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          {t("admin", "retry")}
+        </button>
+      </div>
+    );
+  }
+
+  if (comments.length === 0) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-50" />
+        <p className="text-sm">{t("admin", "noComments")}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 mt-1">
+      <ul className="space-y-3">
+        {comments.map((c) => (
+          <li key={c.id} className="rounded-2xl border border-border bg-card p-4 transition-all">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span
+                  aria-hidden
+                  className="w-8 h-8 rounded-full grid place-items-center text-[11px] font-black text-white shrink-0 shadow-sm"
+                  style={avatarStyle(c.name)}
+                >
+                  {c.name.trim().charAt(0).toUpperCase() || "?"}
+                </span>
+                <div className="min-w-0">
+                  <p className="font-bold text-sm truncate leading-tight">{c.name}</p>
+                  <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                    {fmtDate(c.createdAt)}
+                  </p>
+                </div>
+              </div>
+              <div className="shrink-0 flex items-center gap-0.5">
+                {confirmDeleteId === c.id ? (
+                  <span className="flex items-center gap-0.5">
+                    <button
+                      onClick={() => deleteComment(c)}
+                      aria-label={t("admin", "confirmDelete")}
+                      title={t("admin", "confirmDelete")}
+                      disabled={busyId === c.id}
+                      className="w-8 h-8 rounded-lg grid place-items-center text-destructive hover:bg-destructive/15 transition-all"
+                    >
+                      {busyId === c.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <CheckCircle2 className="w-4 h-4" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      aria-label={t("admin", "cancel")}
+                      title={t("admin", "cancel")}
+                      className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground/60 hover:text-foreground transition-all"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </button>
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(c.id)}
+                    aria-label={t("admin", "deleteComment")}
+                    title={t("admin", "deleteComment")}
+                    className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-all"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+            {/* Host article chip */}
+            <span
+              className="inline-flex items-center gap-1 max-w-full rounded-full border border-border bg-secondary/60 px-2.5 py-1 text-[10.5px] font-bold text-muted-foreground mb-2"
+              title={c.articleSlug}
+            >
+              <span aria-hidden className="shrink-0">{c.articleIcon}</span>
+              <span className="truncate">
+                {pickEn(lang, c.articleTitleEn, c.articleTitle)}
+              </span>
+            </span>
+            <p className="text-sm text-foreground/90 leading-7 whitespace-pre-wrap break-words">
+              {c.body}
+            </p>
+          </li>
+        ))}
+      </ul>
+      <button
+        onClick={load}
+        className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 hover:bg-brand/20 active:scale-95 transition-all min-h-[30px]"
+      >
+        <RefreshCw className="w-3.5 h-3.5" />
+        {t("admin", "refresh")}
+      </button>
+    </div>
+  );
+}
+
 export function AdminMessagesDialog({
   open,
   onOpenChange,
@@ -353,7 +559,7 @@ export function AdminMessagesDialog({
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const [panel, setPanel] = useState<"inbox" | "stats">("inbox");
+  const [panel, setPanel] = useState<"inbox" | "comments" | "stats">("inbox");
 
   // Reset state when dialog closes
   useEffect(() => {
@@ -529,6 +735,7 @@ export function AdminMessagesDialog({
               {(
                 [
                   { icon: Inbox, label: t("admin", "loginChipInbox") },
+                  { icon: MessageSquare, label: t("admin", "loginChipComments") },
                   { icon: BarChart3, label: t("admin", "loginChipStats") },
                 ] as const
               ).map((c) => (
@@ -580,9 +787,15 @@ export function AdminMessagesDialog({
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Inbox className="w-5 h-5 text-brand" />
+                {panel === "inbox" ? (
+                  <Inbox className="w-5 h-5 text-brand" />
+                ) : panel === "comments" ? (
+                  <MessageSquare className="w-5 h-5 text-brand" />
+                ) : (
+                  <BarChart3 className="w-5 h-5 text-brand" />
+                )}
                 {t("admin", "panel")}
-                {unread > 0 && (
+                {panel === "inbox" && unread > 0 && (
                   <span className="text-[11px] font-bold bg-brand text-primary-foreground rounded-full px-2.5 py-0.5">
                     {t("admin", "unreadCount", { n: num(unread) })}
                   </span>
@@ -591,7 +804,9 @@ export function AdminMessagesDialog({
               <DialogDescription>
                 {panel === "inbox"
                   ? t("admin", "inboxDesc", { n: num(total) })
-                  : t("admin", "statsDesc")}
+                  : panel === "comments"
+                    ? t("admin", "commentsDesc")
+                    : t("admin", "statsDesc")}
               </DialogDescription>
             </DialogHeader>
 
@@ -604,6 +819,7 @@ export function AdminMessagesDialog({
               {(
                 [
                   { id: "inbox", label: t("admin", "tabInbox"), icon: Inbox },
+                  { id: "comments", label: t("admin", "tabComments"), icon: MessageSquare },
                   { id: "stats", label: t("admin", "tabStats"), icon: BarChart3 },
                 ] as const
               ).map((p) => (
@@ -627,6 +843,8 @@ export function AdminMessagesDialog({
 
             {panel === "stats" ? (
               <AdminStatsPanel apiKey={key.trim()} />
+            ) : panel === "comments" ? (
+              <AdminCommentsPanel apiKey={key.trim()} />
             ) : loading ? (
               <div className="py-10 grid place-items-center text-muted-foreground">
                 <Loader2 className="w-6 h-6 animate-spin" />

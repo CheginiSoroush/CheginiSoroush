@@ -1,4 +1,5 @@
 import type {
+  AdminCommentRow,
   AdminStats,
   ArticleRow,
   CommentRow,
@@ -69,6 +70,11 @@ export interface DataStore {
     name: string;
     body: string;
   }): Promise<CommentRow>;
+  // ---------- Article comments (admin moderation) ----------
+  /** Newest-first comments across all articles, joined with article meta. */
+  listAllComments(): Promise<AdminCommentRow[]>;
+  /** Returns false when the comment does not exist. */
+  deleteComment(id: string): Promise<boolean>;
 
   // ---------- Subscribers ----------
   countSubscribers(): Promise<number>;

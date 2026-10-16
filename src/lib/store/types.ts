@@ -62,6 +62,13 @@ export type CommentRow = {
   createdAt: string;
 };
 
+/** Admin moderation view: comment joined with its host article's meta. */
+export type AdminCommentRow = CommentRow & {
+  articleTitle: string;
+  articleTitleEn: string | null;
+  articleIcon: string;
+};
+
 export type SubscriberRow = {
   email: string;
   createdAt: string;

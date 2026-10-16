@@ -1,6 +1,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import type { DataStore } from "./store-contract";
 import type {
+  AdminCommentRow,
   AdminStats,
   ArticleRow,
   CommentRow,
@@ -127,6 +128,15 @@ function mapComment(r: Record<string, unknown>): CommentRow {
     name: String(r.name),
     body: String(r.body),
     createdAt: toIso(r.createdAt ?? nowIso()),
+  };
+}
+
+function mapAdminComment(r: Record<string, unknown>): AdminCommentRow {
+  return {
+    ...mapComment(r),
+    articleTitle: (r.articleTitle as string) ?? String(r.articleSlug ?? ""),
+    articleTitleEn: (r.articleTitleEn as string | null) ?? null,
+    articleIcon: (r.articleIcon as string) ?? "📝",
   };
 }
 
@@ -331,6 +341,27 @@ export const d1Store: DataStore = {
       .first<Record<string, unknown>>();
     if (!row) throw new Error("Failed to insert comment");
     return mapComment(row);
+  },
+
+  async listAllComments(): Promise<AdminCommentRow[]> {
+    // LEFT JOIN keeps orphaned comments (article later removed) visible so the
+    // owner can still delete them; title falls back to the raw slug in the mapper.
+    const { results } = await d1()
+      .prepare(
+        `SELECT c.*, a."title" AS "articleTitle", a."titleEn" AS "articleTitleEn", a."icon" AS "articleIcon"
+         FROM "Comment" c LEFT JOIN "Article" a ON a."slug" = c."articleSlug"
+         ORDER BY c."createdAt" DESC LIMIT 500`
+      )
+      .all<Record<string, unknown>>();
+    return results.map(mapAdminComment);
+  },
+
+  async deleteComment(id: string): Promise<boolean> {
+    const row = await d1()
+      .prepare(`DELETE FROM "Comment" WHERE "id" = ? RETURNING "id"`)
+      .bind(id)
+      .first<{ id: string }>();
+    return !!row;
   },
 
   // ---------- Subscribers ----------

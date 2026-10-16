@@ -5,8 +5,9 @@ export const adminDict: Dict = {
   fa: {
     // ---------- login ----------
     "login": "ورود مدیر",
-    "loginDesc": "این پنل فقط برای شماست (مالک سایت). با کلید مدیریتی وارد شوید تا پیام‌های فرم تماس و آمار سایت را ببینید — بازدیدکنندگان هیچ‌کدام از این‌ها را نمی‌بینند.",
+    "loginDesc": "این پنل فقط برای شماست (مالک سایت). با کلید مدیریتی وارد شوید تا پیام‌های فرم تماس را بخوانید، دیدگاه‌ها را مدیریت کنید و آمار سایت را ببینید — بازدیدکنندگان هیچ‌کدام از این‌ها را نمی‌بینند.",
     "loginChipInbox": "صندوق پیام‌های فرم تماس",
+    "loginChipComments": "مدیریت دیدگاه‌های نوشته‌ها",
     "loginChipStats": "آمار و عملکرد سایت",
     "loginKeyHint": "کلید، همان مقدار ADMIN_KEY در فایل .env سرور است.",
     "keyAria": "کلید مدیریتی",
@@ -32,9 +33,11 @@ export const adminDict: Dict = {
     // ---------- shell / tabs ----------
     "panel": "پنل مدیریت",
     "inboxDesc": "مجموع {n} پیام از فرم تماس",
+    "commentsDesc": "مدیریت و پاک‌سازی دیدگاه‌های مخاطبان روی نوشته‌ها",
     "statsDesc": "نگاه کلی به عملکرد سایت",
     "tabsAria": "بخش‌های پنل",
     "tabInbox": "صندوق پیام",
+    "tabComments": "دیدگاه‌ها",
     "tabStats": "آمار سایت",
 
     // ---------- inbox ----------
@@ -49,7 +52,14 @@ export const adminDict: Dict = {
     "deleted": "پیام حذف شد",
     "deletedDesc": "پیام «{s}» پاک شد.",
 
-    // (Comments feature intentionally not part of the product.)
+    // ---------- comments moderation ----------
+    "commentsFailed": "دیدگاه‌ها بارگذاری نشد.",
+    "noComments": "هنوز دیدگاهی ثبت نشده.",
+    "onArticle": "روی مقاله «{s}»",
+    "deleteComment": "حذف دیدگاه",
+    "commentDeleted": "دیدگاه حذف شد",
+    "commentDeletedDesc": "دیدگاه «{s}» پاک شد.",
+    "commentDeleteFailed": "حذف دیدگاه ناموفق بود",
 
     // ---------- stats ----------
     "statsFailed": "آمار بارگذاری نشد.",
@@ -58,6 +68,7 @@ export const adminDict: Dict = {
     "tileLikes": "مجموع لایک‌ها",
     "tileMessages": "پیام‌ها",
     "tileMessagesWeek": "پیام این هفته",
+    "tileComments": "دیدگاه‌ها",
     "tileProjects": "پروژه‌ها",
     "tileArticles": "نوشته‌ها",
     "tileSubscribers": "اعضای خبرنامه",
@@ -78,8 +89,9 @@ export const adminDict: Dict = {
   en: {
     // ---------- login ----------
     "login": "Admin sign-in",
-    "loginDesc": "This panel is for you only (the site owner). Sign in with your admin key to read contact-form messages and see site stats — visitors never see any of this.",
+    "loginDesc": "This panel is for you only (the site owner). Sign in with your admin key to read contact-form messages, moderate article comments and see site stats — visitors never see any of this.",
     "loginChipInbox": "Contact-form inbox",
+    "loginChipComments": "Moderate article comments",
     "loginChipStats": "Site stats & performance",
     "loginKeyHint": "The key is the ADMIN_KEY value in the server's .env file.",
     "keyAria": "Admin key",
@@ -105,9 +117,11 @@ export const adminDict: Dict = {
     // ---------- shell / tabs ----------
     "panel": "Admin panel",
     "inboxDesc": "{n} total messages from the contact form",
+    "commentsDesc": "Moderate and clean up reader comments on your articles",
     "statsDesc": "Site performance at a glance",
     "tabsAria": "Panel sections",
     "tabInbox": "Inbox",
+    "tabComments": "Comments",
     "tabStats": "Site stats",
 
     // ---------- inbox ----------
@@ -122,7 +136,14 @@ export const adminDict: Dict = {
     "deleted": "Message deleted",
     "deletedDesc": "Message “{s}” was deleted.",
 
-    // (Comments feature intentionally not part of the product.)
+    // ---------- comments moderation ----------
+    "commentsFailed": "Couldn't load comments.",
+    "noComments": "No comments yet.",
+    "onArticle": "on “{s}”",
+    "deleteComment": "Delete comment",
+    "commentDeleted": "Comment deleted",
+    "commentDeletedDesc": "Comment by “{s}” was deleted.",
+    "commentDeleteFailed": "Couldn't delete the comment",
 
     // ---------- stats ----------
     "statsFailed": "Couldn't load stats.",
@@ -131,6 +152,7 @@ export const adminDict: Dict = {
     "tileLikes": "Total likes",
     "tileMessages": "Messages",
     "tileMessagesWeek": "Messages this week",
+    "tileComments": "Comments",
     "tileProjects": "Projects",
     "tileArticles": "Articles",
     "tileSubscribers": "Newsletter members",

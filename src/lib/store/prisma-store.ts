@@ -2,6 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import { db } from "@/lib/db";
 import type { DataStore } from "./store-contract";
 import type {
+  AdminCommentRow,
   AdminStats,
   ArticleRow,
   CommentRow,
@@ -218,6 +219,35 @@ export function createPrismaStore(client: Prisma = db): DataStore {
     }): Promise<CommentRow> {
       const saved = await pdb.comment.create({ data: c });
       return { ...saved, createdAt: iso(saved.createdAt) };
+    },
+
+    async listAllComments(): Promise<AdminCommentRow[]> {
+      const [rows, articles] = await Promise.all([
+        pdb.comment.findMany({ orderBy: { createdAt: "desc" }, take: 500 }),
+        pdb.article.findMany({
+          select: { slug: true, title: true, titleEn: true, icon: true },
+        }),
+      ]);
+      const bySlug = new Map(articles.map((a) => [a.slug, a]));
+      return rows.map((c) => {
+        const a = bySlug.get(c.articleSlug);
+        return {
+          ...c,
+          createdAt: iso(c.createdAt),
+          articleTitle: a?.title ?? c.articleSlug,
+          articleTitleEn: a?.titleEn ?? null,
+          articleIcon: a?.icon ?? "📝",
+        };
+      });
+    },
+
+    async deleteComment(id: string): Promise<boolean> {
+      try {
+        await pdb.comment.delete({ where: { id } });
+        return true;
+      } catch {
+        return false;
+      }
     },
 
     // ---------- Subscribers ----------
