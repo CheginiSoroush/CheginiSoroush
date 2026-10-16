@@ -43,7 +43,10 @@ function useTypewriter(words: string[]) {
 function Counter({ value, format }: { value: number; format: (n: number) => string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
-  const [display, setDisplay] = useState(0);
+  // null = animation not started yet → render the REAL value (SSR HTML and
+  // pre-scroll view show true numbers, never a false 0 for visitors/crawlers);
+  // once the tile scrolls into view the usual 0→value count-up takes over.
+  const [display, setDisplay] = useState<number | null>(null);
 
   useEffect(() => {
     if (!inView) return;
@@ -60,7 +63,7 @@ function Counter({ value, format }: { value: number; format: (n: number) => stri
     return () => cancelAnimationFrame(raf);
   }, [inView, value]);
 
-  return <span ref={ref}>{format(display)}</span>;
+  return <span ref={ref}>{format(display ?? value)}</span>;
 }
 
 export function Hero({
