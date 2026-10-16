@@ -179,7 +179,10 @@ const CACHE_API: CacheLike | undefined =
     ? (caches as unknown as { default?: CacheLike }).default
     : undefined;
 
-const L2_PREFIX = "https://imsoroush.ir/__d1-l2/";
+// v2: entries written before the baked-fallback fix may contain zero-filled
+// stats payloads (failed SiteStat reads were cached as "success"); bumping the
+// prefix orphans them so the fallback dataset can serve instead.
+const L2_PREFIX = "https://imsoroush.ir/__d1-l2/v2/";
 
 async function l2Put(key: string, value: unknown): Promise<void> {
   if (!CACHE_API) return;
