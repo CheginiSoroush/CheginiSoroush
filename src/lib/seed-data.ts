@@ -95,7 +95,7 @@ export const seedProjects: SeedProject[] = [
     slug: "unsplash-photos",
     title: "اتوماسیون تصاویر Unsplash",
     titleEn: "Unsplash Photo Automation",
-    repo: "CheginiSoroush/Unsplash-Photos",
+    repo: "CheginiSoroush/unsplashphotos",
     description:
       "ربات سرورلس تلگرام مجهز به CRON Jobs برای دریافت تصاویر باکیفیت از Unsplash API و انتشار زمان‌بندی‌شده.",
     descriptionEn:
@@ -147,7 +147,7 @@ export const seedProjects: SeedProject[] = [
     slug: "audio-queue-bot",
     title: "ربات صف صوتی",
     titleEn: "Audio Queue Bot",
-    repo: "CheginiSoroush/Audio-Queue-Bot",
+    repo: "CheginiSoroush/Audio-Queue-Telegram-Bot",
     description:
       "اتوماسیون انتشار موسیقی در کانال‌های تلگرامی با معماری Serverless، مجهز به زمان‌بندی پویا و دیتابیس D1.",
     descriptionEn:
@@ -199,7 +199,7 @@ export const seedProjects: SeedProject[] = [
     slug: "channel-manager",
     title: "دستیار ادمین کانال",
     titleEn: "Channel Admin Assistant",
-    repo: "CheginiSoroush/Telegram-Channel-Manager",
+    repo: "CheginiSoroush/telegram-channel-manager-bot",
     description:
       "ربات پایتونی برای پایش، پاکسازی خودکار متون با RegEx و سیستم تاییدیه دو مرحله‌ای برای مدیریت کانال.",
     descriptionEn:
@@ -240,7 +240,7 @@ export const seedProjects: SeedProject[] = [
     slug: "vamp-sole",
     title: "فروشگاه خونین کفش",
     titleEn: "VampSole Store",
-    repo: "CheginiSoroush/VampSole",
+    repo: "CheginiSoroush/VampSole-WebSite",
     description:
       "طراحی رابط کاربری خلاقانه و تعاملی با تم وحشت، دارای انیمیشن‌های پیشرفته CSS و افکت باران خون.",
     descriptionEn:
@@ -266,7 +266,7 @@ export const seedProjects: SeedProject[] = [
     slug: "aurora-vpn",
     title: "لندینگ پیج AuroraVPN",
     titleEn: "AuroraVPN Landing Page",
-    repo: "CheginiSoroush/AuroraVPN",
+    repo: "CheginiSoroush/aurora-vpn-landing",
     description:
       "طراحی مدرن شیشه‌ای با انیمیشن‌های پس‌زمینه پویا و اسکرول تعاملی با جاوااسکریپت خالص.",
     descriptionEn:
@@ -292,7 +292,7 @@ export const seedProjects: SeedProject[] = [
     slug: "argus-vpn",
     title: "لندینگ پیج ArgusVPN",
     titleEn: "ArgusVPN Landing Page",
-    repo: "CheginiSoroush/ArgusVPN",
+    repo: "CheginiSoroush/argus-vpn-landing",
     description:
       "طراحی مدرن و تاریک با انیمیشن‌های اسکرول GSAP، ماک‌آپ تعاملی CSS و کره زمین سه‌بعدی.",
     descriptionEn:
@@ -387,7 +387,7 @@ export const seedProjects: SeedProject[] = [
     slug: "portfolio-nebula",
     title: "قالب پورتفولیو سحابی",
     titleEn: "Nebula Portfolio Template",
-    repo: "CheginiSoroush/Portfolio-Nebula",
+    repo: "CheginiSoroush/portfolio-nebula-theme",
     description:
       "یک قالب شخصی تاریک و مدرن با پس‌زمینه تعاملی Three.js، افکت‌های تایپ‌رایتر و انیمیشن‌های GSAP.",
     descriptionEn:

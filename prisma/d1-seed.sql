@@ -42,7 +42,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmvb76k330005vf1dx6nmuxd5', 'unsplash-photos', 'اتوماسیون تصاویر Unsplash', 'Unsplash Photo Automation', 'CheginiSoroush/Unsplash-Photos', NULL, 'ربات سرورلس تلگرام مجهز به CRON Jobs برای دریافت تصاویر باکیفیت از Unsplash API و انتشار زمان‌بندی‌شده.', 'Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.', 'bots', '["CRON Jobs","Unsplash API","Serverless","Cloudflare"]', '📷', 0, 0, 5, '2026-10-16T16:44:13.744Z')
+VALUES ('cmvb76k330005vf1dx6nmuxd5', 'unsplash-photos', 'اتوماسیون تصاویر Unsplash', 'Unsplash Photo Automation', 'CheginiSoroush/unsplashphotos', NULL, 'ربات سرورلس تلگرام مجهز به CRON Jobs برای دریافت تصاویر باکیفیت از Unsplash API و انتشار زمان‌بندی‌شده.', 'Serverless Telegram bot using CRON jobs to fetch high-quality images from the Unsplash API and publish them on a schedule.', 'bots', '["CRON Jobs","Unsplash API","Serverless","Cloudflare"]', '📷', 0, 0, 5, '2026-10-16T16:44:13.744Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -74,7 +74,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmvb76k370009vf1df0gj1koo', 'audio-queue-bot', 'ربات صف صوتی', 'Audio Queue Bot', 'CheginiSoroush/Audio-Queue-Bot', NULL, 'اتوماسیون انتشار موسیقی در کانال‌های تلگرامی با معماری Serverless، مجهز به زمان‌بندی پویا و دیتابیس D1.', 'Music publishing automation for Telegram channels with a serverless architecture, dynamic scheduling, and a D1 database.', 'bots', '["Audio Publishing","Dynamic Scheduling","D1","Serverless"]', '🎧', 0, 0, 9, '2026-10-16T16:44:13.747Z')
+VALUES ('cmvb76k370009vf1df0gj1koo', 'audio-queue-bot', 'ربات صف صوتی', 'Audio Queue Bot', 'CheginiSoroush/Audio-Queue-Telegram-Bot', NULL, 'اتوماسیون انتشار موسیقی در کانال‌های تلگرامی با معماری Serverless، مجهز به زمان‌بندی پویا و دیتابیس D1.', 'Music publishing automation for Telegram channels with a serverless architecture, dynamic scheduling, and a D1 database.', 'bots', '["Audio Publishing","Dynamic Scheduling","D1","Serverless"]', '🎧', 0, 0, 9, '2026-10-16T16:44:13.747Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -106,7 +106,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmvb76k3z000dvf1dqdn852q0', 'channel-manager', 'دستیار ادمین کانال', 'Channel Admin Assistant', 'CheginiSoroush/Telegram-Channel-Manager', NULL, 'ربات پایتونی برای پایش، پاکسازی خودکار متون با RegEx و سیستم تاییدیه دو مرحله‌ای برای مدیریت کانال.', 'Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.', 'bots', '["Python","RegEx","Moderation","Two-Factor Approval"]', '🛎️', 0, 0, 13, '2026-10-16T16:44:13.776Z')
+VALUES ('cmvb76k3z000dvf1dqdn852q0', 'channel-manager', 'دستیار ادمین کانال', 'Channel Admin Assistant', 'CheginiSoroush/telegram-channel-manager-bot', NULL, 'ربات پایتونی برای پایش، پاکسازی خودکار متون با RegEx و سیستم تاییدیه دو مرحله‌ای برای مدیریت کانال.', 'Python bot for channel moderation with RegEx-based automatic text cleanup and a two-step approval system.', 'bots', '["Python","RegEx","Moderation","Two-Factor Approval"]', '🛎️', 0, 0, 13, '2026-10-16T16:44:13.776Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -130,7 +130,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmvb76k44000gvf1d36nfheqj', 'vamp-sole', 'فروشگاه خونین کفش', 'VampSole Store', 'CheginiSoroush/VampSole', 'https://vampsole.imsoroush.ir/', 'طراحی رابط کاربری خلاقانه و تعاملی با تم وحشت، دارای انیمیشن‌های پیشرفته CSS و افکت باران خون.', 'Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.', 'web', '["E-Commerce UI","Advanced CSS","Horror Theme","Animations"]', '🩸', 0, 0, 16, '2026-10-16T16:44:13.780Z')
+VALUES ('cmvb76k44000gvf1d36nfheqj', 'vamp-sole', 'فروشگاه خونین کفش', 'VampSole Store', 'CheginiSoroush/VampSole-WebSite', 'https://vampsole.imsoroush.ir/', 'طراحی رابط کاربری خلاقانه و تعاملی با تم وحشت، دارای انیمیشن‌های پیشرفته CSS و افکت باران خون.', 'Creative, interactive e-commerce UI with a horror theme, advanced CSS animations, and a blood-rain effect.', 'web', '["E-Commerce UI","Advanced CSS","Horror Theme","Animations"]', '🩸', 0, 0, 16, '2026-10-16T16:44:13.780Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -146,7 +146,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmvb76k46000ivf1dif798yuy', 'aurora-vpn', 'لندینگ پیج AuroraVPN', 'AuroraVPN Landing Page', 'CheginiSoroush/AuroraVPN', 'https://aurora-vpn.imsoroush.ir/', 'طراحی مدرن شیشه‌ای با انیمیشن‌های پس‌زمینه پویا و اسکرول تعاملی با جاوااسکریپت خالص.', 'Modern glassmorphism design with dynamic background animations and interactive scrolling in vanilla JavaScript.', 'web', '["Glassmorphism","Vanilla JS","Landing Page","Animations"]', '🌌', 0, 0, 18, '2026-10-16T16:44:13.782Z')
+VALUES ('cmvb76k46000ivf1dif798yuy', 'aurora-vpn', 'لندینگ پیج AuroraVPN', 'AuroraVPN Landing Page', 'CheginiSoroush/aurora-vpn-landing', 'https://aurora-vpn.imsoroush.ir/', 'طراحی مدرن شیشه‌ای با انیمیشن‌های پس‌زمینه پویا و اسکرول تعاملی با جاوااسکریپت خالص.', 'Modern glassmorphism design with dynamic background animations and interactive scrolling in vanilla JavaScript.', 'web', '["Glassmorphism","Vanilla JS","Landing Page","Animations"]', '🌌', 0, 0, 18, '2026-10-16T16:44:13.782Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -162,7 +162,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmvb76k47000kvf1d1vnocvb2', 'argus-vpn', 'لندینگ پیج ArgusVPN', 'ArgusVPN Landing Page', 'CheginiSoroush/ArgusVPN', 'https://argus-vpn.imsoroush.ir/', 'طراحی مدرن و تاریک با انیمیشن‌های اسکرول GSAP، ماک‌آپ تعاملی CSS و کره زمین سه‌بعدی.', 'Modern dark design with GSAP scroll animations, an interactive CSS mockup, and a 3D globe.', 'web', '["GSAP","3D Globe","Dark Design","CSS Mockups"]', '👁️', 0, 0, 20, '2026-10-16T16:44:13.784Z')
+VALUES ('cmvb76k47000kvf1d1vnocvb2', 'argus-vpn', 'لندینگ پیج ArgusVPN', 'ArgusVPN Landing Page', 'CheginiSoroush/argus-vpn-landing', 'https://argus-vpn.imsoroush.ir/', 'طراحی مدرن و تاریک با انیمیشن‌های اسکرول GSAP، ماک‌آپ تعاملی CSS و کره زمین سه‌بعدی.', 'Modern dark design with GSAP scroll animations, an interactive CSS mockup, and a 3D globe.', 'web', '["GSAP","3D Globe","Dark Design","CSS Mockups"]', '👁️', 0, 0, 20, '2026-10-16T16:44:13.784Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
@@ -218,7 +218,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmvb76k4e000rvf1dcacmktqo', 'portfolio-nebula', 'قالب پورتفولیو سحابی', 'Nebula Portfolio Template', 'CheginiSoroush/Portfolio-Nebula', 'https://portfolio-nebula.imsoroush.ir/', 'یک قالب شخصی تاریک و مدرن با پس‌زمینه تعاملی Three.js، افکت‌های تایپ‌رایتر و انیمیشن‌های GSAP.', 'Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.', '3d', '["Three.js","GSAP","Typewriter","Dark UI"]', '🌫️', 0, 0, 27, '2026-10-16T16:44:13.791Z')
+VALUES ('cmvb76k4e000rvf1dcacmktqo', 'portfolio-nebula', 'قالب پورتفولیو سحابی', 'Nebula Portfolio Template', 'CheginiSoroush/portfolio-nebula-theme', 'https://portfolio-nebula.imsoroush.ir/', 'یک قالب شخصی تاریک و مدرن با پس‌زمینه تعاملی Three.js، افکت‌های تایپ‌رایتر و انیمیشن‌های GSAP.', 'Dark, modern personal template with an interactive Three.js background, typewriter effects, and GSAP animations.', '3d', '["Three.js","GSAP","Typewriter","Dark UI"]', '🌫️', 0, 0, 27, '2026-10-16T16:44:13.791Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
