@@ -287,10 +287,17 @@ export function ContactSection() {
                     value={form.name}
                     onChange={set("name")}
                     placeholder={t("contact", "form.namePlaceholder")}
+                    autoComplete="name"
+                    required
                     aria-invalid={!!errors.name}
+                    aria-describedby={errors.name ? "c-name-error" : undefined}
                     className={inputCls(errors.name)}
                   />
-                  {errors.name && <p className="text-[11px] text-destructive mt-1.5">{errors.name}</p>}
+                  {errors.name && (
+                    <p id="c-name-error" role="alert" className="text-[11px] text-destructive mt-1.5">
+                      {errors.name}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label htmlFor="c-email" className="block text-xs font-bold mb-2">
@@ -303,10 +310,17 @@ export function ContactSection() {
                     value={form.email}
                     onChange={set("email")}
                     placeholder="email@example.com"
+                    autoComplete="email"
+                    required
                     aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? "c-email-error" : undefined}
                     className={`${inputCls(errors.email)} text-left`}
                   />
-                  {errors.email && <p className="text-[11px] text-destructive mt-1.5">{errors.email}</p>}
+                  {errors.email && (
+                    <p id="c-email-error" role="alert" className="text-[11px] text-destructive mt-1.5">
+                      {errors.email}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -320,11 +334,15 @@ export function ContactSection() {
                   value={form.subject}
                   onChange={set("subject")}
                   placeholder={t("contact", "form.subjectPlaceholder")}
+                  required
                   aria-invalid={!!errors.subject}
+                  aria-describedby={errors.subject ? "c-subject-error" : undefined}
                   className={inputCls(errors.subject)}
                 />
                 {errors.subject && (
-                  <p className="text-[11px] text-destructive mt-1.5">{errors.subject}</p>
+                  <p id="c-subject-error" role="alert" className="text-[11px] text-destructive mt-1.5">
+                    {errors.subject}
+                  </p>
                 )}
               </div>
 
@@ -338,11 +356,15 @@ export function ContactSection() {
                   value={form.message}
                   onChange={set("message")}
                   placeholder={t("contact", "form.messagePlaceholder")}
+                  required
                   aria-invalid={!!errors.message}
+                  aria-describedby={errors.message ? "c-message-error" : undefined}
                   className={`${inputCls(errors.message)} resize-none`}
                 />
                 {errors.message && (
-                  <p className="text-[11px] text-destructive mt-1.5">{errors.message}</p>
+                  <p id="c-message-error" role="alert" className="text-[11px] text-destructive mt-1.5">
+                    {errors.message}
+                  </p>
                 )}
               </div>
 

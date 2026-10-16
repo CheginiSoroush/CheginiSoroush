@@ -29,13 +29,20 @@ bun run dev         # http://localhost:3000
 
 ## Useful scripts
 
-| Command             | What it does                          |
-| ------------------- | ------------------------------------- |
-| `bun run dev`       | Start the dev server                  |
-| `bun run build`     | Production build                      |
-| `bun run lint`      | ESLint                                |
-| `bun run db:push`   | Push the Prisma schema to the database|
-| `bun run db:generate` | Generate the Prisma client          |
+| Command                | What it does                                       |
+| ---------------------- | -------------------------------------------------- |
+| `bun run dev`          | Start the dev server (port 3000)                   |
+| `bun run build`        | Production build (standalone output)               |
+| `bun run start`        | Run the standalone production server               |
+| `bun run lint`         | ESLint                                             |
+| `bun run typecheck`    | TypeScript check (`tsc --noEmit`)                  |
+| `bun run db:push`      | Push the Prisma schema to the database             |
+| `bun run db:generate`  | Generate the Prisma client                         |
+| `bun run db:migrate`   | Create/apply a dev migration                       |
+| `bun run db:reset`     | Reset the database (drops data!)                   |
+
+> Deploy tip: `deploy/ci-deploy.sh` runs `lint` + `typecheck` as quality gates
+> before every Cloudflare Workers deployment — keep both green.
 
 ## Structure
 

@@ -48,20 +48,21 @@ export function ArticleComments({ slug }: { slug: string }) {
   const nameLoaded = useRef(false);
 
   useEffect(() => {
-    let alive = true;
+    const ac = new AbortController();
     setComments(null);
     (async () => {
       try {
-        const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`);
+        const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`, {
+          signal: ac.signal,
+        });
         const data = (await res.json()) as { comments?: CommentItem[] };
-        if (alive) setComments(Array.isArray(data.comments) ? data.comments : []);
+        if (!ac.signal.aborted)
+          setComments(Array.isArray(data.comments) ? data.comments : []);
       } catch {
-        if (alive) setComments([]);
+        if (!ac.signal.aborted) setComments([]);
       }
     })();
-    return () => {
-      alive = false;
-    };
+    return () => ac.abort();
   }, [slug]);
 
   useEffect(() => {
@@ -187,12 +188,18 @@ export function ArticleComments({ slug }: { slug: string }) {
             }}
             placeholder={t("articles", "comments.namePlaceholder")}
             aria-label={t("articles", "comments.nameAria")}
+            aria-invalid={!!nameError}
+            aria-describedby={nameError ? "comment-name-error" : undefined}
             maxLength={60}
             autoComplete="name"
             dir="auto"
             className={cn("h-10", nameError && "border-red-500/60 focus-visible:ring-red-500/30")}
           />
-          {nameError && <p className="mt-1 text-[11px] text-red-500">{nameError}</p>}
+          {nameError && (
+            <p id="comment-name-error" role="alert" className="mt-1 text-[11px] text-red-500">
+              {nameError}
+            </p>
+          )}
         </div>
         <div>
           <Textarea
@@ -203,12 +210,18 @@ export function ArticleComments({ slug }: { slug: string }) {
             }}
             placeholder={t("articles", "comments.bodyPlaceholder")}
             aria-label={t("articles", "comments.bodyAria")}
+            aria-invalid={!!textError}
+            aria-describedby={textError ? "comment-body-error" : undefined}
             rows={3}
             maxLength={1000}
             dir="auto"
             className={cn("min-h-[76px] resize-y", textError && "border-red-500/60 focus-visible:ring-red-500/30")}
           />
-          {textError && <p className="mt-1 text-[11px] text-red-500">{textError}</p>}
+          {textError && (
+            <p id="comment-body-error" role="alert" className="mt-1 text-[11px] text-red-500">
+              {textError}
+            </p>
+          )}
         </div>
         <div className="flex items-center justify-between gap-3">
           <span className="text-[10px] text-muted-foreground tabular-nums" aria-hidden>

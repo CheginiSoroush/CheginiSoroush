@@ -74,8 +74,8 @@ function usePrivateRepos() {
   const [set, setSet] = useState<ReadonlySet<string> | null>(privateReposCache);
   useEffect(() => {
     if (privateReposCache) return;
-    let alive = true;
-    fetch("/api/repos")
+    const ac = new AbortController();
+    fetch("/api/repos", { signal: ac.signal })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         const repos: Array<{ name?: string; isPrivate?: boolean }> = Array.isArray(d?.repos)
@@ -84,14 +84,12 @@ function usePrivateRepos() {
         privateReposCache = new Set(
           repos.filter((x) => x.isPrivate && x.name).map((x) => x.name!.toLowerCase())
         );
-        if (alive) setSet(privateReposCache);
+        if (!ac.signal.aborted) setSet(privateReposCache);
       })
       .catch(() => {
         // visibility map is optional decoration — silently keep links live
       });
-    return () => {
-      alive = false;
-    };
+    return () => ac.abort();
   }, []);
   return set;
 }

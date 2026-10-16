@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  reactStrictMode: false,
+  reactStrictMode: true,
   devIndicators: false,
   // Don't advertise the framework version (`x-powered-by: Next.js`).
   poweredByHeader: false,

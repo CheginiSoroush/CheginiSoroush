@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Star,
   GitFork,
@@ -69,6 +69,7 @@ export function ReposExplorer() {
   const [visFilter, setVisFilter] = useState<VisFilter>("all");
   const [sort, setSort] = useState<SortKey>("recent");
   const [includesPrivate, setIncludesPrivate] = useState(false);
+  const controllerRef = useRef<AbortController | null>(null);
 
   const apply = (data: {
     repos: GitHubRepo[];
@@ -84,12 +85,20 @@ export function ReposExplorer() {
   };
 
   const load = (refresh = false) => {
+    // Cancel any in-flight load (initial / manual refresh race) — only the
+    // newest response may touch state.
+    controllerRef.current?.abort();
+    const ac = new AbortController();
+    controllerRef.current = ac;
     setLoading(true);
     setError(false);
-    fetch(`/api/repos${refresh ? "?refresh=1" : ""}`)
+    fetch(`/api/repos${refresh ? "?refresh=1" : ""}`, { signal: ac.signal })
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then(apply)
-      .catch(() => {
+      .then((data) => {
+        if (!ac.signal.aborted) apply(data);
+      })
+      .catch((err) => {
+        if (ac.signal.aborted || (err as Error)?.name === "AbortError") return;
         setError(true);
         setLoading(false);
       });
@@ -97,14 +106,22 @@ export function ReposExplorer() {
 
   useEffect(() => {
     // Initial load — state defaults are already "loading"; all setState calls
-    // happen in promise callbacks (no sync setState in the effect body).
-    fetch("/api/repos")
+    // happen in promise callbacks (no sync setState in the effect body) and
+    // the request is aborted on unmount.
+    controllerRef.current?.abort();
+    const ac = new AbortController();
+    controllerRef.current = ac;
+    fetch("/api/repos", { signal: ac.signal })
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then(apply)
-      .catch(() => {
+      .then((data) => {
+        if (!ac.signal.aborted) apply(data);
+      })
+      .catch((err) => {
+        if (ac.signal.aborted || (err as Error)?.name === "AbortError") return;
         setError(true);
         setLoading(false);
       });
+    return () => ac.abort();
   }, []);
 
   const privateCount = useMemo(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Star, Users, GitFork, FolderGit2, RefreshCw, ExternalLink } from "lucide-react";
 import { ContributionHeatmap } from "@/components/site/contribution-heatmap";
@@ -43,25 +43,36 @@ export function GitHubCard() {
   const [refreshing, setRefreshing] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  const load = async (showSpinner: boolean) => {
+  const controllerRef = useRef<AbortController | null>(null);
+
+  const load = useCallback(async (showSpinner: boolean) => {
+    // Cancel any in-flight request; only the newest response may touch state.
+    controllerRef.current?.abort();
+    const ac = new AbortController();
+    controllerRef.current = ac;
     if (showSpinner) setRefreshing(true);
     try {
-      const res = await fetch("/api/github");
+      const res = await fetch("/api/github", { signal: ac.signal });
       if (!res.ok) throw new Error("github fetch failed");
       const data = (await res.json()) as GitHubStats;
+      if (ac.signal.aborted) return;
       setStats(data);
       setFailed(false);
-    } catch {
+    } catch (error) {
+      if ((error as Error)?.name === "AbortError") return;
       setFailed(true);
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (!ac.signal.aborted) {
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
-  };
+  }, []);
 
   useEffect(() => {
     load(false);
-  }, []);
+    return () => controllerRef.current?.abort();
+  }, [load]);
 
   const statItems = stats
     ? [

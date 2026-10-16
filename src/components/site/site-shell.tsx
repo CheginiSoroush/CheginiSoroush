@@ -153,18 +153,16 @@ export function SiteShell({
 
   // Hero stat tile — real repository totals (tiny aggregate payload)
   useEffect(() => {
-    let alive = true;
-    fetch("/api/repos?meta=1")
+    const ac = new AbortController();
+    fetch("/api/repos?meta=1", { signal: ac.signal })
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
       .then((data: RepoMeta) => {
-        if (alive) setRepoMeta(data);
+        if (!ac.signal.aborted) setRepoMeta(data);
       })
       .catch(() => {
         /* tile simply stays at 0 until a retry */
       });
-    return () => {
-      alive = false;
-    };
+    return () => ac.abort();
   }, []);
 
   // Keep <html lang/dir> and the document title in sync with the active language

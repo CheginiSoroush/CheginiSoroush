@@ -14,14 +14,16 @@ export function NewsletterForm() {
   const { toast } = useToast();
   const { t, num, isRtl } = useT();
 
-  // Subtle subscriber counter (one-shot, silent on failure)
+  // Subtle subscriber counter (one-shot, silent on failure; aborted on unmount)
   useEffect(() => {
-    fetch("/api/subscribe")
+    const ac = new AbortController();
+    fetch("/api/subscribe", { signal: ac.signal })
       .then((r) => r.json())
       .then((d: { count?: number }) => {
-        if (typeof d.count === "number") setCount(d.count);
+        if (!ac.signal.aborted && typeof d.count === "number") setCount(d.count);
       })
       .catch(() => {});
+    return () => ac.abort();
   }, []);
 
   const submit = async (e: React.FormEvent) => {
@@ -125,35 +127,49 @@ export function NewsletterForm() {
             {t("contact", status === "duplicate" ? "newsletter.doneDuplicate" : "newsletter.done")}
           </p>
         ) : (
-          <form onSubmit={submit} className="flex items-center gap-2 shrink-0" noValidate>
-            <label htmlFor="newsletter-email" className="sr-only">
-              {t("contact", "newsletter.emailLabel")}
-            </label>
-            <input
-              id="newsletter-email"
-              type="email"
-              dir="ltr"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (status === "error") setStatus("idle");
-              }}
-              placeholder="name@example.com"
-              autoComplete="email"
-              className="newsletter-input w-full sm:w-56 rounded-2xl border border-border bg-background/70 px-4 py-3 text-sm outline-none transition-all min-h-[44px]"
-            />
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="btn-shine inline-flex items-center justify-center gap-2 rounded-2xl bg-brand text-primary-foreground font-bold text-sm px-5 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[44px] disabled:opacity-60"
-            >
-              {status === "loading" ? (
-                <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
-              ) : (
-                <Send className={`w-4 h-4 ${isRtl ? "-scale-x-100" : ""}`} aria-hidden />
-              )}
-              {t("contact", "newsletter.subscribe")}
-            </button>
+          <form onSubmit={submit} className="shrink-0" noValidate>
+            <div className="flex items-center gap-2">
+              <label htmlFor="newsletter-email" className="sr-only">
+                {t("contact", "newsletter.emailLabel")}
+              </label>
+              <input
+                id="newsletter-email"
+                type="email"
+                dir="ltr"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (status === "error") setStatus("idle");
+                }}
+                placeholder="name@example.com"
+                autoComplete="email"
+                required
+                aria-invalid={status === "error"}
+                aria-describedby={status === "error" ? "newsletter-error" : undefined}
+                className="newsletter-input w-full sm:w-56 rounded-2xl border border-border bg-background/70 px-4 py-3 text-sm outline-none transition-all min-h-[44px]"
+              />
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="btn-shine inline-flex items-center justify-center gap-2 rounded-2xl bg-brand text-primary-foreground font-bold text-sm px-5 py-3 hover:-translate-y-0.5 active:scale-95 transition-all min-h-[44px] disabled:opacity-60"
+              >
+                {status === "loading" ? (
+                  <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
+                ) : (
+                  <Send className={`w-4 h-4 ${isRtl ? "-scale-x-100" : ""}`} aria-hidden />
+                )}
+                {t("contact", "newsletter.subscribe")}
+              </button>
+            </div>
+            {status === "error" && (
+              <p
+                id="newsletter-error"
+                role="alert"
+                className="mt-1.5 text-[11px] font-bold text-destructive sm:text-end"
+              >
+                {t("contact", "newsletter.errDesc")}
+              </p>
+            )}
           </form>
         )}
       </div>
