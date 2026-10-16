@@ -404,6 +404,28 @@ export function ArticlesSection({
     }).catch(() => {});
   }, [selected, bumpedSlugs]);
 
+  // Broken deep-link (#/writing/<unknown-slug>): tell the visitor instead of
+  // silently showing the list, then normalize the hash back to the list view.
+  const deepLinkMissing =
+    !!detailSlug && articles.length > 0 && !articles.some((x) => x.slug === detailSlug);
+  useEffect(() => {
+    if (!deepLinkMissing) return;
+    toast({
+      title: t("articles", "toast.deepLinkMissingTitle"),
+      description: t("articles", "toast.deepLinkMissingDesc"),
+    });
+    try {
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search + "#writing"
+      );
+      window.dispatchEvent(new Event("hashchange"));
+    } catch {
+      // history unavailable — the list still renders; the hash just stays stale
+    }
+  }, [deepLinkMissing, detailSlug, toast, t]);
+
   // Reset reading progress when article changes (render-phase adjustment)
   const [prevOpenSlug, setPrevOpenSlug] = useState<string | null>(null);
   if ((selected?.slug ?? null) !== prevOpenSlug) {

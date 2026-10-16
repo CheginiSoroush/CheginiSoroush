@@ -273,6 +273,11 @@ export function createPrismaStore(client: Prisma = db): DataStore {
       return rows.map((s) => ({ email: s.email, createdAt: iso(s.createdAt) }));
     },
 
+    async deleteSubscriber(email: string): Promise<boolean> {
+      const res = await pdb.subscriber.deleteMany({ where: { email } });
+      return res.count > 0;
+    },
+
     // ---------- GitHub snapshots ----------
     async getSnapshot(table): Promise<{ payloadJson: string; updatedAt: string } | null> {
       if (table === "RepoSnapshot") {

@@ -397,6 +397,14 @@ export const d1Store: DataStore = {
     }));
   },
 
+  async deleteSubscriber(email: string): Promise<boolean> {
+    const row = await d1()
+      .prepare(`DELETE FROM "Subscriber" WHERE "email" = ? RETURNING "email"`)
+      .bind(email)
+      .first<{ email: string }>();
+    return !!row;
+  },
+
   // ---------- GitHub snapshots ----------
   async getSnapshot(table): Promise<{ payloadJson: string; updatedAt: string } | null> {
     const row = await d1()

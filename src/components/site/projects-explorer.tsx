@@ -370,6 +370,29 @@ export function ProjectsExplorer({
     }).catch(() => {});
   }, [selected, bumpedSlugs]);
 
+  // Broken deep-link (#/projects/<unknown-slug>): notify and normalize the hash
+  const deepLinkMissing =
+    !!detailSlug &&
+    initialProjects.length > 0 &&
+    !initialProjects.some((x) => x.slug === detailSlug);
+  useEffect(() => {
+    if (!deepLinkMissing) return;
+    toast({
+      title: t("projects", "toast.deepLinkMissing.title"),
+      description: t("projects", "toast.deepLinkMissing.desc"),
+    });
+    try {
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search + "#projects"
+      );
+      window.dispatchEvent(new Event("hashchange"));
+    } catch {
+      // history unavailable — the list still renders; the hash just stays stale
+    }
+  }, [deepLinkMissing, detailSlug, toast, t]);
+
   // Keyboard "/" focuses the search input
   useEffect(() => {
     const onFocus = () => searchRef.current?.focus();

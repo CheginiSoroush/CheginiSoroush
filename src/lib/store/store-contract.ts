@@ -81,6 +81,8 @@ export interface DataStore {
   subscriberExists(email: string): Promise<boolean>;
   addSubscriber(email: string): Promise<void>;
   listSubscribers(): Promise<SubscriberRow[]>;
+  /** Returns false when no subscriber row was removed (email unknown). */
+  deleteSubscriber(email: string): Promise<boolean>;
 
   // ---------- GitHub snapshots (single-row caches) ----------
   getSnapshot(table: SnapshotTable): Promise<{ payloadJson: string; updatedAt: string } | null>;

@@ -12,6 +12,8 @@ import {
   Reply,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
+  ChevronUp,
   CheckCircle2,
   RotateCcw,
   BarChart3,
@@ -126,8 +128,15 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [exporting, setExporting] = useState(false);
+  // Subscriber list management (load on demand, delete per row)
+  const [subsOpen, setSubsOpen] = useState(false);
+  const [subs, setSubs] = useState<{ email: string; createdAt: string }[] | null>(null);
+  const [subsLoading, setSubsLoading] = useState(false);
+  const [subsFailed, setSubsFailed] = useState(false);
+  const [subsBusy, setSubsBusy] = useState<string | null>(null);
+  const [subsConfirm, setSubsConfirm] = useState<string | null>(null);
   const { toast } = useToast();
-  const { t, num, lang } = useT();
+  const { t, num, lang, date } = useT();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -143,6 +152,24 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
       setFailed(true);
     } finally {
       setLoading(false);
+    }
+  }, [apiKey]);
+
+  const loadSubscribers = useCallback(async () => {
+    setSubsLoading(true);
+    setSubsFailed(false);
+    try {
+      const res = await fetch("/api/admin/subscribers", {
+        headers: { "x-admin-key": apiKey },
+        cache: "no-store",
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const data = (await res.json()) as { subscribers?: { email: string; createdAt: string }[] };
+      setSubs(Array.isArray(data.subscribers) ? data.subscribers : []);
+    } catch {
+      setSubsFailed(true);
+    } finally {
+      setSubsLoading(false);
     }
   }, [apiKey]);
 
@@ -194,6 +221,44 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
 
   const maxProjectViews = Math.max(1, ...stats.topProjects.map((p) => p.views));
   const maxArticleViews = Math.max(1, ...stats.topArticles.map((a) => a.views));
+
+  const removeSubscriber = async (email: string) => {
+    if (subsBusy === email) return;
+    setSubsBusy(email);
+    try {
+      const res = await fetch("/api/admin/subscribers", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "x-admin-key": apiKey },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setSubs((list) => (list ? list.filter((s) => s.email !== email) : list));
+        setSubsConfirm(null);
+        setStats((s) =>
+          s
+            ? { ...s, totals: { ...s.totals, subscribers: Math.max(0, s.totals.subscribers - 1) } }
+            : s
+        );
+        toast({
+          title: t("admin", "subsDeleted"),
+          description: t("admin", "subsDeletedDesc", { email }),
+        });
+      } else {
+        toast({ title: t("admin", "deleteFailed"), variant: "destructive" });
+      }
+    } catch {
+      toast({ title: t("admin", "networkTitle"), variant: "destructive" });
+    } finally {
+      setSubsBusy(null);
+    }
+  };
+
+  const toggleSubsList = () => {
+    setSubsOpen((open) => {
+      if (!open && subs === null && !subsLoading) loadSubscribers();
+      return !open;
+    });
+  };
 
   const exportSubscribersCsv = async () => {
     setExporting(true);
@@ -333,6 +398,114 @@ function AdminStatsPanel({ apiKey }: { apiKey: string }) {
           {exporting ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> : <Download className="w-4 h-4" aria-hidden />}
           {t("admin", "exportCsv")}
         </button>
+      </div>
+
+      {/* Subscriber list management — load on demand, per-row delete */}
+      <div className="rounded-2xl border border-border bg-card/60 p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          <div className="flex-grow min-w-0">
+            <h4 className="flex items-center gap-2 text-sm font-extrabold flex-wrap">
+              <Users className="w-4 h-4 text-brand" />
+              {t("admin", "subsManage")}
+              {subs && !subsLoading && (
+                <span className="text-[10px] font-bold text-brand bg-brand/10 border border-brand/25 rounded-full px-2 py-0.5">
+                  {t("admin", "subsCount", { n: num(subs.length) })}
+                </span>
+              )}
+            </h4>
+            <p className="text-[11px] text-muted-foreground mt-1 leading-5">
+              {t("admin", "subsManageDesc")}
+            </p>
+          </div>
+          <button
+            onClick={toggleSubsList}
+            aria-expanded={subsOpen}
+            className="shrink-0 inline-flex items-center justify-center gap-1.5 text-xs font-bold rounded-xl border border-brand/30 bg-brand/10 text-brand px-4 py-2.5 hover:bg-brand/20 active:scale-95 transition-all min-h-[38px]"
+          >
+            {subsOpen ? <ChevronUp className="w-4 h-4" aria-hidden /> : <ChevronDown className="w-4 h-4" aria-hidden />}
+            {subsOpen ? t("admin", "subsHide") : t("admin", "subsShow")}
+          </button>
+        </div>
+
+        {subsOpen && (
+          <div className="mt-3 border-t border-border/60 pt-3">
+            {subsLoading ? (
+              <div className="py-6 grid place-items-center text-muted-foreground">
+                <Loader2 className="w-5 h-5 animate-spin" />
+              </div>
+            ) : subsFailed ? (
+              <div className="py-4 text-center">
+                <p className="text-xs text-muted-foreground mb-2">{t("admin", "subsLoadFail")}</p>
+                <button
+                  onClick={loadSubscribers}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-brand rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 hover:bg-brand/20 active:scale-95 transition-all min-h-[30px]"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  {t("admin", "retry")}
+                </button>
+              </div>
+            ) : !subs || subs.length === 0 ? (
+              <p className="py-4 text-center text-xs text-muted-foreground">{t("admin", "subsEmpty")}</p>
+            ) : (
+              <ul className="max-h-48 overflow-y-auto space-y-1.5 pe-1">
+                {subs.map((s) => (
+                  <li
+                    key={s.email}
+                    className="flex items-center justify-between gap-2 rounded-xl bg-background/40 border border-border/50 px-3 py-2 hover:border-brand/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="w-7 h-7 rounded-full bg-brand/10 border border-brand/20 grid place-items-center shrink-0">
+                        <Mail className="w-3.5 h-3.5 text-brand" aria-hidden />
+                      </span>
+                      <div className="min-w-0">
+                        <p dir="ltr" className="text-xs font-bold truncate text-start">
+                          {s.email}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+                          {t("admin", "subsJoined")} {date(s.createdAt, DATE_OPTS)}
+                        </p>
+                      </div>
+                    </div>
+                    {subsConfirm === s.email ? (
+                      <span className="flex items-center gap-0.5 shrink-0">
+                        <button
+                          onClick={() => removeSubscriber(s.email)}
+                          aria-label={t("admin", "confirmDelete")}
+                          title={t("admin", "confirmDelete")}
+                          disabled={subsBusy === s.email}
+                          className="w-8 h-8 rounded-lg grid place-items-center text-destructive hover:bg-destructive/15 transition-all"
+                        >
+                          {subsBusy === s.email ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="w-4 h-4" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => setSubsConfirm(null)}
+                          aria-label={t("admin", "cancel")}
+                          title={t("admin", "cancel")}
+                          className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground/60 hover:text-foreground transition-all"
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                        </button>
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => setSubsConfirm(s.email)}
+                        aria-label={t("admin", "deleteShort")}
+                        title={t("admin", "deleteShort")}
+                        className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 active:scale-90 transition-all shrink-0"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex items-center justify-between">

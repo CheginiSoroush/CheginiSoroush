@@ -95,6 +95,8 @@ export const projectsDict: Dict = {
     // ---------- toasts ----------
     "toast.linkCopied.title": "لینک کپی شد",
     "toast.linkCopied.desc": "لینک پروژه در کلیپ‌بورد ذخیره شد.",
+    "toast.deepLinkMissing.title": "این پروژه پیدا نشد",
+    "toast.deepLinkMissing.desc": "لینک پروژه معتبر نیست — فهرست پروژه‌ها را ببینید.",
     "toast.cmdCopied.title": "دستور کپی شد",
     "toast.cmdCopied.desc": "دستور کلون در کلیپ‌بورد ذخیره شد.",
     "toast.copyFailed.title": "کپی نشد",
@@ -188,6 +190,8 @@ export const projectsDict: Dict = {
     // ---------- toasts ----------
     "toast.linkCopied.title": "Link copied",
     "toast.linkCopied.desc": "Project link copied to your clipboard.",
+    "toast.deepLinkMissing.title": "That project wasn't found",
+    "toast.deepLinkMissing.desc": "The project link is invalid — browse the list instead.",
     "toast.cmdCopied.title": "Command copied",
     "toast.cmdCopied.desc": "Clone command copied to your clipboard.",
     "toast.copyFailed.title": "Copy failed",

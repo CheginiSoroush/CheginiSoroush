@@ -5,9 +5,10 @@ import type { Dict } from "./i18n/dict-type";
 
 /**
  * Bilingual (fa/en) infrastructure for the whole site.
- * - Language is persisted in localStorage ("imsoroush-lang"). Default is
- *   **English** (LTR) per the owner's decision; returning visitors who once
- *   picked Persian keep it via the saved value.
+ * - Language is persisted in localStorage ("imsoroush-lang"). First-time
+ *   visitors whose browser runs in Persian get Persian automatically;
+ *   everyone else gets the site default **English** (LTR) per the owner's
+ *   decision. A saved preference always wins over detection.
  * - Server snapshot is always "en" so SSR/hydration never mismatch; after
  *   mount React re-renders with the stored choice (documented
  *   useSyncExternalStore pattern — same as the codebase's other stores).
@@ -29,7 +30,15 @@ function detectLang(): Lang {
   } catch {
     // private mode etc.
   }
-  // Site default: English (visitor's saved preference always wins)
+  // First visit: adopt the browser language when it is Persian. Everyone
+  // else gets the site default (English). A saved choice always wins.
+  try {
+    if (typeof navigator !== "undefined" && navigator.language?.toLowerCase().startsWith("fa")) {
+      return "fa";
+    }
+  } catch {
+    // navigator unavailable — fall through to the default
+  }
   return "en";
 }
 
