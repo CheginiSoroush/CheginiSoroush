@@ -525,4 +525,29 @@ export const d1Store: DataStore = {
       })),
     };
   },
+
+  async incrementRateLimit(
+    key: string,
+    windowStart: number,
+    cleanupBefore: number
+  ): Promise<number> {
+    const row = await d1()
+      .prepare(
+        `INSERT INTO "RateLimit" ("key", "windowStart", "count") VALUES (?, ?, 1)
+         ON CONFLICT ("key", "windowStart") DO UPDATE SET "count" = "count" + 1
+         RETURNING "count"`
+      )
+      .bind(key, windowStart)
+      .first<{ count: number }>();
+    const count = Number(row?.count ?? 1);
+    if (count === 1) {
+      // A new window just started → good moment to prune stale counters.
+      d1()
+        .prepare(`DELETE FROM "RateLimit" WHERE "windowStart" < ?`)
+        .bind(cleanupBefore)
+        .run()
+        .catch(() => {});
+    }
+    return count;
+  },
 };

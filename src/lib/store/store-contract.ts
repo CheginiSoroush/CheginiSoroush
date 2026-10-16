@@ -93,4 +93,12 @@ export interface DataStore {
 
   // ---------- Admin dashboard ----------
   adminStats(): Promise<AdminStats>;
+
+  // ---------- Rate limiting (public POST protection) ----------
+  /**
+   * Atomically bumps the fixed-window counter for `key`/`windowStart` and
+   * returns the new count. `cleanupBefore` (epoch sec) lazily prunes stale
+   * windows whenever a fresh window begins.
+   */
+  incrementRateLimit(key: string, windowStart: number, cleanupBefore: number): Promise<number>;
 }

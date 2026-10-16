@@ -114,3 +114,14 @@ model DemoHealth {
   latencyMs   Int      @default(0)
   lastChecked DateTime @updatedAt
 }
+
+/// Fixed-window per-IP counters backing the public POST rate limiter.
+/// `key` is "<bucket>:<ip>"; rows older than the cleanup horizon are pruned
+/// lazily whenever a new window starts for a key.
+model RateLimit {
+  key         String
+  windowStart Int
+  count       Int
+
+  @@id([key, windowStart])
+}

@@ -29,6 +29,7 @@ type Prisma = Pick<
   | "repoDemo"
   | "repoMeta"
   | "demoHealth"
+  | "rateLimit"
 >;
 
 const iso = (d: Date | string): string => (d instanceof Date ? d.toISOString() : String(d));
@@ -387,6 +388,25 @@ export function createPrismaStore(client: Prisma = db): DataStore {
         topProjects,
         topArticles,
       };
+    },
+
+    async incrementRateLimit(
+      key: string,
+      windowStart: number,
+      cleanupBefore: number
+    ): Promise<number> {
+      const row = await pdb.rateLimit.upsert({
+        where: { key_windowStart: { key, windowStart } },
+        update: { count: { increment: 1 } },
+        create: { key, windowStart, count: 1 },
+      });
+      if (row.count === 1) {
+        // A new window just started → good moment to prune stale counters.
+        pdb.rateLimit
+          .deleteMany({ where: { windowStart: { lt: cleanupBefore } } })
+          .catch(() => {});
+      }
+      return row.count;
     },
   };
 

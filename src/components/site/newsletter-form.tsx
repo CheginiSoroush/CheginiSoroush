@@ -44,8 +44,22 @@ export function NewsletterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: value }),
       });
-      const data = (await res.json()) as { ok?: boolean; duplicate?: boolean };
+      const data = (await res.json()) as {
+        ok?: boolean;
+        duplicate?: boolean;
+        error?: string;
+      };
 
+      if (res.status === 429) {
+        // Rate-limited: show the server's explanation, not the generic failure.
+        setStatus("error");
+        toast({
+          title: t("contact", "newsletter.failTitle"),
+          description: data.error ?? t("contact", "newsletter.failDesc"),
+          variant: "destructive",
+        });
+        return;
+      }
       if (data.ok && data.duplicate) {
         setStatus("duplicate");
         toast({

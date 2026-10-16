@@ -91,7 +91,20 @@ export function ArticleComments({ slug }: { slug: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ articleSlug: slug, name: trimmedName, body: trimmedText }),
       });
-      const data = (await res.json()) as { ok?: boolean; comment?: CommentItem };
+      const data = (await res.json()) as {
+        ok?: boolean;
+        comment?: CommentItem;
+        error?: string;
+      };
+      if (res.status === 429) {
+        // Rate-limited: show the server's Persian explanation instead of the
+        // generic failure toast.
+        toast({
+          description: data.error ?? t("articles", "comments.error"),
+          variant: "destructive",
+        });
+        return;
+      }
       if (!res.ok || !data.ok || !data.comment) throw new Error("post failed");
       setComments((prev) => [...(prev ?? []), data.comment as CommentItem]);
       setText("");

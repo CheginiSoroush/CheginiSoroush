@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { store } from "@/lib/store";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 /**
  * Public per-article comments.
@@ -29,6 +30,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Anti-abuse: 8 comments per 10 minutes per IP (counted before validation
+  // so invalid-payload floods are throttled too).
+  const rl = await checkRateLimit(request, "comments", 8, 600);
+  if (!rl.ok) return rateLimitResponse(rl.retryAfterSec);
+
   try {
     const body = (await request.json()) as {
       articleSlug?: string;

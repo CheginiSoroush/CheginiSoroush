@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { store } from "@/lib/store";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: NextRequest) {
+  // Anti-abuse: 5 contact messages per 10 minutes per IP (counted before
+  // validation so invalid-payload floods are throttled too).
+  const rl = await checkRateLimit(request, "contact", 5, 600);
+  if (!rl.ok) return rateLimitResponse(rl.retryAfterSec);
+
   try {
     const body = (await request.json()) as {
       name?: string;

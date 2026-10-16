@@ -105,3 +105,10 @@ CREATE TABLE IF NOT EXISTS "DemoHealth" (
     "latencyMs" INTEGER NOT NULL DEFAULT 0,
     "lastChecked" DATETIME NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS "RateLimit" (
+    "key" TEXT NOT NULL,
+    "windowStart" INTEGER NOT NULL,
+    "count" INTEGER NOT NULL,
+    PRIMARY KEY ("key", "windowStart")
+);
