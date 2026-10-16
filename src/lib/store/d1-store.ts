@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import fallbackData from "../fallback-data.json";
 import type { DataStore } from "./store-contract";
 import type {
   AdminCommentRow,
@@ -229,7 +230,100 @@ async function cachedRead<T>(key: string, load: () => Promise<T>): Promise<T> {
       });
       return l2;
     }
+    const baked = fallbackRead<T>(key); // D1 down + all caches cold → baked snapshot
+    if (baked !== null) {
+      readCache.set(key, {
+        value: baked,
+        freshUntil: now + 5_000, // short fresh so a recovered D1 takes over fast
+        staleUntil: now + FRESH_MS + STALE_MS,
+      });
+      return baked;
+    }
     throw error;
+  }
+}
+
+/* ---------------------- baked last-resort dataset ---------------------- */
+
+/**
+ * Deploy-time snapshot of the production data (refreshed by ci-deploy.sh via
+ * `wrangler d1 execute` on every push, committed as the baseline).
+ * Served ONLY when D1 rejects queries and both cache layers are cold —
+ * the visitor always sees real content and non-zero counters instead of
+ * an empty page. Values are stale but honest (deploy-time data).
+ */
+interface FallbackData {
+  generatedAt: string;
+  projects: Record<string, unknown>[];
+  articles: Record<string, unknown>[];
+  repoDemos: { repo: string; url: string; source: string; updatedAt: string }[];
+  repoMeta: {
+    repo: string;
+    latestTag: string | null;
+    latestTagAt: string | null;
+    commitActivity: string;
+    openIssues: number;
+    fetchedAt: string;
+  }[];
+  demoHealth: { host: string; ok: boolean; latencyMs: number; lastChecked: string }[];
+  siteStats: { visits: number; projectViews: number; messages: number };
+  snapshots: {
+    RepoSnapshot: { payloadJson: string; updatedAt: string } | null;
+    GithubSnapshot: { payloadJson: string; updatedAt: string } | null;
+  };
+}
+const FB = fallbackData as unknown as FallbackData;
+
+function fallbackRead<T>(key: string): T | null {
+  try {
+    if (key === "stats") {
+      return {
+        visits: FB.siteStats.visits,
+        projectViews: FB.siteStats.projectViews,
+        projects: FB.projects.length,
+        articles: FB.articles.length,
+        messages: FB.siteStats.messages,
+      } as T;
+    }
+    if (key.startsWith("projects:")) {
+      // key = projects:<category>:<q>:<featured>:<sort> — q may contain ':'
+      const m = key.match(/^projects:([^:]*):(.*):(true|false):(default|views)$/);
+      const category = m?.[1] ?? "all";
+      const q = (m?.[2] ?? "").toLowerCase();
+      const featured = m?.[3] === "true";
+      const sort = m?.[4] ?? "default";
+      let rows = FB.projects.map(mapProject);
+      if (category && category !== "all") rows = rows.filter((p) => p.category === category);
+      if (featured) rows = rows.filter((p) => p.featured);
+      if (q) {
+        rows = rows.filter((p) =>
+          `${p.title} ${p.titleEn ?? ""} ${p.description} ${p.descriptionEn ?? ""} ${p.repo} ${p.tags}`
+            .toLowerCase()
+            .includes(q)
+        );
+      }
+      rows =
+        sort === "views"
+          ? [...rows].sort(
+              (a, b) => b.views - a.views || Number(b.featured) - Number(a.featured) || a.order - b.order
+            )
+          : [...rows].sort((a, b) => Number(b.featured) - Number(a.featured) || a.order - b.order);
+      return rows as T;
+    }
+    if (key.startsWith("articles:")) {
+      const category = key.slice("articles:".length);
+      let rows = FB.articles.map(mapArticle);
+      if (category && category !== "all") rows = rows.filter((a) => a.category === category);
+      return rows as T;
+    }
+    if (key === "snap:RepoSnapshot" && FB.snapshots.RepoSnapshot) return FB.snapshots.RepoSnapshot as T;
+    if (key === "snap:GithubSnapshot" && FB.snapshots.GithubSnapshot) return FB.snapshots.GithubSnapshot as T;
+    if (key === "repodemos") return FB.repoDemos as T;
+    if (key === "repometas") return FB.repoMeta as T;
+    if (key === "demohealth") return FB.demoHealth as T;
+    return null;
+  } catch {
+    return null;
   }
 }
 
@@ -348,17 +442,24 @@ export const d1Store: DataStore = {
         this.listArticles("all"),
         database.prepare(`SELECT COUNT(*) AS c FROM "ContactMessage"`).first<{ c: number }>(),
       ]);
+      // SiteStat reads that fail during quota windows fall back to the baked
+      // deploy-time values instead of lying with 0 — content lists come from
+      // their own cached/fallback reads above.
       return {
         visits:
-          visits.status === "fulfilled" && visits.value ? Number(visits.value.value) : 0,
+          visits.status === "fulfilled" && visits.value
+            ? Number(visits.value.value)
+            : FB.siteStats.visits,
         projectViews:
           projectViews.status === "fulfilled" && projectViews.value
             ? Number(projectViews.value.value)
-            : 0,
-        projects: projectsList.status === "fulfilled" ? projectsList.value.length : 0,
-        articles: articlesList.status === "fulfilled" ? articlesList.value.length : 0,
+            : FB.siteStats.projectViews,
+        projects: projectsList.status === "fulfilled" ? projectsList.value.length : FB.projects.length,
+        articles: articlesList.status === "fulfilled" ? articlesList.value.length : FB.articles.length,
         messages:
-          messages.status === "fulfilled" && messages.value ? Number(messages.value.c) : 0,
+          messages.status === "fulfilled" && messages.value
+            ? Number(messages.value.c)
+            : FB.siteStats.messages,
       };
     });
   },

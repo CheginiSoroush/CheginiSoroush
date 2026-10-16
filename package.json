@@ -11,7 +11,8 @@
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "export:fallback": "bun scripts/export-fallback.ts"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.10",

@@ -111,6 +111,17 @@ else
 fi
 bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-seed.sql
 
+echo "━━━ 4b/8 Refresh baked fallback snapshot (best-effort)"
+# Bakes a deploy-time copy of the catalog into the Worker bundle so the site
+# still shows real content/counters when the account-wide D1 free-tier quota
+# is exhausted and both cache layers are cold. Failure here must never block
+# a deploy — the committed baseline (src/lib/fallback-data.json) stays.
+if bun scripts/export-fallback.ts --from-d1; then
+  echo "    fallback snapshot refreshed from D1"
+else
+  echo "    fallback export failed (non-fatal) — committed baseline kept"
+fi
+
 echo "━━━ 5/8 Quality gates (lint + typecheck)"
 # A failing lint or type error must never reach production. These gates also
 # exist as workflow steps; they are repeated here because the workflow file on
