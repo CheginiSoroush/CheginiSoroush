@@ -11,8 +11,9 @@ const isPersian = (s: string) => /[\u0600-\u06FF]/.test(s);
 
 /**
  * Blog + latest-articles JSON-LD (complements the Person/WebSite graph that
- * the root layout renders). Permalinks use the SPA deep-link format
- * `/#/writing/<slug>` — the same URLs the reader UI shares.
+ * the root layout renders). Permalinks are the server-rendered article pages
+ * `/writing/<slug>` (the Option-1 SEO decision) — the same URLs the sitemap,
+ * RSS feed and social shares use.
  */
 function blogJsonLd(articles: Article[]) {
   if (articles.length === 0) return null;
@@ -28,7 +29,7 @@ function blogJsonLd(articles: Article[]) {
       "@type": "BlogPosting",
       headline: a.titleEn ?? a.title,
       alternativeHeadline: a.titleEn ? a.title : undefined,
-      url: `${SITE_URL}/#/writing/${a.slug}`,
+      url: `${SITE_URL}/writing/${encodeURIComponent(a.slug)}`,
       datePublished: a.publishedAt,
       inLanguage: isPersian(a.title) ? "fa-IR" : "en",
       author: { "@id": `${SITE_URL}/#person` },

@@ -3,11 +3,12 @@ import { store } from "@/lib/store";
 /**
  * RSS 2.0 feed for the articles — /feed.xml.
  *
- * The site is a hash-routed SPA (single HTML document), so every article
- * permalink is `https://imsoroush.ir/#/writing/<slug>` — the same deep-link
- * format the reader UI and the share buttons use. Titles/excerpts prefer the
- * English translation with a Persian fallback, matching the site's default
- * language. Served as `application/rss+xml` with a 30-minute CDN window.
+ * Every article permalink is the server-rendered page
+ * `https://imsoroush.ir/writing/<slug>` (the Option-1 SEO decision) so RSS
+ * readers and social shares land on the indexable page with its own OG card.
+ * Titles/excerpts prefer the English translation with a Persian fallback,
+ * matching the site's default language. Served as `application/rss+xml`
+ * with a 30-minute CDN window.
  */
 
 export const dynamic = "force-dynamic";
@@ -34,7 +35,7 @@ export async function GET() {
       .map((a) => {
         const title = a.titleEn ?? a.title;
         const excerpt = a.excerptEn ?? a.excerpt;
-        const url = `${SITE_URL}/#/writing/${encodeURIComponent(a.slug)}`;
+        const url = `${SITE_URL}/writing/${encodeURIComponent(a.slug)}`;
         const pubDate = new Date(a.publishedAt).toUTCString();
         return `    <item>
       <title>${esc(title)}</title>

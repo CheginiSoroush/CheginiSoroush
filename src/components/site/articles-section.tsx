@@ -184,9 +184,11 @@ const childrenText = (children: React.ReactNode): string => {
   return String(children ?? "");
 };
 
-// Brand share-target links for the reader (URL-safe, hash-routed)
+// Brand share-target links for the reader — the REAL server-rendered article
+// page (/writing/<slug>), so social shares land on the indexable page with
+// its own OG card (the SPA hash deep-link stays for in-app navigation).
 function shareLinksFor(a: Article) {
-  const url = encodeURIComponent(`${window.location.origin}/#/writing/${encodeURIComponent(a.slug)}`);
+  const url = encodeURIComponent(`${window.location.origin}/writing/${encodeURIComponent(a.slug)}`);
   const text = encodeURIComponent(a.title);
   return {
     telegram: `https://t.me/share/url?url=${url}&text=${text}`,
@@ -480,7 +482,7 @@ export function ArticlesSection({
   };
 
   const shareArticle = async (a: Article) => {
-    const url = `${window.location.origin}/#/writing/${encodeURIComponent(a.slug)}`;
+    const url = `${window.location.origin}/writing/${encodeURIComponent(a.slug)}`;
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
     if (navigator.share) {

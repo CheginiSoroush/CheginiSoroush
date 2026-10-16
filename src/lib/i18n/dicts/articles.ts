@@ -127,6 +127,16 @@ export const articlesDict: Dict = {
     "toast.copyFailedTitle": "کپی نشد",
     "toast.historyClearedTitle": "تاریخچه پاک شد",
     "toast.historyClearedDesc": "همه رکوردهای مطالعه حذف شدند.",
+
+    // ---------- standalone article page (/writing/<slug>) ----------
+    "page.back": "همه نوشته‌ها",
+    "page.backAria": "بازگشت به فهرست نوشته‌ها",
+    "page.backHome": "صفحه اصلی",
+    "page.relatedAria": "نوشته‌های پیشنهادی",
+    "page.notFoundTitle": "نوشته پیدا نشد",
+    "page.notFoundDesc": "آدرس این نوشته معتبر نیست یا نوشته حذف شده است.",
+    "page.notFoundBack": "دیدن فهرست نوشته‌ها",
+    "page.footerTagline": "سروش چگینی — توسعه‌دهنده و نویسنده",
   },
   en: {
     // ---------- section ----------
@@ -253,5 +263,15 @@ export const articlesDict: Dict = {
     "toast.copyFailedTitle": "Copy failed",
     "toast.historyClearedTitle": "History cleared",
     "toast.historyClearedDesc": "All reading records have been removed.",
+
+    // ---------- standalone article page (/writing/<slug>) ----------
+    "page.back": "All articles",
+    "page.backAria": "Back to all articles",
+    "page.backHome": "Home",
+    "page.relatedAria": "Suggested articles",
+    "page.notFoundTitle": "Article not found",
+    "page.notFoundDesc": "This article link is invalid or the article was removed.",
+    "page.notFoundBack": "Browse all articles",
+    "page.footerTagline": "Soroush Chegini — Software Developer & Writer",
   },
 };
