@@ -253,7 +253,7 @@ export const seedProjects: SeedProject[] = [
     slug: "style-plus",
     title: "فروشگاه استایل پلاس",
     titleEn: "StylePlus Store",
-    repo: "CheginiSoroush/StylePlus-Ecommerce",
+    repo: "CheginiSoroush/style-plus-ecommerce-ui",
     description:
       "رابط کاربری پیشرفته و واکنش‌گرای فروشگاهی با امکاناتی نظیر استوری، گردونه شانس و سبد خرید پویا.",
     descriptionEn:
