@@ -117,6 +117,13 @@ echo "   deduplicating auto-synced cards (repo/demo already curated)"
 # SAME demo. sync-engine now prevents recreation; this removes the leftovers.
 bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-dedup.sql
 
+echo "   Persian backfill for untranslated cards (idempotent, guarded)"
+# 15 cards (14 auto-synced + ubuntu-optimizer) had title = titleEn (English on
+# both fields) → the FA mode of the site showed English card text. This fills
+# Persian titles/descriptions + verified demo URLs; it only fires while a row
+# is still untranslated, so it can never clobber manual edits.
+bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-fa-autocards.sql
+
 echo "━━━ 4b/8 Refresh baked fallback snapshot (best-effort)"
 # Bakes a deploy-time copy of the catalog into the Worker bundle so the site
 # still shows real content/counters when the account-wide D1 free-tier quota
