@@ -5,10 +5,12 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { GITHUB_PROFILE_URL } from "@/lib/site-config";
 
 const SITE_URL = "https://imsoroush.ir";
-// Site default language is English (see src/lib/i18n.ts) — SEO metadata follows.
-const TITLE = "Soroush | Software Developer & Writer";
+// Site default language is English (see src/lib/i18n.ts) — but the brand query
+// people actually search is BOTH "Soroush Chegini" and «سروش چگینی», so the
+// SEO metadata carries the full name in both languages up front.
+const TITLE = "Soroush Chegini | سروش چگینی — Software Developer & Writer";
 const DESCRIPTION =
-  "Soroush Chegini's personal portfolio: software developer, Telegram bot maker, 3D experience builder and writer.";
+  "Soroush Chegini (سروش چگینی) — software developer, Telegram bot maker, 3D experience builder and writer. Projects, articles and open-source work.";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -17,13 +19,14 @@ const jsonLd = {
       "@type": "Person",
       "@id": `${SITE_URL}/#person`,
       name: "Soroush Chegini",
-      alternateName: "سروش چگینی",
+      alternateName: ["سروش چگینی", "Soroush Chegini"],
       url: SITE_URL,
       image: `${SITE_URL}/photos/logo_dark.png`,
       jobTitle: "Software Developer & Writer",
       description:
         "Software developer, Telegram bot maker, 3D enthusiast and writer.",
       sameAs: [GITHUB_PROFILE_URL],
+      knowsLanguage: ["fa", "en"],
       knowsAbout: [
         "Software Development",
         "Telegram Bots",
@@ -48,7 +51,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: "%s | Soroush",
+    template: "%s | Soroush Chegini",
   },
   description: DESCRIPTION,
   keywords: [
@@ -88,8 +91,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: TITLE,
-    description:
-      "Software developer, Telegram bot maker, 3D experience builder and writer — projects, articles and open-source work.",
+    description: DESCRIPTION,
     url: SITE_URL,
     siteName: "imsoroush.ir",
     type: "website",
@@ -101,8 +103,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: TITLE,
-    description:
-      "Software developer, Telegram bot maker and writer — imsoroush.ir",
+    description: DESCRIPTION,
     // no twitter.images → crawlers fall back to og:image (dynamic card)
   },
   category: "technology",

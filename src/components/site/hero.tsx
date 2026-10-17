@@ -77,7 +77,7 @@ export function Hero({
   onExplore: () => void;
   onNavigate: (v: ViewName) => void;
 }) {
-  const { t, num } = useT();
+  const { t, num, lang } = useT();
   const roles = useMemo(
     () => [0, 1, 2, 3].map((i) => t("core", `hero.role.${i}`)),
     [t]
@@ -155,11 +155,25 @@ export function Hero({
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.15 }}
-          className="text-5xl sm:text-7xl font-black tracking-tight mb-4"
+          className="text-5xl sm:text-7xl font-black tracking-tight mb-2"
         >
           <span className="brand-gradient-text">{t("core", "hero.name.first")}</span>{" "}
           {t("core", "hero.name.last")}
         </motion.h1>
+
+        {/* Bilingual name echo — the visitor sees the name in BOTH languages
+            (Persian on the EN page, English on the FA page). Real, visible
+            content — not hidden text — so crawlers index the Persian brand
+            name «سروش چگینی» from the SSR HTML too. */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          lang={lang === "fa" ? "en" : "fa"}
+          className="text-sm sm:text-base font-medium text-muted-foreground tracking-wide mb-4"
+        >
+          {lang === "fa" ? "Soroush Chegini" : "سروش چگینی"}
+        </motion.p>
 
         {/* Typing role */}
         <motion.p
