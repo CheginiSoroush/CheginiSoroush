@@ -171,6 +171,10 @@ export type ProjectPlan = {
  * Plan catalog writes:
  *  - every owner repo without a Project row becomes a draft card
  *    (forks skipped; archived kept but never featured),
+ *  - a repo is SKIPPED when it is already represented by an existing card —
+ *    matched by slug, exact repo name, separator-insensitive repo name, OR
+ *    its matched demo URL equal to an existing card's demoUrl — so the sync
+ *    can never create a second card for the same repo / same live demo,
  *  - existing rows with a null demoUrl get one when a demo was discovered
  *    for their repo (curated values are never overwritten).
  */
@@ -184,6 +188,19 @@ export function planProjectWrites(
   const existingRepos = new Set(
     existing.map((p) => repoNameOf(p.repo).toLowerCase())
   );
+  // Separator-insensitive view of the same repos ("Audio-Queue-Bot" ==
+  // "audioqueuebot") so a renamed/reformatted repo cannot spawn a 2nd card.
+  const existingRepoNorms = new Set(
+    existing.map((p) => normalizeName(repoNameOf(p.repo)))
+  );
+  // Demo URLs already shown by an existing card. A second card that opens the
+  // SAME live demo is a duplicate for visitors no matter which repo backs it,
+  // so a repo whose matched demo is already represented never gets a new card.
+  const existingDemoUrls = new Set(
+    existing
+      .map((p) => p.demoUrl?.trim().toLowerCase().replace(/\/+$/, "") ?? "")
+      .filter(Boolean)
+  );
 
   const newProjects: NewProjectDraft[] = [];
   let orderSeed = 1000; // auto cards sort below all curated ones
@@ -191,7 +208,16 @@ export function planProjectWrites(
   for (const repo of repos) {
     if (repo.isFork) continue;
     const lower = repo.name.toLowerCase();
-    if (existingRepos.has(lower) || existingSlugs.has(lower)) continue;
+    const demoUrl = demos[lower] ?? null;
+    const demoKey = demoUrl?.trim().toLowerCase().replace(/\/+$/, "") ?? "";
+    if (
+      existingRepos.has(lower) ||
+      existingSlugs.has(lower) ||
+      existingRepoNorms.has(normalizeName(repo.name)) ||
+      (demoKey !== "" && existingDemoUrls.has(demoKey))
+    ) {
+      continue;
+    }
 
     const cls = classifyRepo({
       name: repo.name,

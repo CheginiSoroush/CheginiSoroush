@@ -111,6 +111,12 @@ else
 fi
 bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-seed.sql
 
+echo "   deduplicating auto-synced cards (repo/demo already curated)"
+# Idempotent cleanup: auto-sync once spawned 2nd cards for repos whose curated
+# card still pointed to an old repo name — visitors saw two cards opening the
+# SAME demo. sync-engine now prevents recreation; this removes the leftovers.
+bunx wrangler d1 execute "$DB_NAME" --remote -y --file=./prisma/d1-dedup.sql
+
 echo "━━━ 4b/8 Refresh baked fallback snapshot (best-effort)"
 # Bakes a deploy-time copy of the catalog into the Worker bundle so the site
 # still shows real content/counters when the account-wide D1 free-tier quota
