@@ -79,3 +79,6 @@ download/
 # audit workspace & chat uploads (never part of the product)
 /audit/
 /upload/
+
+# resume working sources (local only)
+/resume/
