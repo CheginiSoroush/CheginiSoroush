@@ -135,11 +135,11 @@ on **Cloudflare Workers**, gamified Obsidian vaults, interactive books and cinem
 
 <div align="center">
 
-<img height="168" src="https://github-readme-stats.vercel.app/api?username=CheginiSoroush&show_icons=true&theme=tokyonight&hide_border=true&count_private=true&include_all_commits=true" alt="GitHub stats"/>&nbsp;&nbsp;&nbsp;<img height="168" src="https://streak-stats.demolab.com?user=CheginiSoroush&theme=tokyonight&hide_border=true&locale=en" alt="GitHub streak"/>
+<img height="168" src="https://github-readme-stats.vercel.app/api?username=CheginiSoroush&show_icons=true&theme=tokyonight&hide_border=true&count_private=true&include_all_commits=true&cache_seconds=86400" alt="GitHub stats"/>&nbsp;&nbsp;&nbsp;<img height="168" src="https://streak-stats.demolab.com?user=CheginiSoroush&theme=tokyonight&hide_border=true&locale=en" alt="GitHub streak"/>
 
 <br/><br/>
 
-<img height="168" src="https://github-readme-stats.vercel.app/api/top-langs/?username=CheginiSoroush&layout=compact&theme=tokyonight&hide_border=true&langs_count=8" alt="Top languages"/>
+<img height="168" src="https://github-readme-stats.vercel.app/api/top-langs/?username=CheginiSoroush&layout=compact&theme=tokyonight&hide_border=true&langs_count=8&cache_seconds=86400" alt="Top languages"/>
 
 </div>
 
