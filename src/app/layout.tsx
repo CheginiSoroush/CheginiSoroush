@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
-import { GITHUB_PROFILE_URL } from "@/lib/site-config";
+import { GITHUB_PROFILE_URL, LINKEDIN_URL } from "@/lib/site-config";
 
 const SITE_URL = "https://imsoroush.ir";
 // Site default language is English (see src/lib/i18n.ts) — but the brand query
@@ -25,7 +25,7 @@ const jsonLd = {
       jobTitle: "Software Developer & Writer",
       description:
         "Software developer, researcher, 3D enthusiast and writer.",
-      sameAs: [GITHUB_PROFILE_URL],
+      sameAs: [GITHUB_PROFILE_URL, LINKEDIN_URL],
       knowsLanguage: ["fa", "en"],
       knowsAbout: [
         "Software Development",

@@ -19,15 +19,14 @@ export const CONTACT_EMAIL = "imsoroushchegini@gmail.com";
 export const CONTACT_EMAIL_URL = `mailto:${CONTACT_EMAIL}`;
 
 /**
- * LinkedIn profile URL — `null` until the owner actually creates the profile
- * (user confirmed on 2025 that no LinkedIn account exists yet; the previous
- * handle "imsoroush" was a guess and must not ship as a live link).
+ * LinkedIn profile URL (owner-provided handle: soroushchegini).
+ * The footer button and the contact card both read this — when it is
+ * `null` the footer falls back to a disabled "soon" placeholder.
  *
- * وقتی پروفایل لینکدین ساخته شد، فقط همین‌جا آدرس را قرار بده؛
- * دکمه‌ی فوتر به‌صورت خودکار از حالت «به‌زودی» فعال می‌شود. مثال:
- *   linkedinUrl: "https://www.linkedin.com/in/<handle>"
+ * دکمه‌ی فوتر و کارت بخش تماس از همین‌جا می‌خوانند؛ اگر خالی شود
+ * فوتر به‌صورت خودکار به حالت غیرفعال «به‌زودی» برمی‌گردد.
  */
-export const LINKEDIN_URL: string | null = null;
+export const LINKEDIN_URL = "https://www.linkedin.com/in/soroushchegini";
 
 /**
  * Build a repository URL from a full "owner/name" string

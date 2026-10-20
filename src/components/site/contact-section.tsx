@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Send, MapPin, Mail, Github, CheckCircle2, Loader2, FileClock } from "lucide-react";
+import { Send, MapPin, Mail, Github, Linkedin, CheckCircle2, Loader2, FileClock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useT } from "@/lib/i18n";
-import { CONTACT_EMAIL, CONTACT_EMAIL_URL, GITHUB_HANDLE, GITHUB_PROFILE_URL } from "@/lib/site-config";
+import { CONTACT_EMAIL, CONTACT_EMAIL_URL, GITHUB_HANDLE, GITHUB_PROFILE_URL, LINKEDIN_URL } from "@/lib/site-config";
 import type { ReactNode } from "react";
 
 type FormState = { name: string; email: string; subject: string; message: string };
@@ -32,6 +32,14 @@ const SOCIALS: Social[] = [
     href: GITHUB_PROFILE_URL,
     icon: <Github className="w-5 h-5" />,
     tone: "text-violet-500 bg-violet-500/10 border-violet-500/30",
+  },
+  {
+    id: "linkedin",
+    labelKey: "social.linkedin",
+    value: "soroushchegini",
+    href: LINKEDIN_URL,
+    icon: <Linkedin className="w-5 h-5" />,
+    tone: "text-sky-500 bg-sky-500/10 border-sky-500/30",
   },
   {
     id: "email",

@@ -6,6 +6,7 @@ export const contactDict: Dict = {
     // ---------- section / socials ----------
     "aria.section": "تماس با من",
     "social.github": "گیت‌هاب",
+    "social.linkedin": "لینکدین",
     "social.email": "ایمیل",
     "social.location": "موقعیت",
     "social.locationValue": "ایران",
@@ -72,6 +73,7 @@ export const contactDict: Dict = {
     // ---------- section / socials ----------
     "aria.section": "Contact me",
     "social.github": "GitHub",
+    "social.linkedin": "LinkedIn",
     "social.email": "Email",
     "social.location": "Location",
     "social.locationValue": "Iran",
