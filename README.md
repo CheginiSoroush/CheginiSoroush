@@ -186,6 +186,7 @@ bun install
 
 bun run db:push     # create the local database
 bun run dev         # http://localhost:3000
+
 ```
 
 | Command                | What it does                         |
