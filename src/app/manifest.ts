@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "سروش چگینی | Soroush Chegini",
     short_name: "سروش",
     description:
-      "پورتفولیو شخصی سروش چگینی: توسعه‌دهنده نرم‌افزار، سازنده ربات‌های تلگرام و نویسنده.",
+      "پورتفولیو شخصی سروش چگینی: توسعه‌دهنده نرم‌افزار، پژوهشگر و نویسنده.",
     start_url: "/",
     id: "/",
     scope: "/",

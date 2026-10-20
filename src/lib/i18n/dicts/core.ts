@@ -22,7 +22,7 @@ export const coreDict: Dict = {
     "hero.name.first": "سروش",
     "hero.name.last": "چگینی",
     "hero.role.0": "توسعه‌دهنده نرم‌افزار",
-    "hero.role.1": "سازنده ربات‌های تلگرام",
+    "hero.role.1": "پژوهشگر",
     "hero.role.2": "خالق تجربه‌های سه‌بعدی",
     "hero.role.3": "نویسنده و کاوشگر",
     "hero.desc":
@@ -113,7 +113,7 @@ export const coreDict: Dict = {
     "hero.name.first": "Soroush",
     "hero.name.last": "Chegini",
     "hero.role.0": "Software Developer",
-    "hero.role.1": "Telegram Bot Builder",
+    "hero.role.1": "Researcher",
     "hero.role.2": "Creator of 3D Experiences",
     "hero.role.3": "Writer & Explorer",
     "hero.desc":

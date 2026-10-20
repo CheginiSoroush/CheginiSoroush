@@ -10,7 +10,7 @@ const SITE_URL = "https://imsoroush.ir";
 // SEO metadata carries the full name in both languages up front.
 const TITLE = "Soroush Chegini | سروش چگینی — Software Developer & Writer";
 const DESCRIPTION =
-  "Soroush Chegini (سروش چگینی) — software developer, Telegram bot maker, 3D experience builder and writer. Projects, articles and open-source work.";
+  "Soroush Chegini (سروش چگینی) — software developer, researcher, 3D experience builder and writer. Projects, articles and open-source work.";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -24,7 +24,7 @@ const jsonLd = {
       image: `${SITE_URL}/photos/logo_dark.png`,
       jobTitle: "Software Developer & Writer",
       description:
-        "Software developer, Telegram bot maker, 3D enthusiast and writer.",
+        "Software developer, researcher, 3D enthusiast and writer.",
       sameAs: [GITHUB_PROFILE_URL],
       knowsLanguage: ["fa", "en"],
       knowsAbout: [
@@ -97,8 +97,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     alternateLocale: ["fa_IR"],
-    // NOTE: og:image is provided by the src/app/opengraph-image.tsx file
-    // convention (dynamic 1200×630 card) — do not duplicate it here.
+    // NOTE: og:image is provided by the static src/app/opengraph-image.png
+    // file convention (1200×630 card) — do not duplicate it here.
   },
   twitter: {
     card: "summary_large_image",
