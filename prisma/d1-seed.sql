@@ -34,7 +34,7 @@ ON CONFLICT("slug") DO UPDATE SET
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
-VALUES ('cmvb76k320004vf1ddgx607mz', 'kv-dumper', 'سیستم صف ربات تلگرام', 'Telegram Bot Queue System', 'CheginiSoroush/KV-Dumper', NULL, 'ربات مدیریت صف ارسال محتوا با تاخیر هوشمند، متصل به دیتابیس Cloudflare D1 برای جلوگیری از Flood Limit تلگرام.', 'Content queue-management bot with smart delays, backed by Cloudflare D1 to prevent Telegram flood limits.', 'bots', '["Cloudflare D1","Queue System","Automation"]', '📋', 0, 0, 4, '2026-10-16T16:44:13.743Z')
+VALUES ('cmvb76k320004vf1ddgx607mz', 'kv-dumper', 'سیستم صف ربات تلگرام', 'Telegram Bot Queue System', 'CheginiSoroush/KV-Dumper', 'https://cheginisoroush.github.io/KV-Dumper/', 'ربات مدیریت صف ارسال محتوا با تاخیر هوشمند، متصل به دیتابیس Cloudflare D1 برای جلوگیری از Flood Limit تلگرام.', 'Content queue-management bot with smart delays, backed by Cloudflare D1 to prevent Telegram flood limits.', 'bots', '["Cloudflare D1","Queue System","Automation"]', '📋', 0, 0, 4, '2026-10-16T16:44:13.743Z')
 ON CONFLICT("slug") DO UPDATE SET
   "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
   "demoUrl" = excluded."demoUrl",
