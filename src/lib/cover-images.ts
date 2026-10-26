@@ -19,6 +19,7 @@ export const COVER_IMAGES: Record<string, string> = {
   "channel-manager": "/photos/covers/channel-manager.webp",
   "cheginisoroush": "/photos/covers/cheginisoroush.webp",
   "cinematic-solar-system": "/photos/covers/cinematic-solar-system.webp",
+  "clean-ip-scanner": "/photos/covers/clean-ip-scanner.webp",
   "cloudflare-telegram-bot": "/photos/covers/cloudflare-telegram-bot.webp",
   "config-to-channel": "/photos/covers/config-to-channel.webp",
   "cosmic-earth": "/photos/covers/cosmic-earth.webp",
@@ -68,4 +69,5 @@ export const COVER_IMAGES: Record<string, string> = {
   "vamp-sole": "/photos/covers/vamp-sole.webp",
   "vampsole-website": "/photos/covers/vampsole-website.webp",
   "willpower-science-amcc": "/photos/covers/willpower-science-amcc.webp",
+  "workout": "/photos/covers/workout.webp",
 };

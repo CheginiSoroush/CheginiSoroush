@@ -42,7 +42,7 @@ export const projectsDict: Dict = {
     "favorites.removeThis": "حذف این پروژه از علاقه‌مندی‌ها",
 
     // ---------- card ----------
-    "card.featured": "منتخب",
+    "card.featured": "پین‌شده",
     "card.trending": "پربازدید",
     "card.details": "جزئیات",
     "card.live": "وب‌سایت پروژه",
@@ -56,7 +56,7 @@ export const projectsDict: Dict = {
     "empty.search.desc": "عبارت دیگری را جستجو کنید یا فیلتر دسته‌بندی را تغییر دهید.",
 
     // ---------- detail dialog ----------
-    "detail.featuredBadge": "پروژه منتخب",
+    "detail.featuredBadge": "پین‌شده در گیت‌هاب",
     "detail.stack": "پشته فناوری",
     "detail.related": "پروژه‌های مرتبط",
     "detail.github": "مشاهده در گیت‌هاب",
@@ -137,7 +137,7 @@ export const projectsDict: Dict = {
     "favorites.removeThis": "Remove this project from favorites",
 
     // ---------- card ----------
-    "card.featured": "Featured",
+    "card.featured": "Pinned",
     "card.trending": "Trending",
     "card.details": "Details",
     "card.live": "Project site",
@@ -151,7 +151,7 @@ export const projectsDict: Dict = {
     "empty.search.desc": "Try a different search term or switch the category filter.",
 
     // ---------- detail dialog ----------
-    "detail.featuredBadge": "Featured project",
+    "detail.featuredBadge": "Pinned on GitHub",
     "detail.stack": "Tech Stack",
     "detail.related": "Related Projects",
     "detail.github": "View on GitHub",

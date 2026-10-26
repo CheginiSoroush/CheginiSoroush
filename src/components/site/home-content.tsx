@@ -184,7 +184,9 @@ export function HomeContent({
       <section aria-label={t("home", "featured.aria")}>
         <h2 className="section-title mb-14">{t("home", "featured.title")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {featured.slice(0, 4).map((p, i) => {
+          {/* GitHub pins all six — the pinned section mirrors the profile,
+              so show the full pin list instead of a 4-card cut. */}
+          {featured.slice(0, 6).map((p, i) => {
             // Every online presence of the project: live demo (DB) + extra
             // curated sites (GitHub Pages) + third-party recognition
             const sites = projectSites(p.slug);

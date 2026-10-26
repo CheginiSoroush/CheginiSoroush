@@ -58,8 +58,8 @@ export const homeDict: Dict = {
       "ابزارهای OpenCV، اسکریپت‌های Bash، چیت‌شیت‌های تعاملی و ماشین‌حساب‌های ++C برای کارِ سریع‌تر.",
 
     // ---------- featured projects ----------
-    "featured.aria": "پروژه‌های منتخب",
-    "featured.title": "پروژه‌های منتخب",
+    "featured.aria": "پروژه‌های پین‌شده روی گیت‌هاب",
+    "featured.title": "پین‌شده در گیت‌هاب",
     "featured.viewAll": "مشاهده همه پروژه‌ها",
 
     // ---------- writing teaser ----------
@@ -155,8 +155,8 @@ export const homeDict: Dict = {
       "OpenCV tools, Bash scripts, interactive cheat sheets and C++ calculators for getting things done faster.",
 
     // ---------- featured projects ----------
-    "featured.aria": "Featured projects",
-    "featured.title": "Featured Projects",
+    "featured.aria": "Projects pinned on GitHub",
+    "featured.title": "Pinned on GitHub",
     "featured.viewAll": "View all projects",
 
     // ---------- writing teaser ----------

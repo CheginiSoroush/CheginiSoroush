@@ -1,5 +1,7 @@
 // Seed data extracted from the original CheginiSoroush/CheginiSoroush static site
-// 39 computer projects + 4 articles
+// 45 computer projects + 4 articles.
+// The first section mirrors the repos PINNED on the GitHub profile, in the
+// same order (Task 91) — the homepage pinned section is driven by it.
 
 export type SeedProject = {
   slug: string;
@@ -22,6 +24,67 @@ export const PROJECT_CATEGORIES = [
 ] as const;
 
 export const seedProjects: SeedProject[] = [
+  // ---------- PINNED ON GITHUB (6, in profile pin order) ----------
+  // Mirrors github.com/CheginiSoroush pinned repos, verified 2026-10-26:
+  // obsidian-sync-scripts → projdump → ubuntu-optimizer → flash-panel →
+  // KV-Dumper → clean-ip-scanner. Keep this order in sync with the profile.
+  {
+    slug: "obsidian-sync-scripts",
+    title: "اسکریپت‌های سینک اوبسیدین",
+    titleEn: "Obsidian Sync Scripts",
+    repo: "CheginiSoroush/obsidian-sync-scripts",
+    description:
+      "یک اسکریپت بش برای سه پلتفرم — سینک جنگآزمودهٔ Obsidian با گیت‌هاب روی Termux، لینوکس و مک؛ بکاپ راستی‌آزمایی‌شده، ترمیم اتمیک مخزن و گیت خودترمیم.",
+    descriptionEn:
+      "One Bash script, three platforms — battle-hardened Obsidian ↔ GitHub sync for Termux, Linux and macOS, with verified backups, atomic repository repair and self-healing git.",
+    category: "tools",
+    tags: ["Bash", "Git", "Obsidian", "Termux", "Backup"],
+    icon: "🔄",
+    featured: true,
+  },
+  {
+    slug: "projdump",
+    title: "پراج‌دامپ",
+    titleEn: "ProjDump",
+    repo: "CheginiSoroush/projdump",
+    description:
+      "کل کدبیس را در یک فایل آمادهٔ هوش مصنوعی بریز — خروجی Markdown، XML یا JSON با بش خالص و صفر وابستگی؛ بودجهٔ توکن، پریست مدل‌ها و split-- برای کانتکست‌های بلند. بیش از ۷۰ تست.",
+    descriptionEn:
+      "Dump an entire codebase into one AI-ready file — Markdown, XML or JSON from pure dependency-free Bash, with token budgets, model presets and --split for long contexts. 70+ tests, shellcheck-clean.",
+    category: "tools",
+    tags: ["Bash", "LLM", "CLI", "Prompt Engineering", "Token Budget"],
+    icon: "📤",
+    featured: true,
+  },
+  {
+    slug: "ubuntu-optimizer",
+    title: "بهینه‌ساز اوبونتو",
+    titleEn: "Ubuntu Optimizer",
+    repo: "CheginiSoroush/ubuntu-optimizer",
+    description:
+      "ابزار خط فرمان بشی خودبه‌روزشونده برای پاکسازی، بهینه‌سازی، تعمیر و امن‌سازی اوبونتو — ۲۳ ابزار از سوییچ DNS و پاک‌سازی کرنل تا مدیریت سواپ و لانچر fzf؛ رابط دوزبانهٔ EN/FA، گزارش JSON، تایمر systemd و ۵۱۰ تست خودکار.",
+    descriptionEn:
+      "A self-updating Bash CLI that cleans, optimizes, repairs and secures Ubuntu — 23 tools from DNS switching and kernel cleanup to swap management and an fzf launcher, with a bilingual EN/FA interface, JSON reports, systemd timers and 510 automated tests.",
+    category: "tools",
+    tags: ["Bash", "Ubuntu", "CLI", "System Optimization", "Self-Update"],
+    icon: "⚙️",
+    featured: true,
+  },
+  {
+    slug: "flash-panel",
+    title: "فلش پنل",
+    titleEn: "Flash Panel",
+    repo: "CheginiSoroush/flash-panel",
+    description:
+      "پنل پروکسی VLESS/Trojan سِرورلس و پرفروش برای Cloudflare Workers — ضدسانسور با fragmentation، زنجیرهٔ WARP، تلمتری لبه، ربات تلگرام و تیون خودکار.",
+    descriptionEn:
+      "High-performance serverless VLESS/Trojan proxy panel for Cloudflare Workers — anti-censorship with fragmentation, WARP chaining, edge telemetry, a Telegram bot and auto-tuning.",
+    category: "tools",
+    tags: ["Cloudflare Workers", "VLESS", "Proxy Panel", "Telegram Bot", "WARP"],
+    icon: "⚡",
+    featured: true,
+  },
+
   // ---------- BOTS (16) ----------
   {
     slug: "membership-bot",
@@ -35,7 +98,8 @@ export const seedProjects: SeedProject[] = [
     category: "bots",
     tags: ["Cloudflare Workers", "D1 Database", "TypeScript", "Telegram API"],
     icon: "🔐",
-    // Not featured since Task 61 — homepage slot given to ubuntu-optimizer
+    // Not featured — the homepage pinned section mirrors GitHub's pinned
+    // repos (Task 91), which does not include this project.
     featured: false,
   },
   {
@@ -50,7 +114,6 @@ export const seedProjects: SeedProject[] = [
     category: "bots",
     tags: ["Google Gemini", "OCR", "Telegram API", "AI"],
     icon: "✨",
-    featured: true,
   },
   {
     slug: "aiflash",
@@ -90,6 +153,7 @@ export const seedProjects: SeedProject[] = [
     category: "bots",
     tags: ["Cloudflare D1", "Queue System", "Automation"],
     icon: "📋",
+    featured: true,
   },
   {
     slug: "unsplash-photos",
@@ -313,7 +377,6 @@ export const seedProjects: SeedProject[] = [
     category: "web",
     tags: ["Psychology", "Chart.js", "LocalStorage", "Mindfulness"],
     icon: "🧘",
-    featured: true,
   },
   {
     slug: "luxe-ecommerce",
@@ -368,7 +431,6 @@ export const seedProjects: SeedProject[] = [
     category: "3d",
     tags: ["Three.js", "NASA Textures", "Post-Processing", "WebGL"],
     icon: "🪐",
-    featured: true,
   },
   {
     slug: "threejs-solar-system",
@@ -475,7 +537,6 @@ export const seedProjects: SeedProject[] = [
     category: "tools",
     tags: ["Git", "Terminal Simulator", "Education", "Interactive"],
     icon: "📚",
-    featured: true,
   },
   {
     slug: "linux-cheat-sheet",
@@ -554,6 +615,7 @@ export const seedProjects: SeedProject[] = [
     category: "tools",
     tags: ["Next.js", "TypeScript", "TCP/TLS", "WARP", "CDN"],
     icon: "📡",
+    featured: true,
   },
   {
     slug: "workout",
