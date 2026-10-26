@@ -542,6 +542,32 @@ export const seedProjects: SeedProject[] = [
     tags: ["C++", "CLI", "Validation", "Error Handling"],
     icon: "🧮",
   },
+  {
+    slug: "clean-ip-scanner",
+    title: "اسکنر IPهای تمیز CDN",
+    titleEn: "Clean IP Scanner",
+    repo: "CheginiSoroush/clean-ip-scanner",
+    description:
+      "پیدا کردن IPهای پاک و سازگار با CDN در لحظه — اسکنر زندهٔ TCP/TLS، شکارچی IP گوگل، پروب WARP، زمان‌بان شکار سمت‌سرور با خلاصه‌سازی تلگرام، همراه دفترچهٔ راهنمای دوزبانه روی GitHub Pages.",
+    descriptionEn:
+      "Find clean, CDN-friendly IPs in real time — live TCP/TLS scanner, Google IP hunter, WARP endpoint probing and a server-side hunt scheduler with Telegram digests, plus a bilingual handbook on GitHub Pages.",
+    category: "tools",
+    tags: ["Next.js", "TypeScript", "TCP/TLS", "WARP", "CDN"],
+    icon: "📡",
+  },
+  {
+    slug: "workout",
+    title: "داشبورد تمرین FST-7",
+    titleEn: "FST-7 Workout Dashboard",
+    repo: "CheginiSoroush/Workout",
+    description:
+      "داشبورد شخصی و کاملاً راست‌به‌چپ تمرین با اصول FST-7 — برنامهٔ ۳ روزهٔ Push/Pull/Legs، ثبت ست‌به‌ست با تایمر استراحت و RPE، دانشنامهٔ علمی و خروجی یک‌کلیکی به اپ‌های تمرینی. ۱۰۰٪ آفلاین؛ داده‌ها فقط روی دستگاه خودت.",
+    descriptionEn:
+      "A personal, fully-RTL FST-7 fitness dashboard — 3-day Push/Pull/Legs split, set-by-set logging with rest timers and RPE, a science knowledge base and one-click exports to workout apps. 100% offline; data stays on-device.",
+    category: "web",
+    tags: ["Next.js", "TypeScript", "FST-7", "Fitness", "Offline-first"],
+    icon: "🏋️",
+  },
 ];
 
 export type SeedArticle = {

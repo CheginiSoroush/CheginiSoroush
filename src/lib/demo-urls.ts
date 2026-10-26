@@ -21,6 +21,7 @@ export const CURATED_DEMOS: Record<string, string> = {
   "atomic-habits-interactive": "https://atomic-habits-interactive.imsoroush.ir/",
   "aurora-vpn-landing": "https://aurora-vpn.imsoroush.ir/",
   "cinematic-solar-system-3d": "https://cinematic-solar-system.imsoroush.ir/",
+  "clean-ip-scanner": "https://cheginisoroush.github.io/clean-ip-scanner/",
   "dev-portfolio-3d": "https://dev-portfolio-3d.imsoroush.ir/",
   "fashion-everyday": "https://fashion-everyday.imsoroush.ir/",
   "fashionable-3d-experience": "https://fashionable-3d-experience.imsoroush.ir/",
@@ -38,6 +39,7 @@ export const CURATED_DEMOS: Record<string, string> = {
   "threejs-solar-system": "https://threejs-solar-system.imsoroush.ir/",
   "vampsole-website": "https://vampsole.imsoroush.ir/",
   "willpower-science-amcc": "https://willpower-science-amcc.imsoroush.ir/",
+  workout: "https://cheginisoroush.github.io/Workout/",
 };
 
 export const PROJECT_DEMO_URLS: Record<string, string> = {
@@ -46,6 +48,7 @@ export const PROJECT_DEMO_URLS: Record<string, string> = {
   "argus-vpn": "https://argus-vpn.imsoroush.ir/",
   "aurora-vpn": "https://aurora-vpn.imsoroush.ir/",
   "cinematic-solar-system": "https://cinematic-solar-system.imsoroush.ir/",
+  "clean-ip-scanner": "https://cheginisoroush.github.io/clean-ip-scanner/",
   "cosmic-earth": "https://3d-cosmic-earth.imsoroush.ir/",
   "dev-portfolio-3d": "https://dev-portfolio-3d.imsoroush.ir/",
   "fashion-everyday": "https://fashion-everyday.imsoroush.ir/",
@@ -62,6 +65,7 @@ export const PROJECT_DEMO_URLS: Record<string, string> = {
   "threejs-solar-system": "https://threejs-solar-system.imsoroush.ir/",
   "valentine-game": "https://my-valentine-site.imsoroush.ir/",
   "vamp-sole": "https://vampsole.imsoroush.ir/",
+  workout: "https://cheginisoroush.github.io/Workout/",
 };
 
 /** Hostname of a demo URL (or null when unparsable) — shown on cards. */

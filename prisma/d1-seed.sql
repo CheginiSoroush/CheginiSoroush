@@ -313,6 +313,22 @@ ON CONFLICT("slug") DO UPDATE SET
   "description" = excluded."description", "descriptionEn" = excluded."descriptionEn",
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
+INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
+VALUES ('cmvb76k9q000hvf1dcsn001aa', 'clean-ip-scanner', 'اسکنر IPهای تمیز CDN', 'Clean IP Scanner', 'CheginiSoroush/clean-ip-scanner', 'https://cheginisoroush.github.io/clean-ip-scanner/', 'پیدا کردن IPهای پاک و سازگار با CDN در لحظه — اسکنر زندهٔ TCP/TLS، شکارچی IP گوگل، پروب WARP، زمان‌بان شکار سمت‌سرور با خلاصه‌سازی تلگرام، همراه دفترچهٔ راهنمای دوزبانه روی GitHub Pages.', 'Find clean, CDN-friendly IPs in real time — live TCP/TLS scanner, Google IP hunter, WARP endpoint probing and a server-side hunt scheduler with Telegram digests, plus a bilingual handbook on GitHub Pages.', 'tools', '["Next.js","TypeScript","TCP/TLS","WARP","CDN"]', '📡', 0, 0, 39, '2026-10-26T00:00:00.000Z')
+ON CONFLICT("slug") DO UPDATE SET
+  "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
+  "demoUrl" = excluded."demoUrl",
+  "description" = excluded."description", "descriptionEn" = excluded."descriptionEn",
+  "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
+  "featured" = excluded."featured", "order" = excluded."order";
+INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
+VALUES ('cmvb76k9q000hvf1dwkt001bb', 'workout', 'داشبورد تمرین FST-7', 'FST-7 Workout Dashboard', 'CheginiSoroush/Workout', 'https://cheginisoroush.github.io/Workout/', 'داشبورد شخصی و کاملاً راست‌به‌چپ تمرین با اصول FST-7 — برنامهٔ ۳ روزهٔ Push/Pull/Legs، ثبت ست‌به‌ست با تایمر استراحت و RPE، دانشنامهٔ علمی و خروجی یک‌کلیکی به اپ‌های تمرینی. ۱۰۰٪ آفلاین؛ داده‌ها فقط روی دستگاه خودت.', 'A personal, fully-RTL FST-7 fitness dashboard — 3-day Push/Pull/Legs split, set-by-set logging with rest timers and RPE, a science knowledge base and one-click exports to workout apps. 100% offline; data stays on-device.', 'web', '["Next.js","TypeScript","FST-7","Fitness","Offline-first"]', '🏋️', 0, 0, 40, '2026-10-26T00:00:00.000Z')
+ON CONFLICT("slug") DO UPDATE SET
+  "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
+  "demoUrl" = excluded."demoUrl",
+  "description" = excluded."description", "descriptionEn" = excluded."descriptionEn",
+  "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
+  "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt", "demoUrl")
 VALUES ('cmvb76k4p0013vf1d8f9pyh1h', 'overcoming-laziness-roadmap', 'نقشه راه غلبه بر تنبلی', 'Roadmap to Overcoming Laziness', 'یک وب‌اپلیکیشن تعاملی بر پایه روانشناسی رفتار و مهندسی عادت‌ها؛ برنامه ۳۰ روزه‌ای برای غلبه بر تنبلی با تمرکز بر قانون ۲ دقیقه‌ای.', 'An interactive web app built on behavioral psychology and habit engineering — a 30-day program for beating laziness, centered on the Two-Minute Rule.', '## 🧠 کدنویسی برای ذهن انسان
 
