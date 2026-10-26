@@ -21,12 +21,12 @@ I ship complete products end-to-end: AI-integrated applications, serverless auto
 
 | Project | What it is | Highlights |
 |---|---|---|
+| **[clean-ip-scanner](https://github.com/CheginiSoroush/clean-ip-scanner)** | Real-time CDN preferred-IP scanner (web edition) | 37k+ LOC TypeScript · Next.js 16 + standalone Bun socket.io scan engine + Caddy gateway · Google IP hunter & WARP probing · bilingual RTL UI · Telegram digests |
 | **[flash-panel](https://github.com/CheginiSoroush/flash-panel)** | Serverless VLESS/Trojan panel on Cloudflare Workers | 14k LOC TypeScript · 636 tests · subscriptions for Xray/Clash/v2rayNG/Hiddify · CI/CD |
 | **[ubuntu-optimizer](https://github.com/CheginiSoroush/ubuntu-optimizer)** | Self-updating Bash CLI with 23 system tools | 510+ tests · bilingual EN/FA · **selected for the XERJ Corpus Hub** as a reference implementation for AI coding agents |
 | **[obsidian-sync-scripts](https://github.com/CheginiSoroush/obsidian-sync-scripts)** | Obsidian vault sync engine in pure Bash | 7,380 LOC · 579 tests incl. fuzz & PTY suites · self-discovered and **fixed a critical git argument-injection vulnerability** · ShellCheck CI |
 | **[projdump](https://github.com/CheginiSoroush/projdump)** | Converts codebases into AI-ready files (Markdown/XML/JSON) | zero dependencies · token budgets · 70+ tests · CI + automated releases |
 | **[KV-Dumper](https://github.com/CheginiSoroush/KV-Dumper)** | Telegram publish queue on Workers + D1 | atomic job claiming · 429 retries & DLQ · v2 rewrite shipped via PR · CI/CD |
-| **[obsidian-project-quest](https://github.com/CheginiSoroush/obsidian-project-quest)** | Gamified bilingual Obsidian vault product | polished one-command setup · EN/FA UX |
 
 ## 🧰 Tech Stack
 
