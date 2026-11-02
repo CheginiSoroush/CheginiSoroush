@@ -6,8 +6,9 @@
  * drift from the live UI. Copy lives in the projects i18n dict under
  * `award.<id>.*` (label / short / desc / aria).
  *
- * When the exact XERJ Corpus Hub entry URL for the selected commit becomes
- * available, only `href` needs to change.
+ * The `href` points to the exact XERJ Corpus Hub entry for the selected
+ * commit (pinned to commit 7d659410fc = v7.16, as described in the award
+ * copy).
  */
 export type ProjectAward = {
   /** i18n key suffix under the projects dict: `award.<id>.*` */
@@ -19,8 +20,8 @@ export type ProjectAward = {
 export const PROJECT_AWARDS: Readonly<Record<string, ProjectAward>> = {
   "ubuntu-optimizer": {
     id: "xerj",
-    // TODO: swap to the exact hub-entry URL once it is shared with us.
-    href: "https://github.com/xerj-org/xerj",
+    // Exact hub entry for the selected commit (v7.16 / 7d659410fc).
+    href: "https://hub.xerj.org/corpus/cheginisoroush--ubuntu-optimizer",
   },
 };
 

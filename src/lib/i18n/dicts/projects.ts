@@ -90,7 +90,7 @@ export const projectsDict: Dict = {
     "award.xerj.label": "انتخاب‌شده در XERJ Corpus Hub",
     "award.xerj.short": "XERJ Corpus Hub",
     "award.xerj.desc": "پیاده‌سازی v7.16 این پروژه به‌عنوان مرجع کدِ آزموده‌شده — با نام و لینک مخزن — در کرپوس باز XERJ، موتور جست‌وجوی متن‌باز برای ایجنت‌های کدنویسی، ثبت شده است.",
-    "award.xerj.aria": "مشاهده XERJ Corpus Hub در گیت‌هاب (در تب جدید)",
+    "award.xerj.aria": "مشاهده مدخل ubuntu-optimizer در XERJ Corpus Hub (در تب جدید)",
 
     // ---------- toasts ----------
     "toast.linkCopied.title": "لینک کپی شد",
@@ -185,7 +185,7 @@ export const projectsDict: Dict = {
     "award.xerj.label": "Selected for XERJ Corpus Hub",
     "award.xerj.short": "XERJ Corpus Hub",
     "award.xerj.desc": "The v7.16 implementation was selected as a worked reference — with attribution to this repo — in the open XERJ Corpus Hub, an open-source AI-native search engine for coding agents.",
-    "award.xerj.aria": "Open the XERJ Corpus Hub on GitHub (new tab)",
+    "award.xerj.aria": "Open the ubuntu-optimizer entry in the XERJ Corpus Hub (new tab)",
 
     // ---------- toasts ----------
     "toast.linkCopied.title": "Link copied",
