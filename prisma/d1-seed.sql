@@ -361,6 +361,22 @@ ON CONFLICT("slug") DO UPDATE SET
   "description" = excluded."description", "descriptionEn" = excluded."descriptionEn",
   "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
   "featured" = excluded."featured", "order" = excluded."order";
+INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
+VALUES ('cmderafshvpn00000000000001a', 'derafsh-vpn', 'درفش VPN', 'Derafsh VPN', 'CheginiSoroush/Derafsh-Vpn', NULL, 'کلاینت VPN اندروید با اتصال یک‌ضربه‌ای — پشتیبانی از VMess، VLESS Reality، Trojan و Shadowsocks؛ رابط دوزبانهٔ فارسی/انگلیسی با Jetpack Compose و Material 3، سبک و سریع.', 'One-tap, fast VPN client for Android — VMess, VLESS Reality, Trojan and Shadowsocks, with a bilingual EN/FA Jetpack Compose (Material 3) interface. Light and fast.', 'tools', '["Kotlin","Android","Jetpack Compose","VLESS Reality","Shadowsocks"]', '🚩', 0, 0, 1000, '2026-11-03T06:00:00.000Z')
+ON CONFLICT("slug") DO UPDATE SET
+  "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
+  "demoUrl" = excluded."demoUrl",
+  "description" = excluded."description", "descriptionEn" = excluded."descriptionEn",
+  "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
+  "featured" = excluded."featured", "order" = excluded."order";
+INSERT INTO "Project" ("id", "slug", "title", "titleEn", "repo", "demoUrl", "description", "descriptionEn", "category", "tags", "icon", "featured", "views", "order", "createdAt")
+VALUES ('cmdonjelab0000000000000042', 'donje', 'Donje', 'Donje', 'CheginiSoroush/Donje', NULL, 'سندباکس وب مبتنی بر Next.js 16، Tailwind و shadcn/ui با لایه‌های state خودکار، مینی‌سرویس‌ها و گیت‌وی Caddy؛ آزمایشگاه شخصی برای پروتوتایپ سریع ایده‌ها.', 'A Next.js 16 + Tailwind + shadcn/ui web sandbox with layered agent-state automation, mini-services and a Caddy gateway — a personal rapid-prototyping lab.', 'web', '["TypeScript","Next.js","shadcn/ui","Sandbox"]', '🧪', 0, 0, 1000, '2026-11-03T06:00:00.000Z')
+ON CONFLICT("slug") DO UPDATE SET
+  "title" = excluded."title", "titleEn" = excluded."titleEn", "repo" = excluded."repo",
+  "demoUrl" = excluded."demoUrl",
+  "description" = excluded."description", "descriptionEn" = excluded."descriptionEn",
+  "category" = excluded."category", "tags" = excluded."tags", "icon" = excluded."icon",
+  "featured" = excluded."featured", "order" = excluded."order";
 INSERT INTO "Article" ("id", "slug", "title", "titleEn", "excerpt", "excerptEn", "content", "category", "icon", "readTime", "views", "likes", "publishedAt", "demoUrl")
 VALUES ('cmvpmktc30015rh5btounlxvs', 'overcoming-laziness-roadmap', 'نقشه راه غلبه بر تنبلی', 'Roadmap to Overcoming Laziness', 'یک وب‌اپلیکیشن تعاملی بر پایه روانشناسی رفتار و مهندسی عادت‌ها؛ برنامه ۳۰ روزه‌ای برای غلبه بر تنبلی با تمرکز بر قانون ۲ دقیقه‌ای.', 'An interactive web app built on behavioral psychology and habit engineering — a 30-day program for beating laziness, centered on the Two-Minute Rule.', '## 🧠 کدنویسی برای ذهن انسان
 
